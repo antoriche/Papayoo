@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<!-- saved from url=(0071)https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448 -->
+<html lang="fr" class="desktop-view not-mobile-device  anon js touch discourse-touch"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>Socket en C : client / serveur tout simple - Programmation - debian-fr.org</title>
+    <meta name="description" content="Voilà j&amp;#39;ai un peu honte de poster ceci tellement c&amp;#39;est basique, j&amp;#39;ai récupéré deux fichiers en C pour faire un petit test client / serveur avec les sockets, voici ces deux fichiers : 
+
+server.c :  
+
+ // compilation :	gcc&amp;hellip;">
+    <meta name="author" content="">
+<meta name="generator" content="Discourse 1.7.3 - https://github.com/discourse/discourse version a86807b39b24a77e7070eff77f7a20512248a785">
+<link rel="icon" type="image/png" href="https://debian-fr.org/logos/favicon.ico">
+<link rel="apple-touch-icon" type="image/png" href="./client serveur tout simple_files/debianfr.org.small.png">
+<link rel="icon" sizes="144x144" href="./client serveur tout simple_files/debianfr.org.small.png">
+<meta name="theme-color" content="#333">
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<link rel="canonical" href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448">
+<script type="application/ld+json">{"@context":"http://schema.org","@type":"WebSite","url":"https://www.debian-fr.org","potentialAction":{"@type":"SearchAction","target":"https://www.debian-fr.org/search?q={search_term_string}","query-input":"required name=search_term_string"}}</script>
+<link rel="search" type="application/opensearchdescription+xml" href="https://www.debian-fr.org/opensearch.xml" title="debian-fr.org Search">
+
+    
+
+<style>
+  @font-face {
+    font-family: 'FontAwesome';
+    src: url('/assets/fontawesome-webfont-ff82aeed6b9bb6701696c84d1b223d2e682eb78c89117a438ce6cfea8c498995.woff2?https://www.debian-fr.org&amp;2&v=4.5.0') format('woff2'),
+         url('/assets/fontawesome-webfont-c812ddc9e475d3e65d68a6b3b589ce598a2a5babb7afc55477d59215c4a38a40.woff?https://www.debian-fr.org&amp;2&v=4.5.0') format('woff');
+  }
+</style>
+
+      <link href="./client serveur tout simple_files/desktop_cb5491227d0869a4c3a84e0455a56c2d01870fe6.css" media="all" rel="stylesheet">
+
+
+  <link class="custom-css" rel="stylesheet" href="./client serveur tout simple_files/7e202ef2-56d7-47d5-98d8-a9c8d15e57dd.css" type="text/css" media="all">
+
+    
+
+      <meta name="fragment" content="!">
+
+
+    <script>
+      window.EmberENV = window.EmberENV || {};
+      window.EmberENV['FORCE_JQUERY'] = true;
+    </script>
+
+    <script src="./client serveur tout simple_files/fr-689eebb9f59238a2ba77b6ec50c75ecef2e5d3e9ee381ddc81294095ce8a06b6.js.téléchargement"></script>
+    <script src="./client serveur tout simple_files/ember_jquery-60dedd1dca1d8b8ce48b6d0087db3b96f3149b9b5af2d0c7c6357967d29031fb.js.téléchargement"></script>
+    <script src="./client serveur tout simple_files/preload-store-9a5d6688476c54b0eb6e11cf444ab9dc19602f99f10114228f41fe605c31ac4d.js.téléchargement"></script>
+    <script src="./client serveur tout simple_files/vendor-52ed1f7ea87a692ca7ec8f3b75bb76997f730cae151edfe8f467849ef9ddde78.js.téléchargement"></script>
+    <script src="./client serveur tout simple_files/pretty-text-bundle-ff71294d724c6ac1da9b7859862152f87a4836943884c2a9fab51fdf05445a73.js.téléchargement"></script>
+    <script src="./client serveur tout simple_files/application-f63186fd775cc11e6f1ff9badcb666819ba80ba292eb8d4c61e184b316aa86e9.js.téléchargement"></script>
+    <script src="./client serveur tout simple_files/plugin-7912cc75b45557130d5fc5634e35b89fd2bf80e4aa6171ddd256f99378da015d.js.téléchargement"></script>
+    <script src="./client serveur tout simple_files/plugin-third-party-c1c85ff97f60844379b85e0b260a5a17dff3fc5386e6347a4d1d64df75ee890c.js.téléchargement"></script>
+
+
+      
+
+    
+    <link rel="manifest" href="https://www.debian-fr.org/manifest.json">
+
+
+      <link rel="alternate" type="application/rss+xml" title="Flux RSS de « Socket en C : client / serveur tout simple »" href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448.rss">
+  <meta property="og:site_name" content="debian-fr.org">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://debian-fr.org/logos/debianfr.org.small.png">
+<meta property="og:image" content="https://debian-fr.org/logos/debianfr.org.small.png">
+<meta property="og:url" content="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448">
+<meta name="twitter:url" content="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448">
+<meta property="og:title" content="Socket en C : client / serveur tout simple">
+<meta name="twitter:title" content="Socket en C : client / serveur tout simple">
+<meta property="og:description" content="Voilà j&#39;ai un peu honte de poster ceci tellement c&#39;est basique, j&#39;ai récupéré deux fichiers en C pour faire un petit test client / serveur avec les sockets, voici ces deux fichiers :   server.c :     // compilation :	gcc -Wall -o server.o  -c server.c //			gcc -o server server.o #include &lt;stdio.h&gt; #include &lt;sys/types.h&gt; #include &lt;sys/socket.h&gt; #include &lt;netinet/in.h&gt; #include &lt;signal.h&gt; char buffer[512]; int ma_socket; void main ( void ) { int client_socket; struct sockaddr_in mon_address, clien...">
+<meta name="twitter:description" content="Voilà j&#39;ai un peu honte de poster ceci tellement c&#39;est basique, j&#39;ai récupéré deux fichiers en C pour faire un petit test client / serveur avec les sockets, voici ces deux fichiers :   server.c :     // compilation :	gcc -Wall -o server.o  -c server.c //			gcc -o server server.o #include &lt;stdio.h&gt; #include &lt;sys/types.h&gt; #include &lt;sys/socket.h&gt; #include &lt;netinet/in.h&gt; #include &lt;signal.h&gt; char buffer[512]; int ma_socket; void main ( void ) { int client_socket; struct sockaddr_in mon_address, clien...">
+
+  <style id="image-sizing-hack">#reply-control .d-editor-preview img:not(.thumbnail), .cooked img:not(.thumbnail) {max-width:690px;max-height:500px;}</style></head>
+
+  <body class="archetype-regular docked category-programmation drop-down-visible">
+    
+
+    <div class="debug-eyeline"></div>
+
+    
+
+      
+
+    <section id="main" class="ember-application">
+    <div id="ember731" class="ember-view"><span id="ember779" class="ember-view"><!----></span>
+<div id="ember789" class="ember-view"><header class="d-header clearfix"><div class="wrap"><div class="contents clearfix"><div class="title"><a href="https://www.debian-fr.org/" data-auto-route="true"><img src="./client serveur tout simple_files/debianfr.org.small.png" width="33" height="33" alt="debian-fr.org" id="site-logo" class="logo-small"></a></div><div class="panel clearfix"><span><button class="widget-button btn-primary btn-small login-button" aria-label="Se connecter" title="Se connecter"><i class="fa fa-user" aria-hidden="true"></i>Se connecter</button></span><ul role="navigation" class="icons clearfix"><li class="header-dropdown-toggle"><a href="https://www.debian-fr.org/search" data-auto-route="true" title="rechercher des sujets, messages, utilisateurs ou catégories" aria-label="rechercher des sujets, messages, utilisateurs ou catégories" id="search-button" class="icon"><i class="fa fa-search" aria-hidden="true"></i></a></li><li class="header-dropdown-toggle"><a data-auto-route="true" title="aller à une autre catégorie ou liste de sujets" aria-label="aller à une autre catégorie ou liste de sujets" id="toggle-hamburger-menu" class="icon"><i class="fa fa-bars" aria-hidden="true"></i></a></li></ul></div><div class="extra-info-wrapper"><div class="extra-info two-rows"><div class="title-wrapper"><h1><div class="topic-statuses"></div><a class="widget-link topic-link" href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" title=""><span>Socket en C : client / serveur tout simple</span></a></h1><a class="badge-wrapper bar" href="https://www.debian-fr.org/c/programmation"><span class="badge-category-bg" style="background-color: #0E76BD;"></span><span style="color: #FFF;" data-drop-close="true" class="badge-category clear-badge" title="Pour les codeurs !">Programmation</span></a></div></div></div></div></div></header></div>
+<span id="ember790" class="ember-view"><!----></span>
+
+<div id="main-outlet" class="wrap">
+  <div class="container">
+      <div id="ember799" class="ember-view"></div>
+    <div id="ember807" class="ember-view"></div>
+    <div id="ember812" class="hidden create-topics-notice ember-view"><!----></div>
+  </div>
+  <div id="ember825" class="regular category-programmation ember-view">    <div id="ember842" class="ember-view"></div>
+    <div class="container">
+      <div id="ember847" class="ember-view"><!----></div>
+    </div>
+
+  <span id="ember848" class="ember-view"><!----></span>
+
+      <div id="topic-title">
+        <div class="container">
+
+          <div class="title-wrapper">
+              <h1>
+                  <a>
+                    <span class="private-message-glyph"><i class="fa fa-envelope"></i></span>
+                  </a>
+
+                  <div id="ember876" class="topic-statuses ember-view"></div>
+                  <a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="fancy-title" data-ember-action="" data-ember-action-877="877">
+                    Socket en C : client / serveur tout simple
+                  </a>
+
+<!---->              </h1>
+
+                <div id="ember885" class="topic-category ember-view"><!----><a class="badge-wrapper bar" href="https://www.debian-fr.org/c/programmation"><span class="badge-category-bg" style="background-color: #0E76BD;"></span><span style="color: #FFF;" data-drop-close="true" class="badge-category clear-badge" title="Pour les codeurs !">Programmation</span></a>
+<div class="topic-header-extra">
+    <div class="list-tags">
+<!---->    </div>
+    
+</div>
+<span id="ember892" class="ember-view"><!----></span>
+</div>
+          </div>
+          <span id="ember893" class="ember-view"><!----></span>
+        </div>
+      </div>
+
+    <div class="container posts">
+      <div class="selected-posts hidden">
+        <p><span id="ember907" class="ember-view">Vous avez sélectionné <b>0</b> messages.</span></p>
+
+  <p><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" data-ember-action="" data-ember-action-908="908">tout sélectionner</a></p>
+
+<!---->
+<!---->
+<!---->
+<!---->
+<!---->
+<!---->
+<p class="cancel"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" data-ember-action="" data-ember-action-913="913">annuler la sélection</a></p>
+
+      </div>
+
+<div id="ember918" class="ember-view"><!---->
+          <div id="ember1081" class="ember-view"><div class="timeline-container" style="top: 85px"><div class="topic-timeline"><div class="timeline-scrollarea-wrapper"><div class="timeline-date-wrapper"><a class="widget-link start-date" title="févr. 2016">févr. 2016</a></div><div style="height: 300px" class="timeline-scrollarea"><div style="height: 2.0122146620508183px" class="timeline-padding"></div><div style="height: 50px" class="timeline-scroller"><div class="timeline-handle"></div><div class="timeline-scroller-content"><div class="timeline-replies">1 / 18</div><div class="timeline-ago">févr. 2016</div></div></div><div style="height: 247.98778533794916px" class="timeline-padding"></div></div><div class="timeline-date-wrapper"><a class="widget-link now-date" title="mars 2016">mars 2016</a></div></div></div></div></div>
+
+</div>
+      <div class="row">
+        <section id="topic" data-topic-id="3448" class="topic-area">
+
+          <div class="posts-wrapper">
+            <div id="ember931" class="ember-view">  
+</div>
+
+            <span id="ember932" class="ember-view"><!----></span>
+
+              <div id="ember941" class="ember-view"><div class="post-stream"><div class="topic-post clearfix topic-owner regular"><article id="post_1" data-post-id="24335" data-user-id="14097" class="boxed onscreen-post"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="tabLoc"></a><div class="row"><div class="topic-avatar"><a class="trigger-user-card main-avatar" href="https://www.debian-fr.org/users/Gengis" data-user-card="Gengis"><img alt="" width="45" height="45" src="./client serveur tout simple_files/90.png" title="Gengis" class="avatar"></a><div class="poster-avatar-extra"></div></div><div class="topic-body clearfix"><div class="topic-meta-data"><div class="names trigger-user-card"><span class="first username new-user"><a href="https://www.debian-fr.org/users/Gengis" data-user-card="Gengis">Gengis</a></span></div><div class="post-info"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" data-share-url="/t/socket-en-c-client-serveur-tout-simple/3448" data-post-number="1" class="post-date"><span title="20 févr. 162016 13:48" data-time="1455972485894" data-format="tiny" class="relative-date">févr. '16</span></a></div><div class="read-state read" title="Ce message est non lu"><i class="fa fa-circle" aria-hidden="true"></i></div></div><div class="regular contents"><div class="cooked"><p>Voilà j'ai un peu honte de poster ceci tellement c'est basique, j'ai récupéré deux fichiers en C pour faire un petit test client / serveur avec les sockets, voici ces deux fichiers :</p>
+
+<p>server.c :<br></p>
+
+<p></p><pre><code>// compilation :	gcc -Wall -o server.o  -c server.c
+//			gcc -o server server.o
+#include &lt;stdio.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;signal.h&gt;
+char buffer[512];
+int ma_socket;
+void main ( void )
+{
+int client_socket;
+struct sockaddr_in mon_address, client_address;
+int mon_address_longueur, lg;
+bzero(&amp;mon_address,sizeof(mon_address));
+mon_address.sin_port = htons(30000);
+mon_address.sin_family = AF_INET;
+mon_address.sin_addr.s_addr = htonl(INADDR_ANY);
+/* creation de socket */
+if ((ma_socket = socket(AF_INET,SOCK_STREAM,0))== -1)
+{
+  printf("la creation rate\n");
+  exit(0);
+}
+signal(SIGINT,fin);
+/* bind serveur - socket */
+bind(ma_socket,(struct sockaddr *)&amp;mon_address,sizeof(mon_address));
+/* ecoute sur la socket */
+listen(ma_socket,5);
+/* accept la connexion */
+mon_address_longueur = sizeof(client_address);
+while(1)
+{
+  client_socket = accept(ma_socket,
+                         (struct sockaddr *)&amp;client_address,
+                         &amp;mon_address_longueur);
+  if (fork() == 0)
+  {
+    close(ma_socket);
+    lg = read(client_socket,buffer, 512);
+printf("le serveur a recu: %s\n",buffer);
+sprintf(buffer,"%s du serveur",buffer);
+write(client_socket,buffer, 512);
+shutdown(client_socket,2);
+close(client_socket);
+exit(0);
+  }
+}
+shutdown(ma_socket,2);
+close(ma_socket);
+}</code></pre>
+
+<p>client.c :<br></p>
+
+<p></p><pre><code>// compilation :	gcc -Wall -o client.o  -c client.c
+//			gcc -o client client.o
+#include &lt;stdio.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;signal.h&gt;
+#include &lt;netdb.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;sys/socket.h&gt;
+#define SERVEURNAME "192.168.1.106" // adresse IP de mon serveur
+int to_server_socket = -1;
+void main ( void )
+{
+char *server_name = SERVEURNAME;
+struct sockaddr_in serverSockAddr;
+struct hostent *serverHostEnt;
+long hostAddr;
+long status;
+char buffer[512];
+bzero(&amp;serverSockAddr,sizeof(serverSockAddr));
+hostAddr = inet_addr(SERVEURNAME);
+if ( (long)hostAddr != (long)-1)
+  bcopy(&amp;hostAddr,&amp;serverSockAddr.sin_addr,sizeof(hostAddr));
+else
+{
+  serverHostEnt = gethostbyname(SERVEURNAME);
+  if (serverHostEnt == NULL)
+  {
+    printf("gethost rate\n");
+    exit(0);
+  }
+  bcopy(serverHostEnt-&gt;h_addr,&amp;serverSockAddr.sin_addr,serverHostEnt-&gt;h_length);
+}
+serverSockAddr.sin_port = htons(30000);
+serverSockAddr.sin_family = AF_INET;
+/* creation de la socket */
+if ( (to_server_socket = socket(AF_INET,SOCK_STREAM,0)) &lt; 0)
+{
+  printf("creation socket client ratee\n");
+  exit(0);
+}
+/* requete de connexion */
+if(connect( to_server_socket,
+            (struct sockaddr *)&amp;serverSockAddr,
+            sizeof(serverSockAddr)) &lt; 0 )
+{
+  printf("demande de connection ratee\n");
+  exit(0);
+}
+/* envoie de donne et reception */
+write(to_server_socket,"Toto",4);
+read(to_server_socket,buffer,512);
+printf(buffer);
+/* fermeture de la connection */
+shutdown(to_server_socket,2);
+close(to_server_socket);
+}</code></pre>
+
+<p>J'ai essayé d'abord de faire mon client / serveur en boucle locale, tout fonctionne correctement. J'essaye maintenant de le faire entre pc distant, je met mon serveur sur un pc qui a l'adresse 192.169.1.106, et l'appli cliente sur un autre pc. Résultat : "demande de connection ratee". J'ai essayé de débloquer le port 30000 en tcp sur le pc serveur, mais rien n'y fait (iptables -A INPUT -p tcp --dport 30000 -j ACCEPT). Je n'arrive pas à voir l'erreur si il y en a une dans mon code. J'ai honte, ne plus arriver à faire une socket... Je commence vraiment à rouiller  <img src="./client serveur tout simple_files/blush.png" title=":blush:" class="emoji" alt=":blush:"></p></div><section class="post-menu-area clearfix"><nav class="post-controls clearfix"><div class="actions"><button class="widget-button toggle-like like no-text"><i class="fa fa-heart" aria-hidden="true"></i></button></div></nav></section></div><section class="post-actions"></section><div class="post-links-container"></div><div class="topic-map"><nav class="buttons"><button class="widget-button btn no-text" aria-label="afficher les détails de ce sujet" title="afficher les détails de ce sujet"><i class="fa fa-chevron-down" aria-hidden="true"></i></button></nav><section class="map map-collapsed"><ul class="clearfix"><li><h4>créé</h4><a class="trigger-user-card " data-user-card="Gengis"><img alt="" width="20" height="20" src="./client serveur tout simple_files/40.png" title="Gengis" class="avatar"></a><span title="20 févr. 162016 13:48" data-time="1455972485873" data-format="tiny" class="relative-date">févr. '16</span></li><li><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448/18"><h4>dernière réponse</h4><a class="trigger-user-card " data-user-card="elbidani"><img alt="" width="20" height="20" src="./client serveur tout simple_files/40(1).png" title="elbidani" class="avatar"></a><span title="03 mars 162016 15:38" data-time="1457015929837" data-format="tiny" class="relative-date">mars '16</span></a></li><li><span class="number">17</span><h4>réponses</h4></li><li class="secondary"><span class="number heatmap-high" title="9587">9,6k</span><h4>vues</h4></li><li class="secondary"><span class="number">6</span><h4>utilisateurs</h4></li><li class="secondary"><span class="number">2</span><h4>liens</h4></li><li class="avatars"><div><a class="poster trigger-user-card" title="ed" data-user-card="ed"><img alt="" width="32" height="32" src="./client serveur tout simple_files/5256_1.png" title="ed" class="avatar"><span class="post-count">5</span></a></div><div><a class="poster trigger-user-card" title="Gengis" data-user-card="Gengis"><img alt="" width="32" height="32" src="./client serveur tout simple_files/64.png" title="Gengis" class="avatar"><span class="post-count">4</span></a></div><div><a class="poster trigger-user-card" title="mattotop" data-user-card="mattotop"><img alt="" width="32" height="32" src="./client serveur tout simple_files/3942_1.png" title="mattotop" class="avatar"><span class="post-count">3</span></a></div></li></ul></section></div></div></div></article></div><div class="topic-post clearfix regular"><article id="post_2" data-post-id="24338" data-user-id="27" class="boxed onscreen-post"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="tabLoc"></a><div class="row"><div class="topic-avatar"><a class="trigger-user-card main-avatar" href="https://www.debian-fr.org/users/Ashgenesis" data-user-card="Ashgenesis"><img alt="" width="45" height="45" src="./client serveur tout simple_files/90(1).png" title="Ashgenesis" class="avatar"></a><div class="poster-avatar-extra"></div></div><div class="topic-body clearfix"><div class="topic-meta-data"><div class="names trigger-user-card"><span class="first username"><a href="https://www.debian-fr.org/users/Ashgenesis" data-user-card="Ashgenesis">Ashgenesis</a></span></div><div class="post-info"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448/2" data-share-url="/t/socket-en-c-client-serveur-tout-simple/3448/2" data-post-number="2" class="post-date"><span title="20 févr. 162016 13:48" data-time="1455972486155" data-format="tiny" class="relative-date">févr. '16</span></a></div><div class="read-state read" title="Ce message est non lu"><i class="fa fa-circle" aria-hidden="true"></i></div></div><div class="regular contents"><div class="cooked"><p>Tu peux essayer de regarder par la pour plus d'info <a href="http://mapage.noos.fr/emdel/reseaux.htm" rel="nofollow">mapage.noos.fr/emdel/reseaux.htm<span class="badge badge-notification clicks" title="363 clics">363</span></a><br>ou encore par la <a href="http://www.laissus.fr/cours/node17.html" rel="nofollow">laissus.fr/cours/node17.html<span class="badge badge-notification clicks" title="170 clics">170</span></a></p></div><section class="post-menu-area clearfix"><nav class="post-controls clearfix"><div class="actions"><button class="widget-button toggle-like like no-text"><i class="fa fa-heart" aria-hidden="true"></i></button></div></nav></section></div><section class="post-actions"></section><div class="post-links-container"></div></div></div></article></div><div class="topic-post clearfix regular"><article id="post_3" data-post-id="24343" data-user-id="13479" class="boxed onscreen-post"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="tabLoc"></a><div class="row"><div class="topic-avatar"><a class="trigger-user-card main-avatar" href="https://www.debian-fr.org/users/Damsss" data-user-card="Damsss"><img alt="" width="45" height="45" src="./client serveur tout simple_files/90(2).png" title="Damsss" class="avatar"></a><div class="poster-avatar-extra"></div></div><div class="topic-body clearfix"><div class="topic-meta-data"><div class="names trigger-user-card"><span class="first username new-user"><a href="https://www.debian-fr.org/users/Damsss" data-user-card="Damsss">Damsss</a></span></div><div class="post-info"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448/3" data-share-url="/t/socket-en-c-client-serveur-tout-simple/3448/3" data-post-number="3" class="post-date"><span title="20 févr. 162016 13:48" data-time="1455972486534" data-format="tiny" class="relative-date">févr. '16</span></a></div><div class="read-state read" title="Ce message est non lu"><i class="fa fa-circle" aria-hidden="true"></i></div></div><div class="regular contents"><div class="cooked"><p>Tu as essayé le débuggeur ? C'est comme ça qu'on voit les erreurs. </p>
+
+<p>(cf le topic du même nom dans cette même rubrique)</p></div><section class="post-menu-area clearfix"><nav class="post-controls clearfix"><div class="actions"><button class="widget-button toggle-like like no-text"><i class="fa fa-heart" aria-hidden="true"></i></button></div></nav></section></div><section class="post-actions"></section><div class="post-links-container"></div></div></div></article></div><div class="topic-post clearfix regular"><article id="post_4" data-post-id="24349" data-user-id="1" class="boxed onscreen-post"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="tabLoc"></a><div class="row"><div class="topic-avatar"><a class="trigger-user-card main-avatar" href="https://www.debian-fr.org/users/ed" data-user-card="ed"><img alt="" width="45" height="45" src="./client serveur tout simple_files/5256_1(1).png" title="ed" class="avatar"></a><div class="poster-avatar-extra"></div></div><div class="topic-body clearfix"><div class="topic-meta-data"><div class="names trigger-user-card"><span class="first username staff admin moderator"><a href="https://www.debian-fr.org/users/ed" data-user-card="ed">ed</a><i class="fa fa-shield" aria-hidden="true" title="Cet utilisateur est un modérateur"></i></span></div><div class="post-info"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448/4" data-share-url="/t/socket-en-c-client-serveur-tout-simple/3448/4" data-post-number="4" class="post-date"><span title="20 févr. 162016 13:48" data-time="1455972487027" data-format="tiny" class="relative-date">févr. '16</span></a></div><div class="read-state read" title="Ce message est non lu"><i class="fa fa-circle" aria-hidden="true"></i></div></div><div class="regular contents"><div class="cooked"><p></p><pre><code>  if (fork() == 0)
+  {
+    close(ma_socket);</code></pre>
+
+<p>La, tu gère bien le cas je suis le fils, je ferme la socket server,<br>mais tu ne gere pas le cas, je suis pere, je ferme la socket client.</p>
+
+<p>Bon après ton soucis, c'est bizzare</p>
+
+<p>Déja commence par regarder si ton process serveur écoute sur le port 30 000.</p>
+
+<p>(netstat -nlaAinet)</p>
+
+<p>Ensuite, essaye de faire un telnet sur ce port (sans utiliser le client, ça limitera la quantitée de code a toi a tester).</p></div><section class="post-menu-area clearfix"><nav class="post-controls clearfix"><div class="actions"><button class="widget-button toggle-like like no-text"><i class="fa fa-heart" aria-hidden="true"></i></button></div></nav></section></div><section class="post-actions"></section><div class="post-links-container"></div></div></div></article></div><div class="topic-post clearfix regular"><article id="post_5" data-post-id="24351" data-user-id="36" class="boxed onscreen-post"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="tabLoc"></a><div class="row"><div class="topic-avatar"><a class="trigger-user-card main-avatar" href="https://www.debian-fr.org/users/mattotop" data-user-card="mattotop"><img alt="" width="45" height="45" src="./client serveur tout simple_files/3942_1(1).png" title="mattotop" class="avatar"></a><div class="poster-avatar-extra"></div></div><div class="topic-body clearfix"><div class="topic-meta-data"><div class="names trigger-user-card"><span class="first username"><a href="https://www.debian-fr.org/users/mattotop" data-user-card="mattotop">mattotop</a></span></div><div class="post-info"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448/5" data-share-url="/t/socket-en-c-client-serveur-tout-simple/3448/5" data-post-number="5" class="post-date"><span title="20 févr. 162016 13:48" data-time="1455972487144" data-format="tiny" class="relative-date">févr. '16</span></a></div><div class="read-state read" title="Ce message est non lu"><i class="fa fa-circle" aria-hidden="true"></i></div></div><div class="regular contents"><div class="cooked"><p>'man connect' dit qu'en cas d'erreur, un code est renvoyé dans 'errno', tu devrais enrichir ton message de refus de connection avec ce code et éventuellement sa traduction en langage humain (dans errno.h) ?<br>Mais bon, moi aussi, ça fait trés longtemps que je n'ai pas écrit une ligne de C.</p></div><section class="post-menu-area clearfix"><nav class="post-controls clearfix"><div class="actions"><button class="widget-button toggle-like like no-text"><i class="fa fa-heart" aria-hidden="true"></i></button></div></nav></section></div><section class="post-actions"></section><div class="post-links-container"></div></div></div></article></div><div class="topic-post clearfix regular"><article id="post_6" data-post-id="24354" data-user-id="1" class="boxed onscreen-post"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="tabLoc"></a><div class="row"><div class="topic-avatar"><a class="trigger-user-card main-avatar" href="https://www.debian-fr.org/users/ed" data-user-card="ed"><img alt="" width="45" height="45" src="./client serveur tout simple_files/5256_1(1).png" title="ed" class="avatar"></a><div class="poster-avatar-extra"></div></div><div class="topic-body clearfix"><div class="topic-meta-data"><div class="names trigger-user-card"><span class="first username staff admin moderator"><a href="https://www.debian-fr.org/users/ed" data-user-card="ed">ed</a><i class="fa fa-shield" aria-hidden="true" title="Cet utilisateur est un modérateur"></i></span></div><div class="post-info"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448/6" data-share-url="/t/socket-en-c-client-serveur-tout-simple/3448/6" data-post-number="6" class="post-date"><span title="20 févr. 162016 13:48" data-time="1455972487439" data-format="tiny" class="relative-date">févr. '16</span></a></div><div class="read-state read" title="Ce message est non lu"><i class="fa fa-circle" aria-hidden="true"></i></div></div><div class="regular contents"><div class="cooked"><p>exact: pour avoir le message d'erreur:</p>
+
+<p></p><pre><code>perror("connect");</code></pre></div><section class="post-menu-area clearfix"><nav class="post-controls clearfix"><div class="actions"><button class="widget-button toggle-like like no-text"><i class="fa fa-heart" aria-hidden="true"></i></button></div></nav></section></div><section class="post-actions"></section><div class="post-links-container"></div></div></div></article></div><div class="topic-post clearfix regular"><article id="post_7" data-post-id="24355" data-user-id="27" class="boxed onscreen-post"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="tabLoc"></a><div class="row"><div class="topic-avatar"><a class="trigger-user-card main-avatar" href="https://www.debian-fr.org/users/Ashgenesis" data-user-card="Ashgenesis"><img alt="" width="45" height="45" src="./client serveur tout simple_files/90(1).png" title="Ashgenesis" class="avatar"></a><div class="poster-avatar-extra"></div></div><div class="topic-body clearfix"><div class="topic-meta-data"><div class="names trigger-user-card"><span class="first username"><a href="https://www.debian-fr.org/users/Ashgenesis" data-user-card="Ashgenesis">Ashgenesis</a></span></div><div class="post-info"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448/7" data-share-url="/t/socket-en-c-client-serveur-tout-simple/3448/7" data-post-number="7" class="post-date"><span title="20 févr. 162016 13:48" data-time="1455972487501" data-format="tiny" class="relative-date">févr. '16</span></a></div><div class="read-state read" title="Ce message est non lu"><i class="fa fa-circle" aria-hidden="true"></i></div></div><div class="regular contents"><div class="cooked"><p>[quote="Gengis"]</p>
+
+<p></p><pre><code>void main ( void )
+{</code></pre>
+
+<p>[/quote]Main est du type int et renvoit toujours quelques chose</p>
+
+<p>tu devrais donc modifier ton void main (void) par </p>
+
+<p></p><pre><code>int main(void){
+    //ton prog
+    return 0;
+}</code></pre></div><section class="post-menu-area clearfix"><nav class="post-controls clearfix"><div class="actions"><button class="widget-button toggle-like like no-text"><i class="fa fa-heart" aria-hidden="true"></i></button></div></nav></section></div><section class="post-actions"></section><div class="post-links-container"></div></div></div></article></div><div class="topic-post clearfix topic-owner regular"><article id="post_8" data-post-id="24373" data-user-id="14097" class="boxed onscreen-post"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="tabLoc"></a><div class="row"><div class="topic-avatar"><a class="trigger-user-card main-avatar" href="https://www.debian-fr.org/users/Gengis" data-user-card="Gengis"><img alt="" width="45" height="45" src="./client serveur tout simple_files/90.png" title="Gengis" class="avatar"></a><div class="poster-avatar-extra"></div></div><div class="topic-body clearfix"><div class="topic-meta-data"><div class="names trigger-user-card"><span class="first username new-user"><a href="https://www.debian-fr.org/users/Gengis" data-user-card="Gengis">Gengis</a></span></div><div class="post-info"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448/8" data-share-url="/t/socket-en-c-client-serveur-tout-simple/3448/8" data-post-number="8" class="post-date"><span title="20 févr. 162016 13:48" data-time="1455972488895" data-format="tiny" class="relative-date">févr. '16</span></a></div><div class="read-state read" title="Ce message est non lu"><i class="fa fa-circle" aria-hidden="true"></i></div></div><div class="regular contents"><div class="cooked"><p>Oula oui en me rendant compte de ce que vous avez écrit, je vois que j'ai des automatismes qui sont passés à la trappe. Enfin bref, voici le résultat de la commande netstat :<br></p>
+
+<p></p><pre><code># netstat -nlaAinet
+Connexions Internet actives (serveurs et établies)
+Proto Recv-Q Send-Q Local Address               Foreign Address             State
+tcp        0      0 0.0.0.0:32769               0.0.0.0:*                   LISTEN
+tcp        0      0 0.0.0.0:111                 0.0.0.0:*                   LISTEN
+tcp        0      0 0.0.0.0:30000               0.0.0.0:*                   LISTEN
+tcp        0      0 0.0.0.0:6000                0.0.0.0:*                   LISTEN
+tcp        0      0 127.0.0.1:631               0.0.0.0:*                   LISTEN
+tcp        0      0 127.0.0.1:5335              0.0.0.0:*                   LISTEN
+tcp        0      0 192.168.1.106:51923         207.46.24.24:1863           ESTABLISHED
+udp        0      0 0.0.0.0:32768               0.0.0.0:*
+udp        0      0 0.0.0.0:68                  0.0.0.0:*
+udp        0      0 0.0.0.0:68                  0.0.0.0:*
+udp        0      0 0.0.0.0:5353                0.0.0.0:*
+udp        0      0 0.0.0.0:1003                0.0.0.0:*
+udp        0      0 0.0.0.0:111                 0.0.0.0:*
+udp        0      0 0.0.0.0:631                 0.0.0.0:*</code></pre>
+
+<p>A priori tout va bien de ce côté là. En faisant le telnet, j'ai vu d'où venait le problème :<br></p>
+
+<p></p><pre><code># telnet 192.168.1.106 30000
+Trying 192.168.1.106...
+telnet: connect to address 192.168.1.106: No route to host
+telnet: Unable to connect to remote host: No route to host</code></pre>
+
+<p>J'avais déjà des problèmes de ce genre (No route to host aussi ! ) lorsque j'avais essayé d'utiliser la commande netcat entre deux pc et je n'avais pas réussi à résoudre ce souci.</p></div><section class="post-menu-area clearfix"><nav class="post-controls clearfix"><div class="actions"><button class="widget-button toggle-like like no-text"><i class="fa fa-heart" aria-hidden="true"></i></button></div></nav></section></div><section class="post-actions"></section><div class="post-links-container"></div></div></div></article></div><div class="topic-post clearfix regular"><article id="post_9" data-post-id="24477" data-user-id="1" class="boxed onscreen-post"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="tabLoc"></a><div class="row"><div class="topic-avatar"><a class="trigger-user-card main-avatar" href="https://www.debian-fr.org/users/ed" data-user-card="ed"><img alt="" width="45" height="45" src="./client serveur tout simple_files/5256_1(1).png" title="ed" class="avatar"></a><div class="poster-avatar-extra"></div></div><div class="topic-body clearfix"><div class="topic-meta-data"><div class="names trigger-user-card"><span class="first username staff admin moderator"><a href="https://www.debian-fr.org/users/ed" data-user-card="ed">ed</a><i class="fa fa-shield" aria-hidden="true" title="Cet utilisateur est un modérateur"></i></span></div><div class="post-info"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448/9" data-share-url="/t/socket-en-c-client-serveur-tout-simple/3448/9" data-post-number="9" class="post-date"><span title="20 févr. 162016 13:48" data-time="1455972496901" data-format="tiny" class="relative-date">févr. '16</span></a></div><div class="read-state read" title="Ce message est non lu"><i class="fa fa-circle" aria-hidden="true"></i></div></div><div class="regular contents"><div class="cooked"><p>telnet: connect to address 192.168.1.106: No route to host </p>
+
+<p>ça, c'est clairement que 192.168.1.106 n'est pas la bonne adresse IP.</p>
+
+<p>Vous avez un soucis de réseau...</p></div><section class="post-menu-area clearfix"><nav class="post-controls clearfix"><div class="actions"><button class="widget-button toggle-like like no-text"><i class="fa fa-heart" aria-hidden="true"></i></button></div></nav></section></div><section class="post-actions"></section><div class="post-links-container"></div></div></div></article></div><div class="cloaked-post" id="post_10" style="min-height: 177px"></div><div class="cloaked-post" id="post_11" style="min-height: 212px"></div><div class="cloaked-post" style="min-height: 209px" id="post_12"></div><div class="cloaked-post" id="post_13" style="min-height: 212px"></div><div class="topic-post clearfix topic-owner regular"><article id="post_14" data-post-id="27396" data-user-id="14097" class="boxed onscreen-post"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="tabLoc"></a><div class="row"><div class="topic-avatar"><a class="trigger-user-card main-avatar" href="https://www.debian-fr.org/users/Gengis" data-user-card="Gengis"><img alt="" width="45" height="45" src="./client serveur tout simple_files/90.png" title="Gengis" class="avatar"></a><div class="poster-avatar-extra"></div></div><div class="topic-body clearfix"><div class="topic-meta-data"><div class="names trigger-user-card"><span class="first username new-user"><a href="https://www.debian-fr.org/users/Gengis" data-user-card="Gengis">Gengis</a></span></div><div class="post-info"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448/14" data-share-url="/t/socket-en-c-client-serveur-tout-simple/3448/14" data-post-number="14" class="post-date"><span title="20 févr. 162016 13:52" data-time="1455972731932" data-format="tiny" class="relative-date">févr. '16</span></a></div><div class="read-state read" title="Ce message est non lu"><i class="fa fa-circle" aria-hidden="true"></i></div></div><div class="regular contents"><div class="cooked"><p>Me voilà de retour et je viens de me replonger dans le code, apparament j'ai fait quelques petites modif sur les fichiers de config et ça va un petit peu mieu. J'ai mis aussi un perror pour le connect et j'obtiens ce message : Connection refused ou No route to host, cela dépend dans qui est le serveur et le client</p>
+
+<p>Pourtant je pense pas que cela vienne d'un firewall trop serré.</p></div><section class="post-menu-area clearfix"><nav class="post-controls clearfix"><div class="actions"><button class="widget-button toggle-like like no-text"><i class="fa fa-heart" aria-hidden="true"></i></button></div></nav></section></div><section class="post-actions"></section><div class="post-links-container"></div></div></div></article></div><div class="time-gap small-action clearfix"><div class="topic-avatar"><i class="fa fa-fw" aria-hidden="true"></i></div><div class="small-action-desc timegap">11 jours plus tard</div></div><div class="topic-post clearfix regular"><article id="post_15" data-post-id="532369" data-user-id="17353" class="boxed onscreen-post"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="tabLoc"></a><div class="row"><div class="topic-avatar"><a class="trigger-user-card main-avatar" href="https://www.debian-fr.org/users/elbidani" data-user-card="elbidani"><img alt="" width="45" height="45" src="./client serveur tout simple_files/90(3).png" title="elbidani" class="avatar"></a><div class="poster-avatar-extra"></div></div><div class="topic-body clearfix"><div class="topic-meta-data"><div class="names trigger-user-card"><span class="first username new-user"><a href="https://www.debian-fr.org/users/elbidani" data-user-card="elbidani">elbidani</a></span></div><div class="post-info"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448/15" data-share-url="/t/socket-en-c-client-serveur-tout-simple/3448/15" data-post-number="15" class="post-date"><span title="03 mars 162016 12:07" data-time="1457003227393" data-format="tiny" class="relative-date">mars '16</span></a></div><div class="read-state read" title="Ce message est non lu"><i class="fa fa-circle" aria-hidden="true"></i></div></div><div class="regular contents"><div class="cooked"><p>j'ai besoine de se scripte, j'ai ajouter le code serveur sur dev c++<br>mais il ma donnée des erreurs il n'as pas trouver le fichier    sys/types.h<br>merci de joindre tt les fichiere</p></div><section class="post-menu-area clearfix"><nav class="post-controls clearfix"><div class="actions"><button class="widget-button toggle-like like no-text"><i class="fa fa-heart" aria-hidden="true"></i></button></div></nav></section></div><section class="post-actions"></section><div class="post-links-container"></div></div></div></article></div><div class="topic-post clearfix regular"><article id="post_16" data-post-id="532370" data-user-id="17353" class="boxed onscreen-post"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="tabLoc"></a><div class="row"><div class="topic-avatar"><a class="trigger-user-card main-avatar" href="https://www.debian-fr.org/users/elbidani" data-user-card="elbidani"><img alt="" width="45" height="45" src="./client serveur tout simple_files/90(3).png" title="elbidani" class="avatar"></a><div class="poster-avatar-extra"></div></div><div class="topic-body clearfix"><div class="topic-meta-data"><div class="names trigger-user-card"><span class="first username new-user"><a href="https://www.debian-fr.org/users/elbidani" data-user-card="elbidani">elbidani</a></span></div><div class="post-info"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448/16" data-share-url="/t/socket-en-c-client-serveur-tout-simple/3448/16" data-post-number="16" class="post-date"><span title="03 mars 162016 12:07" data-time="1457003266900" data-format="tiny" class="relative-date">mars '16</span></a></div><div class="read-state read" title="Ce message est non lu"><i class="fa fa-circle" aria-hidden="true"></i></div></div><div class="regular contents"><div class="cooked"><p>Merci de m'aider j'ai besoine de ce tuto</p></div><section class="post-menu-area clearfix"><nav class="post-controls clearfix"><div class="actions"><button class="widget-button toggle-like like no-text"><i class="fa fa-heart" aria-hidden="true"></i></button></div></nav></section></div><section class="post-actions"></section><div class="post-links-container"></div></div></div></article></div><div class="topic-post clearfix regular"><article id="post_17" data-post-id="532384" data-user-id="1" class="boxed onscreen-post"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="tabLoc"></a><div class="row"><div class="topic-avatar"><a class="trigger-user-card main-avatar" href="https://www.debian-fr.org/users/ed" data-user-card="ed"><img alt="" width="45" height="45" src="./client serveur tout simple_files/5256_1(1).png" title="ed" class="avatar"></a><div class="poster-avatar-extra"></div></div><div class="topic-body clearfix"><div class="topic-meta-data"><div class="names trigger-user-card"><span class="first username staff admin moderator"><a href="https://www.debian-fr.org/users/ed" data-user-card="ed">ed</a><i class="fa fa-shield" aria-hidden="true" title="Cet utilisateur est un modérateur"></i></span></div><div class="post-info"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448/17" data-share-url="/t/socket-en-c-client-serveur-tout-simple/3448/17" data-post-number="17" class="post-date"><span title="03 mars 162016 15:01" data-time="1457013718699" data-format="tiny" class="relative-date">mars '16</span></a></div><div class="read-state read" title="Ce message est non lu"><i class="fa fa-circle" aria-hidden="true"></i></div></div><div class="regular contents"><div class="cooked"><p>Vous n'aurez probablement aucune aide si vous ne faites pas un effort de rédaction.</p></div><section class="post-menu-area clearfix"><nav class="post-controls clearfix"><div class="actions"><button class="widget-button toggle-like like no-text"><i class="fa fa-heart" aria-hidden="true"></i></button></div></nav></section></div><section class="post-actions"></section><div class="post-links-container"></div></div></div></article></div><div class="topic-post clearfix regular"><article id="post_18" data-post-id="532388" data-user-id="17353" class="boxed onscreen-post"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="tabLoc"></a><div class="row"><div class="topic-avatar"><a class="trigger-user-card main-avatar" href="https://www.debian-fr.org/users/elbidani" data-user-card="elbidani"><img alt="" width="45" height="45" src="./client serveur tout simple_files/90(3).png" title="elbidani" class="avatar"></a><div class="poster-avatar-extra"></div></div><div class="topic-body clearfix"><div class="topic-meta-data"><div class="names trigger-user-card"><span class="first username new-user"><a href="https://www.debian-fr.org/users/elbidani" data-user-card="elbidani">elbidani</a></span></div><div class="post-info"><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448/18" data-share-url="/t/socket-en-c-client-serveur-tout-simple/3448/18" data-post-number="18" class="post-date"><span title="03 mars 162016 15:38" data-time="1457015929837" data-format="tiny" class="relative-date">mars '16</span></a></div><div class="read-state read" title="Ce message est non lu"><i class="fa fa-circle" aria-hidden="true"></i></div></div><div class="regular contents"><div class="cooked"><p>je veux un tuto sur les socket en langage c<br>j'ai essayé le code source ci-doussous mais il me donnée des erreurs des fichiers manque comme sys/socket.h</p></div><section class="post-menu-area clearfix"><nav class="post-controls clearfix"><div class="actions"><button class="widget-button toggle-like like no-text"><i class="fa fa-heart" aria-hidden="true"></i></button></div></nav></section></div><section class="post-actions"></section><div class="post-links-container"></div></div></div></article></div></div></div>
+
+            <div id="ember942" class="ember-view">  
+</div>
+          </div>
+          <div id="topic-bottom"></div>
+
+<div id="ember943" class="ember-view">  
+              <div id="topic-closing-info" class="ember-view"></div>
+                  <button id="ember963" class="btn-primary btn ember-view">  <i class="fa fa-reply"></i>
+
+Répondre
+
+</button>
+
+<!---->
+<!---->
+              <span id="ember964" class="ember-view"><!----></span>
+
+                <div id="suggested-topics">
+                  <h3>À lire ensuite</h3>
+                  <div class="topics">
+                      <div id="ember973" class="ember-view"><div id="ember974" class="ember-view">      <table id="ember983" class="topic-list ember-view">  <thead>
+    <tr><th data-sort-order="default" class="default">Sujet</th>
+
+  <th data-sort-order="category" class="category">Catégorie</th>
+
+<th data-sort-order="posts" class="posts num">Réponses</th>
+
+<th data-sort-order="views" class="views num">Vues</th>
+
+<th data-sort-order="activity" class="activity num">Activité</th>
+
+</tr>
+  </thead>
+<tbody>
+    <tr data-topic-id="71486" id="ember1006" class="topic-list-item category-programmation ember-view">
+<td class="main-link clearfix" colspan="1">
+  
+  <a href="https://www.debian-fr.org/t/reponse-a-micp-concept-de-base-bash-scripts/71486" class="title">Réponse a Micp Concept de base … bash scripts</a>
+  
+    <span class="topic-post-badges">
+</span>
+
+  
+  
+</td>
+
+    <td class="category"><a class="badge-wrapper bar" href="https://www.debian-fr.org/c/programmation"><span class="badge-category-bg" style="background-color: #0E76BD;"></span><span style="color: #FFF;" data-drop-close="true" class="badge-category clear-badge" title="Pour les codeurs !">Programmation</span></a></td>
+
+
+
+<td class="num posts-map posts heatmap-" title="Ce sujet a 2 réponses">
+  <a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="posts-map badge-posts heatmap-"><span class="number">2</span></a>
+</td>
+
+
+
+
+
+<td class="num views "><span class="number" title="ce sujet a été vu 208 fois">208</span></td>
+
+<td class="num age activity" title="Premier message: 25 oct. 162016 22:56
+Dernier message: 26 oct. 162016 1:54"><a href="https://www.debian-fr.org/t/reponse-a-micp-concept-de-base-bash-scripts/71486/3"><span class="relative-date with-year" data-time="1477439693806" data-format="tiny">oct. '16</span></a></td>
+
+</tr>
+    
+    <tr data-topic-id="71452" id="ember1012" class="topic-list-item category-programmation ember-view">
+<td class="main-link clearfix" colspan="1">
+  
+  <a href="https://www.debian-fr.org/t/1-symboles-et-variables-dans-bash/71452" class="title">”!”, “$1”, “$#” … symboles et variables dans bash</a>
+  
+    <span class="topic-post-badges">
+</span>
+
+  
+  
+</td>
+
+    <td class="category"><a class="badge-wrapper bar" href="https://www.debian-fr.org/c/programmation"><span class="badge-category-bg" style="background-color: #0E76BD;"></span><span style="color: #FFF;" data-drop-close="true" class="badge-category clear-badge" title="Pour les codeurs !">Programmation</span></a></td>
+
+
+
+<td class="num posts-map posts heatmap-" title="Ce sujet a 4 réponses">
+  <a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="posts-map badge-posts heatmap-"><span class="number">4</span></a>
+</td>
+
+
+
+
+
+<td class="num views "><span class="number" title="ce sujet a été vu 190 fois">190</span></td>
+
+<td class="num age activity" title="Premier message: 24 oct. 162016 5:20
+Dernier message: 24 oct. 162016 20:08"><a href="https://www.debian-fr.org/t/1-symboles-et-variables-dans-bash/71452/5"><span class="relative-date with-year" data-time="1477332493493" data-format="tiny">oct. '16</span></a></td>
+
+</tr>
+    
+    <tr data-topic-id="70392" id="ember1014" class="topic-list-item category-programmation ember-view">
+<td class="main-link clearfix" colspan="1">
+  
+  <a href="https://www.debian-fr.org/t/cross-compilation-arm-kernel-3-0/70392" class="title">Cross compilation ARM kernel 3.0</a>
+  
+    <span class="topic-post-badges">
+</span>
+
+  
+  
+</td>
+
+    <td class="category"><a class="badge-wrapper bar" href="https://www.debian-fr.org/c/programmation"><span class="badge-category-bg" style="background-color: #0E76BD;"></span><span style="color: #FFF;" data-drop-close="true" class="badge-category clear-badge" title="Pour les codeurs !">Programmation</span></a></td>
+
+
+
+<td class="num posts-map posts heatmap-" title="Ce sujet a 1 réponse">
+  <a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="posts-map badge-posts heatmap-"><span class="number">0</span></a>
+</td>
+
+
+
+
+
+<td class="num views "><span class="number" title="ce sujet a été vu 232 fois">232</span></td>
+
+<td class="num age activity" title="Premier message: 23 juil. 162016 2:29
+Dernier message: 23 juil. 162016 2:29"><a href="https://www.debian-fr.org/t/cross-compilation-arm-kernel-3-0/70392/1"><span class="relative-date with-year" data-time="1469233742451" data-format="tiny">juil. '16</span></a></td>
+
+</tr>
+    
+    <tr data-topic-id="69929" id="ember1016" class="topic-list-item category-programmation ember-view">
+<td class="main-link clearfix" colspan="1">
+  
+  <a href="https://www.debian-fr.org/t/probleme-fmodex-sous-codeblocks/69929" class="title">Problème FMODEx sous CodeBlocks</a>
+  
+    <span class="topic-post-badges">
+</span>
+
+  
+  
+</td>
+
+    <td class="category"><a class="badge-wrapper bar" href="https://www.debian-fr.org/c/programmation"><span class="badge-category-bg" style="background-color: #0E76BD;"></span><span style="color: #FFF;" data-drop-close="true" class="badge-category clear-badge" title="Pour les codeurs !">Programmation</span></a></td>
+
+
+
+<td class="num posts-map posts heatmap-" title="Ce sujet a 2 réponses">
+  <a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="posts-map badge-posts heatmap-"><span class="number">2</span></a>
+</td>
+
+
+
+
+
+<td class="num views "><span class="number" title="ce sujet a été vu 352 fois">352</span></td>
+
+<td class="num age activity" title="Premier message: 08 juin 162016 19:38
+Dernier message: 08 juin 162016 20:28"><a href="https://www.debian-fr.org/t/probleme-fmodex-sous-codeblocks/69929/3"><span class="relative-date with-year" data-time="1465410493041" data-format="tiny">juin '16</span></a></td>
+
+</tr>
+    
+    <tr data-topic-id="69829" id="ember1018" class="topic-list-item category-programmation ember-view">
+<td class="main-link clearfix" colspan="1">
+  
+  <a href="https://www.debian-fr.org/t/question-de-flemmard/69829" class="title">Question de flemmard</a>
+  
+    <span class="topic-post-badges">
+</span>
+
+  
+  
+</td>
+
+    <td class="category"><a class="badge-wrapper bar" href="https://www.debian-fr.org/c/programmation"><span class="badge-category-bg" style="background-color: #0E76BD;"></span><span style="color: #FFF;" data-drop-close="true" class="badge-category clear-badge" title="Pour les codeurs !">Programmation</span></a></td>
+
+
+
+<td class="num posts-map posts heatmap-" title="Ce sujet a 9 réponses">
+  <a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" class="posts-map badge-posts heatmap-"><span class="number">9</span></a>
+</td>
+
+
+
+
+
+<td class="num views "><span class="number" title="ce sujet a été vu 830 fois">830</span></td>
+
+<td class="num age coldmap-med activity" title="Premier message: 31 mai 162016 17:43
+Dernier message: 09 nov. 162016 1:43"><a href="https://www.debian-fr.org/t/question-de-flemmard/69829/10"><span class="relative-date with-year" data-time="1478652214076" data-format="tiny">nov. '16</span></a></td>
+
+</tr>
+    
+</tbody>
+</table>
+
+</div></div>
+                  </div>
+                  <h3>Vous voulez en lire plus ? Découvrez d'autres sujets dans <a class="badge-wrapper bar" href="https://www.debian-fr.org/c/programmation"><span class="badge-category-bg" style="background-color: #0E76BD;"></span><span style="color: #FFF;" data-drop-close="true" class="badge-category clear-badge" title="Pour les codeurs !">Programmation</span></a> ou <a href="https://www.debian-fr.org/latest">voir les derniers sujets</a>.</h3>
+                </div>
+
+
+</div>
+        </section>
+      </div>
+
+    </div>
+
+  <div id="share-link" class="ember-view"><h3>partager ce sujet</h3>
+
+<!---->
+<div>
+  <input type="text">
+  <div class="share-for-touch"><div class="overflow-ellipsis"><a></a></div></div>
+</div>
+
+<!---->
+<!---->
+<div class="link">
+  <a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" aria-label="fermer" title="fermer" class="close-share" data-ember-action="" data-ember-action-1023="1023"><i class="fa fa-close"></i></a>
+</div>
+</div>
+
+<!----></div>
+  <div id="user-card" class="show-badges no-bg ember-view"><!----></div>
+
+</div>
+
+<span id="ember1035" class="ember-view"><!----></span>
+  <div id="ember1036" class="ember-view"></div>
+<span id="ember1037" class="ember-view"><!----></span>
+
+<div data-keyboard="false" id="discourse-modal" class="modal hidden ember-view">  <div class="modal-outer-container">
+    <div class="modal-middle-container">
+      <div class="modal-inner-container">
+        <div class="modal-header">
+          <a class="close" data-ember-action="" data-ember-action-1047="1047"><i class="fa fa-times"></i></a>
+          <h3></h3>
+          <div class="clearfix"></div>
+        </div>
+        <div id="modal-alert"></div>
+        <div id="ember1091" class="ember-view"></div>
+
+<!---->      </div>
+    </div>
+  </div>
+</div>
+<div id="topic-entrance" class="hidden ember-view"><button id="ember1052" class="full jump-top btn no-text ember-view"><!---->
+
+  <i class="fa fa-caret-up"></i> Invalid date
+
+</button>
+<button id="ember1053" class="full jump-button btn no-text ember-view"><!---->
+
+  Invalid date <i class="fa fa-caret-down"></i>
+
+</button></div>
+<div id="reply-control" class="closed ember-view processed"><div class="grippie"></div><!----></div>
+</div></section>
+
+    <div id="offscreen-content">
+    </div>
+
+      <form id="hidden-login-form" method="post" action="https://www.debian-fr.org/login" style="display: none;">
+        <input name="username" type="text" id="signin_username">
+        <input name="password" type="password" id="signin_password">
+        <input name="redirect" type="hidden">
+        <input type="submit" id="signin-button" value="Se connecter">
+      </form>
+
+      <script>
+      (function() {
+        var ps = require('preload-store').default;
+          ps.store("site", {"default_archetype":"regular","notification_types":{"mentioned":1,"replied":2,"quoted":3,"edited":4,"liked":5,"private_message":6,"invited_to_private_message":7,"invitee_accepted":8,"posted":9,"moved_post":10,"linked":11,"granted_badge":12,"invited_to_topic":13,"custom":14,"group_mentioned":15,"group_message_summary":16,"watching_first_post":17},"post_types":{"regular":1,"moderator_action":2,"small_action":3,"whisper":4},"groups":[{"id":1,"name":"administrateurs"},{"id":2,"name":"moderateurs"},{"id":10,"name":"niveau_confiance_0"},{"id":11,"name":"niveau_confiance_1"},{"id":12,"name":"niveau_confiance_2"},{"id":13,"name":"niveau_confiance_3"},{"id":14,"name":"niveau_confiance_4"},{"id":3,"name":"responsables"},{"id":0,"name":"tous"}],"filters":["latest","unread","new","read","posted","bookmarks"],"periods":["all","yearly","quarterly","monthly","weekly","daily"],"top_menu_items":["latest","unread","new","read","posted","bookmarks","category","categories","top"],"anonymous_top_menu_items":["latest","top","categories","category","categories","top"],"uncategorized_category_id":1,"is_readonly":false,"disabled_plugins":[],"user_field_max_length":2048,"suppressed_from_homepage_category_ids":[1],"post_action_types":[{"name_key":"bookmark","name":"Mettre un signet","description":"Mettre un signet","long_form":"signet ajouté","is_flag":false,"icon":null,"id":1,"is_custom_flag":false},{"name_key":"like","name":"J'aime","description":"Aimer ce message","long_form":"a été aimé","is_flag":false,"icon":"heart","id":2,"is_custom_flag":false},{"name_key":"off_topic","name":"Hors-sujet","description":"Étant donné le titre et le premier message de cette discussion, ce message n'est pas pertinent dans ce contexte et devrait probablement être déplacé ailleurs.","long_form":"signalé comme hors-sujet","is_flag":true,"icon":null,"id":3,"is_custom_flag":false},{"name_key":"inappropriate","name":"Inapproprié","description":"Ce message contient du contenu qu'une personne raisonnable jugerait offensant, abusif ou en violation de la <a href=\"/guidelines\">charte de notre communauté<\/a>.","long_form":"signalé comme inapproprié","is_flag":true,"icon":null,"id":4,"is_custom_flag":false},{"name_key":"vote","name":"Vote","description":"Votez pour ce message","long_form":"a voté pour ce message","is_flag":false,"icon":null,"id":5,"is_custom_flag":false},{"name_key":"spam","name":"Spam","description":"Ce message est une publicité. Elle n'est pas utile ou pertinente dans ce sujet, mais est uniquement de nature promotionnelle.","long_form":"signalé comme spam","is_flag":true,"icon":null,"id":8,"is_custom_flag":false},{"name_key":"notify_user","name":"Envoyer un message à @{{username}} ","description":"Je veux parler à cette personne directement et de manière privée à propos de son message.","long_form":"utilisateur contacté","is_flag":true,"icon":null,"id":6,"is_custom_flag":true},{"name_key":"notify_moderators","name":"Autre chose","description":"Ce message demande l'attention des responsables pour une autre raison..","long_form":"signalé aux responsables","is_flag":true,"icon":null,"id":7,"is_custom_flag":true}],"topic_flag_types":[{"name_key":"inappropriate","name":"Inapproprié","description":"Ce message contient du contenu qu'une personne raisonnable jugerait offensant, abusif ou en violation de la <a href=\"/guidelines\">charte de notre communauté<\/a>.","long_form":"signalé comme inapproprié","is_flag":true,"icon":null,"id":4,"is_custom_flag":false},{"name_key":"spam","name":"Spam","description":"Ce message est une publicité. Il n'est pas utile ou pertinent pour ce site, mais de nature promotionnelle.","long_form":"signalé comme spam","is_flag":true,"icon":null,"id":8,"is_custom_flag":false},{"name_key":"notify_moderators","name":"Autre chose","description":"Ce sujet demande l'attention des responsables d'après la <a href='/fguidelines'>charte de la communauté<\/a>, <a href='/tos'>les conditions générales de service<\/a> ou pour une autre raison.","long_form":"signalé pour modération","is_flag":true,"icon":null,"id":7,"is_custom_flag":true}],"can_create_tag":null,"can_tag_topics":null,"tags_filter_regexp":"[/\\?#\\[\\]@!\\$&'\\(\\)\\*\\+,;=\\.%\\\\`^\\s|\\{\\}\"<>]+","topic_featured_link_allowed_category_ids":[9,13,15,16,1,4,12,11,10,8,17,14],"categories":[{"id":1,"name":"Uncategorized","color":"AB9364","text_color":"FFFFFF","slug":"uncategorized","topic_count":3,"post_count":10,"position":0,"description":"Sujets qui n'ont pas besoin d'une catégorie ou qui ne correspondent à aucune catégorie existante.","description_text":"","topic_url":"/t//","read_restricted":false,"permission":null,"notification_level":1,"topic_template":"","has_children":false,"sort_order":null,"sort_ascending":null,"uploaded_logo":null,"uploaded_background":null},{"id":11,"name":"Annonces","color":"AB9364","text_color":"FFFFFF","slug":"annonces","topic_count":41,"post_count":146,"position":10,"description":"Les règles de vie du Forum (à lire par tous les nouveaux venus) et les annonces officielles concernant le fonctionnement du forum.","description_text":"Les règles de vie du Forum (à lire par tous les nouveaux venus) et les annonces officielles concernant le fonctionnement du forum.","topic_url":"/t/a-propos-dannonces/17","read_restricted":false,"permission":null,"notification_level":1,"topic_template":"","has_children":false,"sort_order":null,"sort_ascending":null,"uploaded_logo":null,"uploaded_background":null},{"id":16,"name":"Programmation","color":"0E76BD","text_color":"FFF","slug":"programmation","topic_count":1804,"post_count":14822,"position":11,"description":"Pour les codeurs !","description_text":"Pour les codeurs !","topic_url":"/t/about-the-programmation-category/22","read_restricted":false,"permission":null,"notification_level":1,"topic_template":"","has_children":false,"sort_order":"","sort_ascending":null,"uploaded_logo":null,"uploaded_background":null},{"id":13,"name":"Pause Café","color":"8C6238","text_color":"FFFFFF","slug":"pause-cafe","topic_count":6180,"post_count":126812,"position":12,"description":null,"description_text":null,"topic_url":"/t/about-the-pc-category/19","read_restricted":false,"permission":null,"notification_level":1,"topic_template":"","has_children":false,"sort_order":null,"sort_ascending":null,"uploaded_logo":null,"uploaded_background":null},{"id":12,"name":"Forum interne","color":"B3B5B4","text_color":"FFF","slug":"forum-interne","topic_count":519,"post_count":9766,"position":13,"description":"Ici, c'est pour signaler une anomalie ou une suggestion concernant le fonctionnement du forum.","description_text":"Ici, c'est pour signaler une anomalie ou une suggestion concernant le fonctionnement du forum.","topic_url":"/t/about-the-forum-interne-category/18","read_restricted":false,"permission":null,"notification_level":1,"topic_template":"","has_children":false,"sort_order":null,"sort_ascending":null,"uploaded_logo":null,"uploaded_background":null},{"id":14,"name":"Support Debian","color":"3AB54A","text_color":"FFF","slug":"support","topic_count":44395,"post_count":386916,"position":14,"description":"Un problème sur GNU/Linux, c'est le forum approprié.","description_text":"Un problème sur GNU/Linux, c'est le forum approprié.","topic_url":"/t/regles-de-la-section-support/20","read_restricted":false,"permission":null,"notification_level":1,"topic_template":"","has_children":false,"sort_order":null,"sort_ascending":null,"uploaded_logo":null,"uploaded_background":null},{"id":15,"name":"Trucs et Astuces","color":"ED207B","text_color":"FFF","slug":"trucs-et-astuces","topic_count":926,"post_count":12257,"position":15,"description":"Les petits trucs et astuces pour bien utiliser sa debian","description_text":"Les petits trucs et astuces pour bien utiliser sa debian","topic_url":"/t/about-the-trucs-et-astuces-category/21","read_restricted":false,"permission":null,"notification_level":1,"topic_template":"","has_children":false,"sort_order":null,"sort_ascending":null,"uploaded_logo":null,"uploaded_background":null}],"trust_levels":[{"id":0,"name":"nouvel utilisateur"},{"id":1,"name":"utilisateur de base"},{"id":2,"name":"membre"},{"id":3,"name":"habitué"},{"id":4,"name":"meneur"}],"archetypes":[{"id":"regular","name":"Sujet normal","options":[]},{"id":"banner","name":"Sujet à la une","options":[]}],"user_fields":[]});
+          ps.store("siteSettings", {"title":"debian-fr.org","contact_email":"noreply@debian-fr.org","contact_url":"","logo_url":"https://debian-fr.org/logos/debianfr.org.petit.png","logo_small_url":"https://debian-fr.org/logos/debianfr.org.small.png","mobile_logo_url":"","favicon_url":"https://debian-fr.org/logos/favicon.ico","allow_user_locale":true,"suggested_topics":5,"track_external_right_clicks":false,"ga_universal_tracking_code":"","ga_universal_domain_name":"auto","ga_tracking_code":"","ga_domain_name":"","gtm_container_id":"","top_menu":"categories|latest|new|unread","post_menu":"like-count|like|flag|edit|bookmark|delete|admin|reply|wiki","post_menu_hidden_items":"bookmark|wiki|delete|admin","share_links":"","desktop_category_page_style":"categories_and_latest_topics","category_colors":"BF1E2E|F1592A|F7941D|9EB83B|3AB54A|12A89D|25AAE2|0E76BD|652D90|92278F|ED207B|8C6238|231F20|808281|B3B5B4|283890","category_style":"bar","enable_mobile_theme":true,"relative_date_duration":30,"category_featured_topics":3,"fixed_category_positions":false,"fixed_category_positions_on_create":false,"show_subcategory_list":false,"enable_badges":true,"enable_badge_sql":false,"enable_whispers":false,"invite_only":false,"login_required":false,"must_approve_users":false,"enable_local_logins":true,"allow_new_registrations":true,"enable_signup_cta":true,"enable_google_oauth2_logins":false,"enable_yahoo_logins":false,"enable_twitter_logins":true,"enable_instagram_logins":false,"enable_facebook_logins":true,"enable_github_logins":true,"enable_sso":false,"sso_overrides_avatar":false,"min_username_length":2,"max_username_length":20,"min_password_length":10,"min_admin_password_length":15,"logout_redirect":"","full_name_required":false,"enable_names":true,"invites_per_page":40,"delete_user_max_post_age":60,"delete_all_posts_max":15,"show_email_on_profile":false,"prioritize_username_in_ux":true,"enable_user_directory":true,"allow_anonymous_posting":false,"anonymous_posting_min_trust_level":1,"hide_user_profiles_from_public":false,"enable_group_directory":true,"min_post_length":5,"min_first_post_length":50,"min_private_message_post_length":1,"max_post_length":32000,"topic_featured_link_enabled":true,"min_topic_title_length":10,"max_topic_title_length":255,"min_private_message_title_length":1,"allow_uncategorized_topics":true,"min_title_similar_length":10,"min_body_similar_length":15,"enable_private_messages":true,"edit_history_visible_to_public":true,"delete_removed_posts_after":24,"traditional_markdown_linebreaks":false,"allow_html_tables":false,"suppress_reply_directly_below":true,"suppress_reply_directly_above":true,"max_reply_history":1,"newuser_max_images":1,"newuser_max_attachments":0,"show_pinned_excerpt_mobile":true,"show_pinned_excerpt_desktop":true,"display_name_on_posts":false,"show_time_gap_days":7,"short_progress_text_threshold":10000,"default_code_lang":"auto","autohighlight_all_code":false,"highlighted_languages":"apache|bash|cs|cpp|css|coffeescript|diff|xml|http|ini|json|java|javascript|makefile|markdown|nginx|objectivec|ruby|perl|php|python|sql|handlebars","censored_words":"","censored_pattern":"","enable_emoji":true,"emoji_set":"twitter","code_formatting_style":"4-spaces-indent","allowed_href_schemes":"","email_time_window_mins":10,"disable_digest_emails":false,"email_in":false,"disable_emails":false,"bounce_score_threshold":4,"max_image_size_kb":3457852,"max_attachment_size_kb":3457852,"authorized_extensions":"jpg|jpeg|png|gif|webp|css|html|js|txt|log","max_image_width":690,"max_image_height":500,"prevent_anons_from_downloading_files":false,"enable_s3_uploads":false,"allow_profile_backgrounds":true,"allow_uploaded_avatars":true,"allow_animated_avatars":false,"default_avatars":"","external_system_avatars_enabled":true,"external_system_avatars_url":"/letter_avatar_proxy/v2/letter/{first_letter}/{color}/{size}.png","tl1_requires_read_posts":30,"tl3_links_no_follow":false,"use_admin_ip_whitelist":false,"max_oneboxes_per_post":50,"alert_admins_if_errors_per_minute":0,"alert_admins_if_errors_per_hour":0,"max_prints_per_hour_per_user":5,"enable_long_polling":true,"long_polling_base_url":"/","background_polling_interval":60000,"polling_interval":3000,"anon_polling_interval":15000,"flush_timings_secs":20,"verbose_localization":false,"max_new_topics":500,"tos_url":"","privacy_policy_url":"","faq_url":"","maximum_backups":2,"min_search_term_length":3,"version_checks":true,"suppress_uncategorized_badge":true,"topic_views_heat_low":1000,"topic_views_heat_medium":2000,"topic_views_heat_high":5000,"topic_post_like_heat_low":0.5,"topic_post_like_heat_medium":1.0,"topic_post_like_heat_high":2.0,"history_hours_low":12,"history_hours_medium":24,"history_hours_high":48,"cold_age_days_low":14,"cold_age_days_medium":90,"cold_age_days_high":180,"global_notice":"","show_create_topics_notice":true,"bootstrap_mode_min_users":50,"bootstrap_mode_enabled":false,"automatically_unpin_topics":true,"read_time_word_count":500,"disable_mailing_list_mode":false,"default_topics_automatic_unpin":true,"tagging_enabled":true,"tag_style":"simple","max_tags_per_topic":5,"max_tag_length":20,"min_trust_level_to_tag_topics":0,"max_tag_search_results":5,"show_filter_by_tag":false,"tags_sort_alphabetically":false,"staff_tags":"","suppress_overlapping_tags_in_list":false,"spoiler_enabled":true,"poll_enabled":true,"poll_maximum_options":20,"details_enabled":true,"solved_enabled":true,"allow_solved_on_all_topics":false,"accept_all_solutions_trust_level":4,"empty_box_on_unsolved":false,"available_locales":"ar|bs_BA|cs|da|de|en|es|et|fa_IR|fi|fr|gl|he|id|it|ja|ko|nb_NO|nl|pl_PL|pt|pt_BR|ro|ru|sk|sq|sv|te|tr_TR|uk|ur|vi|zh_CN|zh_TW"});
+          ps.store("customHTML", {"top":"","footer":""});
+          ps.store("banner", {});
+          ps.store("customEmoji", []);
+          ps.store("translationOverrides", {});
+          ps.store("topic_3448", {"post_stream":{"posts":[{"id":24335,"name":"Anonymous No Email Gengis","username":"Gengis","avatar_template":"/letter_avatar_proxy/v2/letter/g/df705f/{size}.png","created_at":"2016-02-20T12:48:05.894Z","cooked":"<p>Voilà j'ai un peu honte de poster ceci tellement c'est basique, j'ai récupéré deux fichiers en C pour faire un petit test client / serveur avec les sockets, voici ces deux fichiers :<\/p>\n\n<p>server.c :<br><\/p>\n\n<p><\/p><pre><code>// compilation :\tgcc -Wall -o server.o  -c server.c\n//\t\t\tgcc -o server server.o\n#include &lt;stdio.h&gt;\n#include &lt;sys/types.h&gt;\n#include &lt;sys/socket.h&gt;\n#include &lt;netinet/in.h&gt;\n#include &lt;signal.h&gt;\nchar buffer[512];\nint ma_socket;\nvoid main ( void )\n{\nint client_socket;\nstruct sockaddr_in mon_address, client_address;\nint mon_address_longueur, lg;\nbzero(&amp;mon_address,sizeof(mon_address));\nmon_address.sin_port = htons(30000);\nmon_address.sin_family = AF_INET;\nmon_address.sin_addr.s_addr = htonl(INADDR_ANY);\n/* creation de socket */\nif ((ma_socket = socket(AF_INET,SOCK_STREAM,0))== -1)\n{\n  printf(\"la creation rate\\n\");\n  exit(0);\n}\nsignal(SIGINT,fin);\n/* bind serveur - socket */\nbind(ma_socket,(struct sockaddr *)&amp;mon_address,sizeof(mon_address));\n/* ecoute sur la socket */\nlisten(ma_socket,5);\n/* accept la connexion */\nmon_address_longueur = sizeof(client_address);\nwhile(1)\n{\n  client_socket = accept(ma_socket,\n                         (struct sockaddr *)&amp;client_address,\n                         &amp;mon_address_longueur);\n  if (fork() == 0)\n  {\n    close(ma_socket);\n    lg = read(client_socket,buffer, 512);\nprintf(\"le serveur a recu: %s\\n\",buffer);\nsprintf(buffer,\"%s du serveur\",buffer);\nwrite(client_socket,buffer, 512);\nshutdown(client_socket,2);\nclose(client_socket);\nexit(0);\n  }\n}\nshutdown(ma_socket,2);\nclose(ma_socket);\n}<\/code><\/pre>\n\n<p>client.c :<br><\/p>\n\n<p><\/p><pre><code>// compilation :\tgcc -Wall -o client.o  -c client.c\n//\t\t\tgcc -o client client.o\n#include &lt;stdio.h&gt;\n#include &lt;errno.h&gt;\n#include &lt;signal.h&gt;\n#include &lt;netdb.h&gt;\n#include &lt;netinet/in.h&gt;\n#include &lt;sys/socket.h&gt;\n#define SERVEURNAME \"192.168.1.106\" // adresse IP de mon serveur\nint to_server_socket = -1;\nvoid main ( void )\n{\nchar *server_name = SERVEURNAME;\nstruct sockaddr_in serverSockAddr;\nstruct hostent *serverHostEnt;\nlong hostAddr;\nlong status;\nchar buffer[512];\nbzero(&amp;serverSockAddr,sizeof(serverSockAddr));\nhostAddr = inet_addr(SERVEURNAME);\nif ( (long)hostAddr != (long)-1)\n  bcopy(&amp;hostAddr,&amp;serverSockAddr.sin_addr,sizeof(hostAddr));\nelse\n{\n  serverHostEnt = gethostbyname(SERVEURNAME);\n  if (serverHostEnt == NULL)\n  {\n    printf(\"gethost rate\\n\");\n    exit(0);\n  }\n  bcopy(serverHostEnt-&gt;h_addr,&amp;serverSockAddr.sin_addr,serverHostEnt-&gt;h_length);\n}\nserverSockAddr.sin_port = htons(30000);\nserverSockAddr.sin_family = AF_INET;\n/* creation de la socket */\nif ( (to_server_socket = socket(AF_INET,SOCK_STREAM,0)) &lt; 0)\n{\n  printf(\"creation socket client ratee\\n\");\n  exit(0);\n}\n/* requete de connexion */\nif(connect( to_server_socket,\n            (struct sockaddr *)&amp;serverSockAddr,\n            sizeof(serverSockAddr)) &lt; 0 )\n{\n  printf(\"demande de connection ratee\\n\");\n  exit(0);\n}\n/* envoie de donne et reception */\nwrite(to_server_socket,\"Toto\",4);\nread(to_server_socket,buffer,512);\nprintf(buffer);\n/* fermeture de la connection */\nshutdown(to_server_socket,2);\nclose(to_server_socket);\n}<\/code><\/pre>\n\n<p>J'ai essayé d'abord de faire mon client / serveur en boucle locale, tout fonctionne correctement. J'essaye maintenant de le faire entre pc distant, je met mon serveur sur un pc qui a l'adresse 192.169.1.106, et l'appli cliente sur un autre pc. Résultat : \"demande de connection ratee\". J'ai essayé de débloquer le port 30000 en tcp sur le pc serveur, mais rien n'y fait (iptables -A INPUT -p tcp --dport 30000 -j ACCEPT). Je n'arrive pas à voir l'erreur si il y en a une dans mon code. J'ai honte, ne plus arriver à faire une socket... Je commence vraiment à rouiller  <img src=\"/images/emoji/emoji_one/blush.png?v=1\" title=\":blush:\" class=\"emoji\" alt=\":blush:\"><\/p>","post_number":1,"post_type":1,"updated_at":"2016-02-20T12:48:05.894Z","reply_count":0,"reply_to_post_number":null,"quote_count":0,"avg_time":27,"incoming_link_count":8561,"reads":17,"score":41959.75,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"Anonymous No Email Gengis","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"actions_summary":[],"moderator":false,"admin":false,"staff":false,"user_id":14097,"hidden":false,"hidden_reason_id":null,"trust_level":0,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":24338,"name":"Ashgenesis","username":"Ashgenesis","avatar_template":"/letter_avatar_proxy/v2/letter/a/57b2e6/{size}.png","created_at":"2016-02-20T12:48:06.155Z","cooked":"<p>Tu peux essayer de regarder par la pour plus d'info <a href=\"http://mapage.noos.fr/emdel/reseaux.htm\" rel=\"nofollow\">mapage.noos.fr/emdel/reseaux.htm<\/a><br>ou encore par la <a href=\"http://www.laissus.fr/cours/node17.html\" rel=\"nofollow\">laissus.fr/cours/node17.html<\/a><\/p>","post_number":2,"post_type":1,"updated_at":"2016-02-20T12:48:06.155Z","reply_count":0,"reply_to_post_number":null,"quote_count":0,"avg_time":8,"incoming_link_count":37,"reads":15,"score":183.4,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"Ashgenesis","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"link_counts":[{"url":"http://mapage.noos.fr/emdel/reseaux.htm","internal":false,"reflection":false,"clicks":363},{"url":"http://www.laissus.fr/cours/node17.html","internal":false,"reflection":false,"clicks":170}],"read":true,"user_title":null,"actions_summary":[],"moderator":false,"admin":false,"staff":false,"user_id":27,"hidden":false,"hidden_reason_id":null,"trust_level":1,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":24343,"name":"Anonymous No Email Damsss","username":"Damsss","avatar_template":"/letter_avatar_proxy/v2/letter/d/43a26b/{size}.png","created_at":"2016-02-20T12:48:06.534Z","cooked":"<p>Tu as essayé le débuggeur ? C'est comme ça qu'on voit les erreurs. <\/p>\n\n<p>(cf le topic du même nom dans cette même rubrique)<\/p>","post_number":3,"post_type":1,"updated_at":"2016-02-20T12:48:06.534Z","reply_count":0,"reply_to_post_number":null,"quote_count":0,"avg_time":11,"incoming_link_count":10,"reads":16,"score":53.75,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"Anonymous No Email Damsss","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"actions_summary":[],"moderator":false,"admin":false,"staff":false,"user_id":13479,"hidden":false,"hidden_reason_id":null,"trust_level":0,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":24349,"name":"ed","username":"ed","avatar_template":"/user_avatar/www.debian-fr.org/ed/{size}/5256_1.png","created_at":"2016-02-20T12:48:07.027Z","cooked":"<p><\/p><pre><code>  if (fork() == 0)\n  {\n    close(ma_socket);<\/code><\/pre>\n\n<p>La, tu gère bien le cas je suis le fils, je ferme la socket server,<br>mais tu ne gere pas le cas, je suis pere, je ferme la socket client.<\/p>\n\n<p>Bon après ton soucis, c'est bizzare<\/p>\n\n<p>Déja commence par regarder si ton process serveur écoute sur le port 30 000.<\/p>\n\n<p>(netstat -nlaAinet)<\/p>\n\n<p>Ensuite, essaye de faire un telnet sur ce port (sans utiliser le client, ça limitera la quantitée de code a toi a tester).<\/p>","post_number":4,"post_type":1,"updated_at":"2016-02-20T12:48:07.027Z","reply_count":0,"reply_to_post_number":null,"quote_count":0,"avg_time":13,"incoming_link_count":10,"reads":14,"score":53.45,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"ed","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"actions_summary":[],"moderator":true,"admin":true,"staff":true,"user_id":1,"hidden":false,"hidden_reason_id":null,"trust_level":4,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":24351,"name":"mattotop","username":"mattotop","avatar_template":"/user_avatar/www.debian-fr.org/mattotop/{size}/3942_1.png","created_at":"2016-02-20T12:48:07.144Z","cooked":"<p>'man connect' dit qu'en cas d'erreur, un code est renvoyé dans 'errno', tu devrais enrichir ton message de refus de connection avec ce code et éventuellement sa traduction en langage humain (dans errno.h) ?<br>Mais bon, moi aussi, ça fait trés longtemps que je n'ai pas écrit une ligne de C.<\/p>","post_number":5,"post_type":1,"updated_at":"2016-02-20T12:48:07.144Z","reply_count":0,"reply_to_post_number":null,"quote_count":0,"avg_time":12,"incoming_link_count":8,"reads":13,"score":43.2,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"mattotop","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"actions_summary":[],"moderator":false,"admin":false,"staff":false,"user_id":36,"hidden":false,"hidden_reason_id":null,"trust_level":2,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":24354,"name":"ed","username":"ed","avatar_template":"/user_avatar/www.debian-fr.org/ed/{size}/5256_1.png","created_at":"2016-02-20T12:48:07.439Z","cooked":"<p>exact: pour avoir le message d'erreur:<\/p>\n\n<p><\/p><pre><code>perror(\"connect\");<\/code><\/pre>","post_number":6,"post_type":1,"updated_at":"2016-02-20T12:48:07.439Z","reply_count":0,"reply_to_post_number":null,"quote_count":0,"avg_time":8,"incoming_link_count":3,"reads":13,"score":18.0,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"ed","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"actions_summary":[],"moderator":true,"admin":true,"staff":true,"user_id":1,"hidden":false,"hidden_reason_id":null,"trust_level":4,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":24355,"name":"Ashgenesis","username":"Ashgenesis","avatar_template":"/letter_avatar_proxy/v2/letter/a/57b2e6/{size}.png","created_at":"2016-02-20T12:48:07.501Z","cooked":"<p>[quote=\"Gengis\"]<\/p>\n\n<p><\/p><pre><code>void main ( void )\n{<\/code><\/pre>\n\n<p>[/quote]Main est du type int et renvoit toujours quelques chose<\/p>\n\n<p>tu devrais donc modifier ton void main (void) par <\/p>\n\n<p><\/p><pre><code>int main(void){\n    //ton prog\n    return 0;\n}<\/code><\/pre>","post_number":7,"post_type":1,"updated_at":"2016-02-20T12:48:07.501Z","reply_count":0,"reply_to_post_number":null,"quote_count":1,"avg_time":6,"incoming_link_count":13,"reads":13,"score":67.9,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"Ashgenesis","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"actions_summary":[],"moderator":false,"admin":false,"staff":false,"user_id":27,"hidden":false,"hidden_reason_id":null,"trust_level":1,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":24373,"name":"Anonymous No Email Gengis","username":"Gengis","avatar_template":"/letter_avatar_proxy/v2/letter/g/df705f/{size}.png","created_at":"2016-02-20T12:48:08.895Z","cooked":"<p>Oula oui en me rendant compte de ce que vous avez écrit, je vois que j'ai des automatismes qui sont passés à la trappe. Enfin bref, voici le résultat de la commande netstat :<br><\/p>\n\n<p><\/p><pre><code># netstat -nlaAinet\nConnexions Internet actives (serveurs et établies)\nProto Recv-Q Send-Q Local Address               Foreign Address             State\ntcp        0      0 0.0.0.0:32769               0.0.0.0:*                   LISTEN\ntcp        0      0 0.0.0.0:111                 0.0.0.0:*                   LISTEN\ntcp        0      0 0.0.0.0:30000               0.0.0.0:*                   LISTEN\ntcp        0      0 0.0.0.0:6000                0.0.0.0:*                   LISTEN\ntcp        0      0 127.0.0.1:631               0.0.0.0:*                   LISTEN\ntcp        0      0 127.0.0.1:5335              0.0.0.0:*                   LISTEN\ntcp        0      0 192.168.1.106:51923         207.46.24.24:1863           ESTABLISHED\nudp        0      0 0.0.0.0:32768               0.0.0.0:*\nudp        0      0 0.0.0.0:68                  0.0.0.0:*\nudp        0      0 0.0.0.0:68                  0.0.0.0:*\nudp        0      0 0.0.0.0:5353                0.0.0.0:*\nudp        0      0 0.0.0.0:1003                0.0.0.0:*\nudp        0      0 0.0.0.0:111                 0.0.0.0:*\nudp        0      0 0.0.0.0:631                 0.0.0.0:*<\/code><\/pre>\n\n<p>A priori tout va bien de ce côté là. En faisant le telnet, j'ai vu d'où venait le problème :<br><\/p>\n\n<p><\/p><pre><code># telnet 192.168.1.106 30000\nTrying 192.168.1.106...\ntelnet: connect to address 192.168.1.106: No route to host\ntelnet: Unable to connect to remote host: No route to host<\/code><\/pre>\n\n<p>J'avais déjà des problèmes de ce genre (No route to host aussi ! ) lorsque j'avais essayé d'utiliser la commande netcat entre deux pc et je n'avais pas réussi à résoudre ce souci.<\/p>","post_number":8,"post_type":1,"updated_at":"2016-02-20T12:48:08.895Z","reply_count":0,"reply_to_post_number":null,"quote_count":0,"avg_time":8,"incoming_link_count":15,"reads":13,"score":78.0,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"Anonymous No Email Gengis","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"actions_summary":[],"moderator":false,"admin":false,"staff":false,"user_id":14097,"hidden":false,"hidden_reason_id":null,"trust_level":0,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":24477,"name":"ed","username":"ed","avatar_template":"/user_avatar/www.debian-fr.org/ed/{size}/5256_1.png","created_at":"2016-02-20T12:48:16.901Z","cooked":"<p>telnet: connect to address 192.168.1.106: No route to host <\/p>\n\n<p>ça, c'est clairement que 192.168.1.106 n'est pas la bonne adresse IP.<\/p>\n\n<p>Vous avez un soucis de réseau...<\/p>","post_number":9,"post_type":1,"updated_at":"2016-02-20T12:48:16.901Z","reply_count":0,"reply_to_post_number":null,"quote_count":0,"avg_time":8,"incoming_link_count":8,"reads":10,"score":37.4,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"ed","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"actions_summary":[],"moderator":true,"admin":true,"staff":true,"user_id":1,"hidden":false,"hidden_reason_id":null,"trust_level":4,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":24479,"name":"mattotop","username":"mattotop","avatar_template":"/user_avatar/www.debian-fr.org/mattotop/{size}/3942_1.png","created_at":"2016-02-20T12:48:17.116Z","cooked":"<p><img src=\"/images/emoji/emoji_one/laughing.png?v=1\" title=\":laughing:\" class=\"emoji\" alt=\":laughing:\"> C'est bêta...<\/p>","post_number":10,"post_type":1,"updated_at":"2016-02-20T12:48:17.116Z","reply_count":0,"reply_to_post_number":null,"quote_count":0,"avg_time":9,"incoming_link_count":3,"reads":11,"score":17.65,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"mattotop","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"actions_summary":[],"moderator":false,"admin":false,"staff":false,"user_id":36,"hidden":false,"hidden_reason_id":null,"trust_level":2,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":24587,"name":"Anonymous No Email Gengis","username":"Gengis","avatar_template":"/letter_avatar_proxy/v2/letter/g/df705f/{size}.png","created_at":"2016-02-20T12:48:26.116Z","cooked":"<p>Bah l'adresse IP est bien la bonne, j'arrive très bien à pinger dessus donc j'ai un peu de mal à comprendre d'où vient le souci. Un service qu'i n'est pas activé ? des fichiers de configuration défectueux ? Ou peut-être autre chose...<\/p>","post_number":11,"post_type":1,"updated_at":"2016-02-20T12:48:26.116Z","reply_count":0,"reply_to_post_number":null,"quote_count":0,"avg_time":8,"incoming_link_count":0,"reads":11,"score":2.6,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"Anonymous No Email Gengis","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"actions_summary":[],"moderator":false,"admin":false,"staff":false,"user_id":14097,"hidden":false,"hidden_reason_id":null,"trust_level":0,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":24594,"name":"ed","username":"ed","avatar_template":"/user_avatar/www.debian-fr.org/ed/{size}/5256_1.png","created_at":"2016-02-20T12:48:26.739Z","cooked":"<p>Fichiers de configuration défectueux a priori.<\/p>\n\n<p>Vérifiez la configuration réseau, fichier /etc/hosts<\/p>","post_number":12,"post_type":1,"updated_at":"2016-02-20T12:48:26.739Z","reply_count":0,"reply_to_post_number":null,"quote_count":0,"avg_time":10,"incoming_link_count":7,"reads":10,"score":37.5,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"ed","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"actions_summary":[],"moderator":true,"admin":true,"staff":true,"user_id":1,"hidden":false,"hidden_reason_id":null,"trust_level":4,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":24612,"name":"mattotop","username":"mattotop","avatar_template":"/user_avatar/www.debian-fr.org/mattotop/{size}/3942_1.png","created_at":"2016-02-20T12:48:28.030Z","cooked":"<p>un pare feu trop serré sur la machine cible, quoi que tu en dise ?<br>au delà de telnet, peut être qu'hping ou fping permettrait d'avoir plus d'info sur l'etat du port vu depuis une machine distante.<\/p>","post_number":13,"post_type":1,"updated_at":"2016-02-20T12:48:28.030Z","reply_count":0,"reply_to_post_number":null,"quote_count":0,"avg_time":12,"incoming_link_count":6,"reads":11,"score":32.8,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"mattotop","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"actions_summary":[],"moderator":false,"admin":false,"staff":false,"user_id":36,"hidden":false,"hidden_reason_id":null,"trust_level":2,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":27396,"name":"Anonymous No Email Gengis","username":"Gengis","avatar_template":"/letter_avatar_proxy/v2/letter/g/df705f/{size}.png","created_at":"2016-02-20T12:52:11.932Z","cooked":"<p>Me voilà de retour et je viens de me replonger dans le code, apparament j'ai fait quelques petites modif sur les fichiers de config et ça va un petit peu mieu. J'ai mis aussi un perror pour le connect et j'obtiens ce message : Connection refused ou No route to host, cela dépend dans qui est le serveur et le client<\/p>\n\n<p>Pourtant je pense pas que cela vienne d'un firewall trop serré.<\/p>","post_number":14,"post_type":1,"updated_at":"2016-02-20T12:52:11.932Z","reply_count":0,"reply_to_post_number":null,"quote_count":0,"avg_time":20,"incoming_link_count":6,"reads":11,"score":33.2,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"Anonymous No Email Gengis","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"actions_summary":[],"moderator":false,"admin":false,"staff":false,"user_id":14097,"hidden":false,"hidden_reason_id":null,"trust_level":0,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":532369,"name":"elbidani said","username":"elbidani","avatar_template":"/letter_avatar_proxy/v2/letter/e/c2a13f/{size}.png","created_at":"2016-03-03T11:07:07.393Z","cooked":"<p>j'ai besoine de se scripte, j'ai ajouter le code serveur sur dev c++<br>mais il ma donnée des erreurs il n'as pas trouver le fichier    sys/types.h<br>merci de joindre tt les fichiere<\/p>","post_number":15,"post_type":1,"updated_at":"2016-03-03T11:07:07.393Z","reply_count":0,"reply_to_post_number":null,"quote_count":0,"avg_time":25,"incoming_link_count":6,"reads":9,"score":33.05,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"elbidani said","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"actions_summary":[],"moderator":false,"admin":false,"staff":false,"user_id":17353,"hidden":false,"hidden_reason_id":null,"trust_level":0,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":532370,"name":"elbidani said","username":"elbidani","avatar_template":"/letter_avatar_proxy/v2/letter/e/c2a13f/{size}.png","created_at":"2016-03-03T11:07:46.900Z","cooked":"<p>Merci de m'aider j'ai besoine de ce tuto<\/p>","post_number":16,"post_type":1,"updated_at":"2016-03-03T11:07:46.900Z","reply_count":1,"reply_to_post_number":null,"quote_count":0,"avg_time":24,"incoming_link_count":3,"reads":9,"score":23.0,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"elbidani said","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"actions_summary":[],"moderator":false,"admin":false,"staff":false,"user_id":17353,"hidden":false,"hidden_reason_id":null,"trust_level":0,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":532384,"name":"ed","username":"ed","avatar_template":"/user_avatar/www.debian-fr.org/ed/{size}/5256_1.png","created_at":"2016-03-03T14:01:58.699Z","cooked":"<p>Vous n'aurez probablement aucune aide si vous ne faites pas un effort de rédaction.<\/p>","post_number":17,"post_type":1,"updated_at":"2016-03-03T14:01:58.699Z","reply_count":0,"reply_to_post_number":16,"quote_count":0,"avg_time":19,"incoming_link_count":5,"reads":10,"score":27.95,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"ed","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"reply_to_user":{"username":"elbidani","avatar_template":"/letter_avatar_proxy/v2/letter/e/c2a13f/{size}.png"},"actions_summary":[],"moderator":true,"admin":true,"staff":true,"user_id":1,"hidden":false,"hidden_reason_id":null,"trust_level":4,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false},{"id":532388,"name":"elbidani said","username":"elbidani","avatar_template":"/letter_avatar_proxy/v2/letter/e/c2a13f/{size}.png","created_at":"2016-03-03T14:38:49.837Z","cooked":"<p>je veux un tuto sur les socket en langage c<br>j'ai essayé le code source ci-doussous mais il me donnée des erreurs des fichiers manque comme sys/socket.h<\/p>","post_number":18,"post_type":1,"updated_at":"2016-03-03T14:38:49.837Z","reply_count":0,"reply_to_post_number":null,"quote_count":0,"avg_time":14,"incoming_link_count":5,"reads":10,"score":27.7,"yours":false,"topic_id":3448,"topic_slug":"socket-en-c-client-serveur-tout-simple","display_username":"elbidani said","primary_group_name":null,"primary_group_flair_url":null,"primary_group_flair_bg_color":null,"primary_group_flair_color":null,"version":1,"can_edit":false,"can_delete":false,"can_recover":false,"can_wiki":false,"read":true,"user_title":null,"actions_summary":[],"moderator":false,"admin":false,"staff":false,"user_id":17353,"hidden":false,"hidden_reason_id":null,"trust_level":0,"deleted_at":null,"user_deleted":false,"edit_reason":null,"can_view_edit_history":true,"wiki":false,"can_accept_answer":false,"can_unaccept_answer":false,"accepted_answer":false}],"stream":[24335,24338,24343,24349,24351,24354,24355,24373,24477,24479,24587,24594,24612,27396,532369,532370,532384,532388]},"timeline_lookup":[[1,435],[15,423]],"id":3448,"title":"Socket en C : client / serveur tout simple","fancy_title":"Socket en C : client / serveur tout simple","posts_count":18,"created_at":"2016-02-20T12:48:05.873Z","views":9587,"reply_count":1,"participant_count":6,"like_count":0,"last_posted_at":"2016-03-03T14:38:49.837Z","visible":true,"closed":false,"archived":false,"has_summary":false,"archetype":"regular","slug":"socket-en-c-client-serveur-tout-simple","category_id":16,"word_count":1364,"deleted_at":null,"user_id":14097,"draft":null,"draft_key":"topic_3448","draft_sequence":null,"unpinned":null,"pinned_globally":false,"pinned":false,"pinned_at":null,"pinned_until":null,"details":{"auto_close_at":null,"auto_close_hours":null,"auto_close_based_on_last_post":false,"created_by":{"id":14097,"username":"Gengis","avatar_template":"/letter_avatar_proxy/v2/letter/g/df705f/{size}.png"},"last_poster":{"id":17353,"username":"elbidani","avatar_template":"/letter_avatar_proxy/v2/letter/e/c2a13f/{size}.png"},"participants":[{"id":1,"username":"ed","avatar_template":"/user_avatar/www.debian-fr.org/ed/{size}/5256_1.png","post_count":5},{"id":14097,"username":"Gengis","avatar_template":"/letter_avatar_proxy/v2/letter/g/df705f/{size}.png","post_count":4},{"id":36,"username":"mattotop","avatar_template":"/user_avatar/www.debian-fr.org/mattotop/{size}/3942_1.png","post_count":3},{"id":17353,"username":"elbidani","avatar_template":"/letter_avatar_proxy/v2/letter/e/c2a13f/{size}.png","post_count":3},{"id":27,"username":"Ashgenesis","avatar_template":"/letter_avatar_proxy/v2/letter/a/57b2e6/{size}.png","post_count":2},{"id":13479,"username":"Damsss","avatar_template":"/letter_avatar_proxy/v2/letter/d/43a26b/{size}.png","post_count":1}],"suggested_topics":[{"id":71486,"title":"Réponse a Micp Concept de base … bash scripts","fancy_title":"Réponse a Micp Concept de base … bash scripts","slug":"reponse-a-micp-concept-de-base-bash-scripts","posts_count":3,"reply_count":0,"highest_post_number":3,"image_url":null,"created_at":"2016-10-25T20:56:01.953Z","last_posted_at":"2016-10-26T05:18:04.323Z","bumped":true,"bumped_at":"2016-10-25T23:54:53.806Z","unseen":false,"pinned":false,"unpinned":null,"visible":true,"closed":false,"archived":false,"bookmarked":null,"liked":null,"archetype":"regular","like_count":1,"views":208,"category_id":16,"tags":[],"featured_link":null,"posters":[{"extras":null,"description":"Créateur du sujet","user":{"id":12506,"username":"greenmerlin","avatar_template":"/user_avatar/www.debian-fr.org/greenmerlin/{size}/5007_1.png"}},{"extras":"latest","description":"Auteur le plus récent","user":{"id":3947,"username":"MicP","avatar_template":"/user_avatar/www.debian-fr.org/micp/{size}/3964_1.png"}}]},{"id":71452,"title":"\"!\", \"$1\", \"$#\" ... symboles et variables dans bash","fancy_title":"&rdquo;!&rdquo;, &ldquo;$1&rdquo;, &ldquo;$#&rdquo; &hellip; symboles et variables dans bash","slug":"1-symboles-et-variables-dans-bash","posts_count":5,"reply_count":0,"highest_post_number":5,"image_url":null,"created_at":"2016-10-24T03:20:30.056Z","last_posted_at":"2016-10-24T18:08:13.493Z","bumped":true,"bumped_at":"2016-10-24T18:08:13.493Z","unseen":false,"pinned":false,"unpinned":null,"visible":true,"closed":false,"archived":false,"bookmarked":null,"liked":null,"archetype":"regular","like_count":4,"views":190,"category_id":16,"tags":[],"featured_link":null,"posters":[{"extras":"latest","description":"Créateur du sujet, Auteur le plus récent","user":{"id":17634,"username":"rasdehya","avatar_template":"/letter_avatar_proxy/v2/letter/r/f1d935/{size}.png"}},{"extras":null,"description":"Auteur fréquent","user":{"id":222,"username":"PengouinPdt","avatar_template":"/user_avatar/www.debian-fr.org/pengouinpdt/{size}/3978_1.png"}},{"extras":null,"description":"Auteur fréquent","user":{"id":3947,"username":"MicP","avatar_template":"/user_avatar/www.debian-fr.org/micp/{size}/3964_1.png"}},{"extras":null,"description":"Auteur fréquent","user":{"id":10412,"username":"Almtesh","avatar_template":"/user_avatar/www.debian-fr.org/almtesh/{size}/5376_1.png"}}]},{"id":70392,"title":"Cross compilation ARM kernel 3.0","fancy_title":"Cross compilation ARM kernel 3.0","slug":"cross-compilation-arm-kernel-3-0","posts_count":1,"reply_count":0,"highest_post_number":1,"image_url":null,"created_at":"2016-07-23T00:29:01.915Z","last_posted_at":"2016-07-23T00:29:02.451Z","bumped":true,"bumped_at":"2016-07-23T00:29:02.451Z","unseen":false,"pinned":false,"unpinned":null,"visible":true,"closed":false,"archived":false,"bookmarked":null,"liked":null,"archetype":"regular","like_count":0,"views":232,"category_id":16,"tags":[],"featured_link":null,"posters":[{"extras":"latest single","description":"Créateur du sujet, Auteur le plus récent","user":{"id":2298,"username":"sifourquier","avatar_template":"/letter_avatar_proxy/v2/letter/s/87869e/{size}.png"}}]},{"id":69929,"title":"Problème FMODEx sous CodeBlocks","fancy_title":"Problème FMODEx sous CodeBlocks","slug":"probleme-fmodex-sous-codeblocks","posts_count":3,"reply_count":1,"highest_post_number":3,"image_url":null,"created_at":"2016-06-08T17:38:49.144Z","last_posted_at":"2016-06-08T17:59:33.009Z","bumped":true,"bumped_at":"2016-06-08T18:28:13.041Z","unseen":false,"pinned":false,"unpinned":null,"visible":true,"closed":false,"archived":false,"bookmarked":null,"liked":null,"archetype":"regular","like_count":0,"views":352,"category_id":16,"tags":[],"featured_link":null,"posters":[{"extras":"latest","description":"Créateur du sujet, Auteur le plus récent","user":{"id":17871,"username":"copostic","avatar_template":"/user_avatar/www.debian-fr.org/copostic/{size}/4494_1.png"}},{"extras":null,"description":"Auteur fréquent","user":{"id":151,"username":"debianhadic","avatar_template":"/user_avatar/www.debian-fr.org/debianhadic/{size}/3870_1.png"}}]},{"id":69829,"title":"Question de flemmard","fancy_title":"Question de flemmard","slug":"question-de-flemmard","posts_count":10,"reply_count":3,"highest_post_number":10,"image_url":null,"created_at":"2016-05-31T15:43:12.201Z","last_posted_at":"2016-11-09T00:43:34.076Z","bumped":true,"bumped_at":"2016-11-09T00:43:34.076Z","unseen":false,"pinned":false,"unpinned":null,"visible":true,"closed":false,"archived":false,"bookmarked":null,"liked":null,"archetype":"regular","like_count":4,"views":830,"category_id":16,"tags":[],"featured_link":null,"posters":[{"extras":null,"description":"Créateur du sujet","user":{"id":36,"username":"mattotop","avatar_template":"/user_avatar/www.debian-fr.org/mattotop/{size}/3942_1.png"}},{"extras":null,"description":"Auteur fréquent","user":{"id":17770,"username":"Yoli","avatar_template":"/letter_avatar_proxy/v2/letter/y/ee7513/{size}.png"}},{"extras":null,"description":"Auteur fréquent","user":{"id":3737,"username":"Watael","avatar_template":"/letter_avatar_proxy/v2/letter/w/a4c791/{size}.png"}},{"extras":null,"description":"Auteur fréquent","user":{"id":130,"username":"ripat","avatar_template":"/letter_avatar_proxy/v2/letter/r/bc79bd/{size}.png"}},{"extras":"latest","description":"Auteur le plus récent","user":{"id":10412,"username":"Almtesh","avatar_template":"/user_avatar/www.debian-fr.org/almtesh/{size}/5376_1.png"}}]}],"links":[{"url":"http://mapage.noos.fr/emdel/reseaux.htm","title":null,"fancy_title":null,"internal":false,"attachment":false,"reflection":false,"clicks":363,"user_id":27,"domain":"mapage.noos.fr"},{"url":"http://www.laissus.fr/cours/node17.html","title":null,"fancy_title":null,"internal":false,"attachment":false,"reflection":false,"clicks":170,"user_id":27,"domain":"www.laissus.fr"}],"notification_level":1,"can_flag_topic":false},"highest_post_number":18,"deleted_by":null,"actions_summary":[{"id":4,"count":0,"hidden":false,"can_act":false},{"id":7,"count":0,"hidden":false,"can_act":false},{"id":8,"count":0,"hidden":false,"can_act":false}],"chunk_size":20,"bookmarked":null,"tags":[],"featured_link":null});
+      })();
+      </script>
+
+    
+
+    <script>
+  Ember.RSVP.configure('onerror', function(e) {
+    // Ignore TransitionAborted exceptions that bubble up
+    if (e && e.message === "TransitionAborted") { return; }
+
+    window.onerror(e && e.message, null,null,null,e);
+  });
+
+
+</script>
+
+<script>
+
+  (function() {
+    var ps = require('preload-store').default;
+
+    Discourse.CDN = '';
+    Discourse.BaseUrl = 'www.debian-fr.org'.replace(/:[\d]*$/,"");
+    Discourse.BaseUri = '';
+    Discourse.Environment = 'production';
+    Discourse.SiteSettings = ps.get('siteSettings');
+    Discourse.LetterAvatarVersion = '5_81f1fd1777f911db8091437f1222013c';
+    I18n.defaultLocale = 'fr';
+    Discourse.start();
+    Discourse.set('assetVersion','34f983810f75a96b0d50b68ed1c78ce2');
+    Discourse.Session.currentProp("disableCustomCSS", false);
+    Discourse.HighlightJSPath = "/highlight-js/www.debian-fr.org/133b1767dbeecf92cad6dfc38d42cde22195db05.js";
+  })();
+</script>
+
+<script src="./client serveur tout simple_files/browser-update-f57286e74ddbc53aa899689b01ef467078911e4138050c561939955849af35dd.js.téléchargement"></script>
+
+
+    
+
+      
+  
+
+<div style="position:fixed; top:0; left:0; overflow:hidden;"><input style="position:absolute; left:-300px;" type="text" value="" id="focus_retriever" readonly="true"></div><a href="https://www.debian-fr.org/t/socket-en-c-client-serveur-tout-simple/3448" download=""></a><span style="border-radius: 3px; text-indent: 20px; width: auto; padding: 0px 4px 0px 0px; text-align: center; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal; font-size: 11px; line-height: 20px; font-family: &quot;Helvetica Neue&quot;, Helvetica, sans-serif; color: rgb(255, 255, 255); background: url(&quot;data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMzBweCIgd2lkdGg9IjMwcHgiIHZpZXdCb3g9Ii0xIC0xIDMxIDMxIj48Zz48cGF0aCBkPSJNMjkuNDQ5LDE0LjY2MiBDMjkuNDQ5LDIyLjcyMiAyMi44NjgsMjkuMjU2IDE0Ljc1LDI5LjI1NiBDNi42MzIsMjkuMjU2IDAuMDUxLDIyLjcyMiAwLjA1MSwxNC42NjIgQzAuMDUxLDYuNjAxIDYuNjMyLDAuMDY3IDE0Ljc1LDAuMDY3IEMyMi44NjgsMC4wNjcgMjkuNDQ5LDYuNjAxIDI5LjQ0OSwxNC42NjIiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxIj48L3BhdGg+PHBhdGggZD0iTTE0LjczMywxLjY4NiBDNy41MTYsMS42ODYgMS42NjUsNy40OTUgMS42NjUsMTQuNjYyIEMxLjY2NSwyMC4xNTkgNS4xMDksMjQuODU0IDkuOTcsMjYuNzQ0IEM5Ljg1NiwyNS43MTggOS43NTMsMjQuMTQzIDEwLjAxNiwyMy4wMjIgQzEwLjI1MywyMi4wMSAxMS41NDgsMTYuNTcyIDExLjU0OCwxNi41NzIgQzExLjU0OCwxNi41NzIgMTEuMTU3LDE1Ljc5NSAxMS4xNTcsMTQuNjQ2IEMxMS4xNTcsMTIuODQyIDEyLjIxMSwxMS40OTUgMTMuNTIyLDExLjQ5NSBDMTQuNjM3LDExLjQ5NSAxNS4xNzUsMTIuMzI2IDE1LjE3NSwxMy4zMjMgQzE1LjE3NSwxNC40MzYgMTQuNDYyLDE2LjEgMTQuMDkzLDE3LjY0MyBDMTMuNzg1LDE4LjkzNSAxNC43NDUsMTkuOTg4IDE2LjAyOCwxOS45ODggQzE4LjM1MSwxOS45ODggMjAuMTM2LDE3LjU1NiAyMC4xMzYsMTQuMDQ2IEMyMC4xMzYsMTAuOTM5IDE3Ljg4OCw4Ljc2NyAxNC42NzgsOC43NjcgQzEwLjk1OSw4Ljc2NyA4Ljc3NywxMS41MzYgOC43NzcsMTQuMzk4IEM4Ljc3NywxNS41MTMgOS4yMSwxNi43MDkgOS43NDksMTcuMzU5IEM5Ljg1NiwxNy40ODggOS44NzIsMTcuNiA5Ljg0LDE3LjczMSBDOS43NDEsMTguMTQxIDkuNTIsMTkuMDIzIDkuNDc3LDE5LjIwMyBDOS40MiwxOS40NCA5LjI4OCwxOS40OTEgOS4wNCwxOS4zNzYgQzcuNDA4LDE4LjYyMiA2LjM4NywxNi4yNTIgNi4zODcsMTQuMzQ5IEM2LjM4NywxMC4yNTYgOS4zODMsNi40OTcgMTUuMDIyLDYuNDk3IEMxOS41NTUsNi40OTcgMjMuMDc4LDkuNzA1IDIzLjA3OCwxMy45OTEgQzIzLjA3OCwxOC40NjMgMjAuMjM5LDIyLjA2MiAxNi4yOTcsMjIuMDYyIEMxNC45NzMsMjIuMDYyIDEzLjcyOCwyMS4zNzkgMTMuMzAyLDIwLjU3MiBDMTMuMzAyLDIwLjU3MiAxMi42NDcsMjMuMDUgMTIuNDg4LDIzLjY1NyBDMTIuMTkzLDI0Ljc4NCAxMS4zOTYsMjYuMTk2IDEwLjg2MywyNy4wNTggQzEyLjA4NiwyNy40MzQgMTMuMzg2LDI3LjYzNyAxNC43MzMsMjcuNjM3IEMyMS45NSwyNy42MzcgMjcuODAxLDIxLjgyOCAyNy44MDEsMTQuNjYyIEMyNy44MDEsNy40OTUgMjEuOTUsMS42ODYgMTQuNzMzLDEuNjg2IiBmaWxsPSIjYmQwODFjIj48L3BhdGg+PC9nPjwvc3ZnPg==&quot;) 3px 50% / 14px 14px no-repeat rgb(189, 8, 28); position: absolute; opacity: 1; z-index: 8675309; display: none; cursor: pointer; border: none; -webkit-font-smoothing: antialiased;">Enregistrer</span></body></html>
