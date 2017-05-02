@@ -1,4 +1,4 @@
-params =
+params = -w
 
 all : server client clean
 

@@ -63,8 +63,12 @@ write(to_server_socket,&message,sizeof(message));
 
 printf("Lecture d'un message : \n");
 Message m;
-read(to_server_socket,&m,sizeof(Message));
-printf("%s\n",m.message);
+/*read(to_server_socket,&m,sizeof(Message));
+printf("%s\n",m.message);*/
+
+//wait
+read(0,buffer,512);
+
 /* fermeture de la connection */
 shutdown(to_server_socket,2);
 close(to_server_socket);

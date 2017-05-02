@@ -1,11 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <signal.h>
+#include <errno.h>
 
 #include <sys/time.h>
 #include <sys/select.h>
@@ -14,10 +16,22 @@
 #include "server.h"
 #include "socket.h"
 
-int fds[NOMBRE_JOUEURS_MAX];
-int nb_fd = 0;
+Client clients[NOMBRE_JOUEURS_MAX];
+int nb_client = 0;
 
+Client* inscrits[NOMBRE_JOUEURS_MAX];
+int nb_inscrit = 0;
+
+int timer_inscription_ecoule = FALSE;
 int partie_en_cours = FALSE;
+int distribution_paquet = FALSE;
+
+int manche = 0;
+int tour = 0;
+
+int end = FALSE;
+int annule = FALSE;
+
 
 int main(int argc, char** argv){
 	int port;
@@ -29,79 +43,233 @@ int main(int argc, char** argv){
 		return 1;
 	}
 
-	
-	int ma_socket = create_socket(port);
+	srand(time(NULL));
 
-	//attendre_connexion(ma_socket,nouvelle_connexion);
+	struct sigaction timer;
+    timer.sa_handler = &handle_timer;
+    sigemptyset(&(timer.sa_mask));
+    timer.sa_flags = 0;
 
-	/*FD_ZERO(&joueurs);
+    SYS(sigaction(SIGALRM, &timer, NULL));
 
-	struct timeval alive;
-	alive.tv_sec = 30;
-	alive.tv_usec = 0;*/
+    int ma_socket = create_socket(port);
 
-	while(1){
-		//int s = select(max_fd+1,&joueurs,NULL,NULL,&alive);
-		int i;
-		fd_set set;
-		int activity = attendre_message(ma_socket,fds,nb_fd,&set);
-		if(activity == 0){
-			timeout(); //temps écoulé
-			break;
-		}else if(activity < 0){
-			perror("erreur select");
-			return 2;
-		}
+	while(TRUE){
+		alarm(0);
 
-		// Nouvelle connexion d'un user
-		if (FD_ISSET(ma_socket, &set)) 
-		{
-			int client;
-			struct sockaddr_in address;
-			int addrlen = sizeof(address);
-			SYS((client = accept(ma_socket, (struct sockaddr *) &address, (socklen_t*) &addrlen)));
+		//Initialisation des variables pour la partie
+		nb_client = 0;
+		nb_inscrit = 0;
 
-			//printf("New connection , socket fd is %d\n" , client);
+		timer_inscription_ecoule = FALSE;
+		partie_en_cours = FALSE;
+		manche = 0;
+		tour = 0;
+		end = FALSE;
+		annule = FALSE;
 
-			if(partie_en_cours){
-				Message ko = {INSCRIPTION_KO,NULL,NULL};
-				envoyer_message(client,ko);
-			}else{
-				// ajouter le nouveau user
-				fds[nb_fd] = client;
-				nb_fd++;
+		while(!end){
+			//int s = select(max_fd+1,&joueurs,NULL,NULL,&alive);
+			int i;
+			fd_set set;
+			int fds[NOMBRE_JOUEURS_MAX];
+			for(i = 0 ; i < nb_client ; i++){
+				fds[i] = clients[i].fd;
 			}
-		}
-		for(i = 0 ; i < nb_fd ; i++){
-			if (FD_ISSET(fds[i], &set)) {
-				Message msg = lire_message(fds[i]);
-				if(msg.type == EMPTY_MSG){
-					timeout();//ferme tous les clients
+			int activity = attendre_message(ma_socket,fds,nb_client,&set);
+			if(activity == 0){
+				if(!partie_en_cours)
+					continue;
+				end = TRUE; //temps écoulé
+				annule = TRUE;
+				printf("inactivité des clients\n");
+				break;
+			}else if(activity < 0){
+				if (errno == EINTR)
+            		continue; //SIGALRM
+				perror("erreur select");
+				return 2;
+			}
+
+			// Nouvelle connexion d'un user
+			if (FD_ISSET(ma_socket, &set)) 
+			{
+				int nouveau_client_fd;
+				struct sockaddr_in address;
+				int addrlen = sizeof(address);
+				SYS((nouveau_client_fd = accept(ma_socket, (struct sockaddr *) &address, (socklen_t*) &addrlen)));
+
+				//printf("New connection , socket fd is %d\n" , client);
+
+				if(nb_client >= NOMBRE_JOUEURS_MAX){
+					//TODO : Envoyer message ?
+					Message ko;
+					ko.type = INSCRIPTION_KO;
+					strcpy(ko.message, "Aucune place disponnible\0");
+					envoyer_message(nouveau_client_fd,ko);
+					close(nouveau_client_fd);
+				}else{
+					// ajouter le nouveau user
+					Client nouveau_client;
+					nouveau_client.fd = nouveau_client_fd;
+					nouveau_client.send_ecart = FALSE;
+					clients[nb_client] = nouveau_client;
+					nb_client++;
 				}
-				handle_message(fds[i],msg);
+			}
+			for(i = 0 ; i < nb_client ; i++){
+				if (FD_ISSET(clients[i].fd, &set)) {
+					Message msg = lire_message(clients[i].fd);
+					handle_message(&clients[i],msg);
+				}
 			}
 		}
+		close_all();
+		printf("Fin de la partie\n");
 	}
 	
 	return 0;
 }
 
-void handle_message(int client, Message msg){
+void handle_message(Client* client, Message msg){
+	Message resp;
+	int i;
+	int n = -1;
 	switch(msg.type){
 		case INSCRIPTION:
-			printf("Demande d'INSCRIPTION du client n %d\n",client);
-			break;
-
+			if(partie_en_cours){
+				resp.type = CONNECTION_FULL;
+				//strcpy(resp.message, "Une partie est en cours actuellement\0");
+				envoyer_message(client->fd,resp);
+			}else{
+				strcpy(client->nom, msg.message);
+				inscrits[nb_inscrit] = client;
+				printf("Inscription : %s\n", inscrits[nb_inscrit]->nom);
+				nb_inscrit++;
+				if(nb_inscrit == 1){
+					alarm(30);
+				}
+				resp.type = INSCRIPTION_OK;
+				envoyer_message(client->fd,resp);
+				demarrer_partie();//-------------------------------------------------------------------------------
+				if(nb_inscrit >= NOMBRE_JOUEURS_MAX){
+					alarm(0);
+					kill(getpid(),SIGALRM);
+					//handle_timer(SIGALRM);
+				}
+			}
+			return;
+		case ANNULER:
+			//Un client s'est déconnecté
+			for(i = 0 ; i < nb_client-1 ; i++){
+				if(clients[i].fd == client->fd){
+					n = i;
+				}
+				if(n<0){
+					clients[i]=clients[i+1];
+				}
+			}
+			nb_client--;
+			if(strlen(client->nom) == 0){
+				printf("Un joueur non-inscrit s'est déconnecté\n");
+			}else{
+				printf("%s s'est déconnecté\n",client->nom);
+				end=TRUE;
+				annule = TRUE;
+			}
+			return;
+	}
+	if(!partie_en_cours){
+		bad_request(client,msg);
+	}
+	switch(msg.type){
+		case ENVOI_PAQUET:
+			if(tour > 0) bad_request(client,msg);
+			memcpy(client->ecart,msg.cartes,sizeof(Carte)*5);
+			client->send_ecart = TRUE;
+			if(check_ecart()){
+				distribution_paquet();
+				commencer_tour();
+			}
+			return;
 	}
 }
 
-void timeout(){
-	printf("timeout\n");
+void close_all(){
 	int i;
-	for(i = 0 ; i < nb_fd ; i++){
+	for(i = 0 ; i < nb_client ; i++){
 		Message msg = {ANNULE,NULL,NULL};
-		envoyer_message(fds[i],msg);
-		close(fds[i]);
+		if(annule)envoyer_message(clients[i].fd,msg);
+		close(clients[i].fd);
 	}
-	nb_fd = 0;
+}
+
+void handle_timer(int signal){
+    if(signal==SIGALRM){
+    	timer_inscription_ecoule = TRUE;
+        if(nb_inscrit>1){
+        	demarrer_partie();
+        }
+    }
+}
+
+void demarrer_partie(){
+	printf("Debut de la partie\n");
+	partie_en_cours = TRUE;
+	int i;
+
+	for(i = 0 ; i < nb_inscrit ; i++){
+		Message debut = {DEBUT_PARTIE};
+		envoyer_message(inscrits[i]->fd,debut);
+	}
+	demarrer_manche();
+}
+
+void demarrer_manche(){
+	manche++;
+	int nb_cartes;
+	Carte* cartes = paquet(&nb_cartes);
+	const int NB_CARTES = nb_cartes;
+	int i,j;
+
+	for(i = 0 ; i < nb_inscrit ; i++){
+
+		Carte main[60];
+		printf("%s\n", inscrits[i]->nom);
+		for(j = 0 ; j < NB_CARTES/nb_inscrit ; j++){
+			main[j] = getRandomCarte(cartes,&nb_cartes);
+		}
+
+		Message distribution = {DISTRIBUTION_CARTES,"",main};
+		envoyer_message(inscrits[i]->fd,distribution);
+	}
+}
+
+int check_ecart(){
+	int i;
+	int ok = TRUE;
+	for(i = 0 ; i < nb_inscrit ; i++){
+		if(!inscrits[i]->send_ecart){
+			OK=FALSE;
+			break;
+		}
+	}
+	return ok;
+}
+
+void distribution_paquet(){
+	int i;
+	Client c = inscrits[nb_inscrit-1];
+	for(i = 0 ; i < nb_inscrit ; i++){
+		Message distribution = {DISTRIBUTION_PAQUET};
+		distribution.cartes = c.ecart;
+		envoyer_message(inscrits[i]->fd,distribution);
+		c = inscrits[i];
+	}
+}
+
+void bad_request(Client* client,Message msg){
+	printf("Reception d'un message non-autorisé(%d)\n",msg.type);
+	Message bad_request = {BAD_REQUEST};
+	envoyer_message(client->fd,bad_request);
 }

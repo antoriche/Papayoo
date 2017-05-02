@@ -12,8 +12,6 @@
 #ifndef TYPES_H_
 #define TYPES_H_
 
-#define EMPTY_MSG 0
-
 #define INSCRIPTION 1
 #define ANNULER 2
 #define ENVOI_PAQUET 3
@@ -32,12 +30,15 @@
 #define FIN_PARTIE 15
 #define ANNULE 16
 
+#define BAD_REQUEST 17
+#define CONNECTION_FULL 18
+
 #define TRUE   1
 #define FALSE  0
 
 #define SYS(call) ((call) == -1) ? (perror(#call ": ERROR"),exit(1)) : 0
 
-typedef enum {COEUR, CARREAU, TREFLE, PIQUE, PAYOO} Color;
+typedef enum {COEUR=0, CARREAU=1, TREFLE=2, PIQUE=3, PAYOO=4} Color;
 
 typedef struct carte{
 	int valeur;
@@ -52,7 +53,8 @@ typedef struct message{
 
 Message lire_message(int fd);
 void envoyer_message(int client, Message message);
-/*void envoyer_message(int client, int type, char* message);
-void envoyer_message(int client, int type, Carte cartes[30]);*/
+char* carte2str(Carte c);
+Carte getRandomCarte(Carte* paquet,int *nb_cartes);
+Carte* paquet(int* nb_cartes);
 
 #endif
