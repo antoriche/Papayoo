@@ -62,7 +62,7 @@ int main(int argc, char** argv){
 
     SYS(sigaction(SIGALRM, &timer, NULL));
 
-    int ma_socket = create_socket(port);
+    int ma_socket = create_server_socket(port);
 
 	while(TRUE){
 		alarm(0);

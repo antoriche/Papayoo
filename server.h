@@ -1,7 +1,5 @@
 #ifndef SERVER_H_
 #define SERVER_H_
-	
-#define NOMBRE_JOUEURS_MAX 4
 
 typedef struct client{
 	int fd;

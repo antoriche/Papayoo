@@ -8,12 +8,14 @@
 
 #include "message.h"
 #include "client.h"
+#include "socket.h"
 
 #define SERVEURNAME "127.0.0.1"
 int to_server_socket = -1;
 void main ( void )
 {
-char *server_name = SERVEURNAME;
+  char buffer[512];
+/*char *server_name = SERVEURNAME;
 struct sockaddr_in serverSockAddr;
 struct hostent *serverHostEnt;
 long hostAddr;
@@ -35,21 +37,23 @@ else
 }
 serverSockAddr.sin_port = htons(30000);
 serverSockAddr.sin_family = AF_INET;
-/* creation de la socket */
+
 if ( (to_server_socket = socket(AF_INET,SOCK_STREAM,0)) < 0)
 {
   printf("creation socket client ratee\n");
   exit(0);
 }
-/* requete de connexion */
+
 if(connect( to_server_socket,
             (struct sockaddr *)&serverSockAddr,
             sizeof(serverSockAddr)) < 0 )
 {
   printf("demande de connection ratee\n");
   exit(0);
-}
+}*/
 /* envoie de donne et reception */
+
+to_server_socket = connect_to_server(SERVEURNAME,30000);
 
 Message message = {INSCRIPTION,"Coucou\0",NULL};
 
