@@ -35,12 +35,22 @@ int annule = FALSE;
 
 int main(int argc, char** argv){
 	int port;
-	if(argc != 3){
-		printf("Usage : %s port stderr\n",argv[0]);
+	if(argc < 2 || argc > 3){
+		printf("Usage : %s port [stderr]\n",argv[0]);
 		return 1;
 	}else if((port = atoi(argv[1])) <= 0){
 		printf("Le port est invalide\n");
 		return 1;
+	}
+
+	FILE* err;
+	if(argc == 3){
+		err = fopen(argv[2],"w");
+		if(err==NULL) {
+			fprintf(stderr,"Impossible d'ouvir le fichier %s : stderr sera utilisé\n",argv[2]);
+		}else{
+			dup2(fileno(err), STDERR_FILENO);
+		}
 	}
 
 	srand(time(NULL));
@@ -82,12 +92,13 @@ int main(int argc, char** argv){
 					continue;
 				end = TRUE; //temps écoulé
 				annule = TRUE;
-				printf("inactivité des clients\n");
+				fprintf(stderr,"inactivité des clients\n");
+
 				break;
 			}else if(activity < 0){
 				if (errno == EINTR)
             		continue; //SIGALRM
-				perror("erreur select");
+				fprintf(stderr,"erreur select\n");
 				return 2;
 			}
 
@@ -104,10 +115,11 @@ int main(int argc, char** argv){
 				if(nb_client >= NOMBRE_JOUEURS_MAX){
 					//TODO : Envoyer message ?
 					Message ko;
-					ko.type = INSCRIPTION_KO;
+					ko.type = CONNECTION_FULL;
 					strcpy(ko.message, "Aucune place disponnible\0");
 					envoyer_message(nouveau_client_fd,ko);
 					close(nouveau_client_fd);
+					fprintf(stderr, "Un client a essayé de se connecter mais il n'y avais plus de connections disponnible\n");
 				}else{
 					// ajouter le nouveau user
 					Client nouveau_client;
@@ -127,7 +139,7 @@ int main(int argc, char** argv){
 		close_all();
 		printf("Fin de la partie\n");
 	}
-	
+	fclose(err);
 	return 0;
 }
 
@@ -138,7 +150,7 @@ void handle_message(Client* client, Message msg){
 	switch(msg.type){
 		case INSCRIPTION:
 			if(partie_en_cours){
-				resp.type = CONNECTION_FULL;
+				resp.type = INSCRIPTION_KO;
 				//strcpy(resp.message, "Une partie est en cours actuellement\0");
 				envoyer_message(client->fd,resp);
 			}else{
@@ -170,9 +182,9 @@ void handle_message(Client* client, Message msg){
 			}
 			nb_client--;
 			if(strlen(client->nom) == 0){
-				printf("Un joueur non-inscrit s'est déconnecté\n");
+				fprintf(stderr,"Un joueur non-inscrit s'est déconnecté\n");
 			}else{
-				printf("%s s'est déconnecté\n",client->nom);
+				fprintf(stderr,"%s s'est déconnecté\n",client->nom);
 				end=TRUE;
 				annule = TRUE;
 			}
@@ -232,9 +244,7 @@ void demarrer_manche(){
 	int i,j;
 
 	for(i = 0 ; i < nb_inscrit ; i++){
-
 		Carte main[30];
-		printf("%s\n", inscrits[i]->nom);
 		for(j = 0 ; j < NB_CARTES/nb_inscrit ; j++){
 			main[j] = getRandomCarte(cartes,&nb_cartes);
 		}
@@ -269,7 +279,7 @@ void distribuer_paquet(){
 }
 
 void bad_request(Client* client,Message msg){
-	printf("Reception d'un message non-autorisé(%d)\n",msg.type);
+	fprintf(stderr,"Reception d'un message non-autorisé(%d)\n",msg.type);
 	Message bad_request = {BAD_REQUEST};
 	envoyer_message(client->fd,bad_request);
 }
