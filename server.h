@@ -15,4 +15,7 @@ void close_all();
 void demarrer_partie();
 void handle_timer(int signal);
 int check_ecart();
+void distribuer_paquet();
+void bad_request(Client* client,Message msg);
+
 #endif // SERVER_H_

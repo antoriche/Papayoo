@@ -151,7 +151,6 @@ void handle_message(Client* client, Message msg){
 				}
 				resp.type = INSCRIPTION_OK;
 				envoyer_message(client->fd,resp);
-				demarrer_partie();//-------------------------------------------------------------------------------
 				if(nb_inscrit >= NOMBRE_JOUEURS_MAX){
 					alarm(0);
 					kill(getpid(),SIGALRM);
@@ -188,8 +187,8 @@ void handle_message(Client* client, Message msg){
 			memcpy(client->ecart,msg.cartes,sizeof(Carte)*5);
 			client->send_ecart = TRUE;
 			if(check_ecart()){
-				distribution_paquet();
-				commencer_tour();
+				distribuer_paquet();
+				demarrer_manche();
 			}
 			return;
 	}
@@ -234,7 +233,7 @@ void demarrer_manche(){
 
 	for(i = 0 ; i < nb_inscrit ; i++){
 
-		Carte main[60];
+		Carte main[30];
 		printf("%s\n", inscrits[i]->nom);
 		for(j = 0 ; j < NB_CARTES/nb_inscrit ; j++){
 			main[j] = getRandomCarte(cartes,&nb_cartes);
@@ -250,19 +249,20 @@ int check_ecart(){
 	int ok = TRUE;
 	for(i = 0 ; i < nb_inscrit ; i++){
 		if(!inscrits[i]->send_ecart){
-			OK=FALSE;
+			ok=FALSE;
 			break;
 		}
 	}
 	return ok;
 }
 
-void distribution_paquet(){
+void distribuer_paquet(){
 	int i;
-	Client c = inscrits[nb_inscrit-1];
+	Client* c = inscrits[nb_inscrit-1];
 	for(i = 0 ; i < nb_inscrit ; i++){
 		Message distribution = {DISTRIBUTION_PAQUET};
-		distribution.cartes = c.ecart;
+		//distribution.cartes = c->ecart;
+		memcpy(&distribution.cartes,c->ecart,sizeof(Carte)*5);
 		envoyer_message(inscrits[i]->fd,distribution);
 		c = inscrits[i];
 	}
