@@ -14,7 +14,12 @@
 int to_server_socket = -1;
 
 
-int main ( void ){
+int main ( int argc,char**argv ){
+
+  if(argc!=2){
+    fprintf(stderr,"Usage : %s ip_server ",argv[0]);
+    exit(1);
+  }
 
   Carte* cartes;
   int nbCartes;
@@ -25,15 +30,25 @@ int main ( void ){
   struct timeval alive;
   alive.tv_sec = 30;
   alive.tv_usec = 0;
-
+  printf("%s\n",argv[1]);
 
   to_server_socket = connect_to_server(SERVEURNAME,30000);
   FD_ZERO(&set);
   FD_SET(0,&set);
   FD_SET(to_server_socket,&set);
+  char nom[51];
+  int nbCharLus;
+
+  printf("Entrez votre nom : \n");
+  if((nbCharLus=read(0,nom,50))==-1){
+    perror("erreur lecture");
+    exit(1);
+  }
+  nom[nbCharLus-1]='\0';
+  printf("%s s'est inscrit\n",nom);
 
 
-  Message message = {INSCRIPTION,"Coucou\0",NULL};
+  Message message = {INSCRIPTION,*nom,NULL};
 
 
   printf("Envoi du message : %s\n", message.message);
