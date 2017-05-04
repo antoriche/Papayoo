@@ -32,7 +32,7 @@ int main ( int argc,char**argv ){
   alive.tv_usec = 0;
   printf("%s\n",argv[1]);
 
-  to_server_socket = connect_to_server(SERVEURNAME,30000);
+  to_server_socket = connect_to_server(argv[1],30000);
   FD_ZERO(&set);
   FD_SET(0,&set);
   FD_SET(to_server_socket,&set);
@@ -48,7 +48,8 @@ int main ( int argc,char**argv ){
   printf("%s s'est inscrit\n",nom);
 
 
-  Message message = {INSCRIPTION,*nom,NULL};
+  Message message = {INSCRIPTION};
+  strcpy(message.message, nom);
 
 
   printf("Envoi du message : %s\n", message.message);
