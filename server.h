@@ -11,6 +11,8 @@ typedef struct client{
 void handle_message(Client* client, Message msg);
 void close_all();
 void demarrer_partie();
+void demarrer_manche();
+void demarrer_tour();
 void handle_timer(int signal);
 int check_ecart();
 void distribuer_paquet();

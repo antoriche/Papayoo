@@ -13,7 +13,6 @@
 #define TYPES_H_
 
 #define INSCRIPTION 1
-#define ANNULER 2
 #define ENVOI_PAQUET 3
 #define JOUER_CARTE 4
 #define ENVOI_POINTS 5

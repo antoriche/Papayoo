@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <signal.h>
+#include <unistd.h>
 
 #include <errno.h>
 #include <netdb.h>
@@ -78,6 +79,7 @@ int attendre_message(int ma_socket, int* fds, int nb_fd, fd_set* set){
 
 	FD_ZERO(set);
 	FD_SET(ma_socket,set);
+	FD_SET(STDIN_FILENO,set);
 
 	for(i = 0 ; i < nb_fd ; i++){
 		int fd = fds[i];

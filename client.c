@@ -12,68 +12,90 @@
 
 #define SERVEURNAME "127.0.0.1"
 int to_server_socket = -1;
-void main ( void )
-{
+
+
+int main ( void ){
+
+  Carte* cartes;
+  int nbCartes;
+
   char buffer[512];
-/*char *server_name = SERVEURNAME;
-struct sockaddr_in serverSockAddr;
-struct hostent *serverHostEnt;
-long hostAddr;
-long status;
-char buffer[512];
-bzero(&serverSockAddr,sizeof(serverSockAddr));
-hostAddr = inet_addr(SERVEURNAME);
-if ( (long)hostAddr != (long)-1)
-  bcopy(&hostAddr,&serverSockAddr.sin_addr,sizeof(hostAddr));
-else
-{
-  serverHostEnt = gethostbyname(SERVEURNAME);
-  if (serverHostEnt == NULL)
-  {
-    printf("gethost rate\n");
-    exit(0);
+  int retval;
+  fd_set set;
+  struct timeval alive;
+  alive.tv_sec = 30;
+  alive.tv_usec = 0;
+
+
+  to_server_socket = connect_to_server(SERVEURNAME,30000);
+  FD_ZERO(&set);
+  FD_SET(0,&set);
+  FD_SET(to_server_socket,&set);
+
+
+  Message message = {INSCRIPTION,"Coucou\0",NULL};
+
+
+  printf("Envoi du message : %s\n", message.message);
+  /*message.type=INSCRIPTION;
+  char txt[256] = "coucou\0";
+  message.message = txt;*/
+
+  write(to_server_socket,&message,sizeof(message));
+
+  printf("Lecture d'un message : \n");
+  
+  /*read(to_server_socket,&m,sizeof(Message));
+  printf("%s\n",m.message);*/
+  while(1){
+
+    retval=select(to_server_socket+1,&set,NULL,NULL,&alive);
+    if(retval==-1){
+      perror("Erreur select");
+    }
+    else if(retval==0){
+
+    }else{
+      if(FD_ISSET(to_server_socket,&set)){
+        Message m=lire_message(to_server_socket);
+        handle_message(m,&cartes,&nbCartes);
+      }
+      
+    }
+
   }
-  bcopy(serverHostEnt->h_addr,&serverSockAddr.sin_addr,serverHostEnt->h_length);
-}
-serverSockAddr.sin_port = htons(30000);
-serverSockAddr.sin_family = AF_INET;
+  //wait
+  read(0,buffer,512);
 
-if ( (to_server_socket = socket(AF_INET,SOCK_STREAM,0)) < 0)
-{
-  printf("creation socket client ratee\n");
-  exit(0);
+  /* fermeture de la connection */
+  shutdown(to_server_socket,2);
+  close(to_server_socket);
+  return 0;
 }
 
-if(connect( to_server_socket,
-            (struct sockaddr *)&serverSockAddr,
-            sizeof(serverSockAddr)) < 0 )
-{
-  printf("demande de connection ratee\n");
-  exit(0);
-}*/
-/* envoie de donne et reception */
+void handle_message(Message message,Carte** cartes,int* nbCartes){
 
-to_server_socket = connect_to_server(SERVEURNAME,30000);
+  Message resp;
+  switch(message.type){
+    case INSCRIPTION_OK : 
+      printf("Vous êtes bien inscrit!\n");
+      break;
 
-Message message = {INSCRIPTION,"Coucou\0",NULL};
+    case INSCRIPTION_KO : 
+      printf("Impossible de s'inscrire à la partie!\n");
+      exit(1);
 
+    case DEBUT_PARTIE :
+      printf("La partie a commencé\n");
+      break;
 
-printf("Envoi du message : %s\n", message.message);
-/*message.type=INSCRIPTION;
-char txt[256] = "coucou\0";
-message.message = txt;*/
+    case ANNULE :
+      printf("La partie s'est terminee prematurement!\n");
+      exit(1);
 
-write(to_server_socket,&message,sizeof(message));
-
-printf("Lecture d'un message : \n");
-Message m;
-/*read(to_server_socket,&m,sizeof(Message));
-printf("%s\n",m.message);*/
-
-//wait
-read(0,buffer,512);
-
-/* fermeture de la connection */
-shutdown(to_server_socket,2);
-close(to_server_socket);
+    case DISTRIBUTION_CARTES : 
+      printf("Cartes distribuees\n");
+      *cartes=message.cartes;
+      *nbCartes=atoi(message.message);
+  }
 }

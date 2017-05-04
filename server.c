@@ -27,7 +27,8 @@ int partie_en_cours = FALSE;
 int distribution_paquet = FALSE;
 
 int manche = 0;
-int tour = 0;
+int nb_cartes = 0;
+int joueur_en_cours = 0;
 
 int end = FALSE;
 int annule = FALSE;
@@ -73,8 +74,10 @@ int main(int argc, char** argv){
 
 		timer_inscription_ecoule = FALSE;
 		partie_en_cours = FALSE;
+
 		manche = 0;
-		tour = 0;
+		nb_cartes = 0;
+
 		end = FALSE;
 		annule = FALSE;
 
@@ -103,8 +106,7 @@ int main(int argc, char** argv){
 			}
 
 			// Nouvelle connexion d'un user
-			if (FD_ISSET(ma_socket, &set)) 
-			{
+			if (FD_ISSET(ma_socket, &set)) {
 				int nouveau_client_fd;
 				struct sockaddr_in address;
 				int addrlen = sizeof(address);
@@ -116,7 +118,7 @@ int main(int argc, char** argv){
 					//TODO : Envoyer message ?
 					Message ko;
 					ko.type = CONNECTION_FULL;
-					strcpy(ko.message, "Aucune place disponnible\0");
+					strcpy(ko.message, "Aucune place disponible\0");
 					envoyer_message(nouveau_client_fd,ko);
 					close(nouveau_client_fd);
 					fprintf(stderr, "Un client a essayé de se connecter mais il n'y avais plus de connections disponnible\n");
@@ -127,6 +129,16 @@ int main(int argc, char** argv){
 					nouveau_client.send_ecart = FALSE;
 					clients[nb_client] = nouveau_client;
 					nb_client++;
+				}
+			}
+			if (FD_ISSET(STDIN_FILENO, &set)) {
+				//On a ecrit quelque chose au clavier
+				char buffer[10];
+				read(STDIN_FILENO,buffer,10);
+				if(strcmp(buffer,"exit")){
+					//fermeture propre du serveur
+					fclose(err);
+					return 0;
 				}
 			}
 			for(i = 0 ; i < nb_client ; i++){
@@ -170,7 +182,7 @@ void handle_message(Client* client, Message msg){
 				}
 			}
 			return;
-		case ANNULER:
+		case ANNULE:
 			//Un client s'est déconnecté
 			for(i = 0 ; i < nb_client-1 ; i++){
 				if(clients[i].fd == client->fd){
@@ -192,16 +204,27 @@ void handle_message(Client* client, Message msg){
 	}
 	if(!partie_en_cours){
 		bad_request(client,msg);
+		return;
 	}
 	switch(msg.type){
 		case ENVOI_PAQUET:
-			if(tour > 0) bad_request(client,msg);
+			if(nb_cartes > 0){
+				bad_request(client,msg);
+				return;
+			}
 			memcpy(client->ecart,msg.cartes,sizeof(Carte)*5);
 			client->send_ecart = TRUE;
 			if(check_ecart()){
 				distribuer_paquet();
-				demarrer_manche();
+				demarrer_tour();
 			}
+			return;
+		case JOUER_CARTE:
+			if(client->fd != inscrits[joueur_en_cours]->fd){
+				bad_request(client,msg);
+				return;
+			}
+			//TODO
 			return;
 	}
 }
@@ -248,10 +271,24 @@ void demarrer_manche(){
 		for(j = 0 ; j < NB_CARTES/nb_inscrit ; j++){
 			main[j] = getRandomCarte(cartes,&nb_cartes);
 		}
-
-		Message distribution = {DISTRIBUTION_CARTES,"",main};
+		char nb_cartes[3];
+		sprintf(nb_cartes, "%d\0", NB_CARTES/nb_inscrit);
+		Message distribution = {DISTRIBUTION_CARTES,nb_cartes,main};
 		envoyer_message(inscrits[i]->fd,distribution);
 	}
+	demarrer_tour();
+}
+
+void demarrer_tour(){
+	nb_cartes = 60/nb_inscrit;
+	//premier_joueur = rand()%nb_inscrit;
+	demander_carte();
+}
+
+void demander_carte(){
+	Client* c = inscrits[joueur_en_cours];
+	Message demande_carte = {DEMANDER_CARTE};
+	envoyer_message(c->fd,demande_carte);
 }
 
 int check_ecart(){
