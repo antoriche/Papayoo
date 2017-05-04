@@ -30,7 +30,6 @@ int main ( int argc,char**argv ){
   struct timeval alive;
   alive.tv_sec = 30;
   alive.tv_usec = 0;
-  printf("%s\n",argv[1]);
 
   to_server_socket = connect_to_server(argv[1],30000);
   FD_ZERO(&set);
@@ -45,7 +44,7 @@ int main ( int argc,char**argv ){
     exit(1);
   }
   nom[nbCharLus-1]='\0';
-  printf("%s s'est inscrit\n",nom);
+ 
 
 
   Message message = {INSCRIPTION};
