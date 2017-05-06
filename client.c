@@ -10,7 +10,7 @@
 #include "client.h"
 #include "socket.h"
 
-#define SERVEURNAME "127.0.0.1"
+
 int to_server_socket = -1;
 
 
@@ -24,6 +24,8 @@ int main ( int argc,char**argv ){
   Carte* cartes;
   int nbCartes;
 
+
+ 
   char buffer[512];
   int retval;
   fd_set set;
@@ -31,10 +33,18 @@ int main ( int argc,char**argv ){
   alive.tv_sec = 30;
   alive.tv_usec = 0;
 
+  /*
+    Connexion au serveur
+  */
   to_server_socket = connect_to_server(argv[1],30000);
   FD_ZERO(&set);
   FD_SET(0,&set);
   FD_SET(to_server_socket,&set);
+
+
+  /*
+    Inscription du joueur
+  */
   char nom[51];
   int nbCharLus;
 
@@ -45,23 +55,16 @@ int main ( int argc,char**argv ){
   }
   nom[nbCharLus-1]='\0';
  
-
-
   Message message = {INSCRIPTION};
   strcpy(message.message, nom);
 
-
   printf("Envoi du message : %s\n", message.message);
-  /*message.type=INSCRIPTION;
-  char txt[256] = "coucou\0";
-  message.message = txt;*/
-
   write(to_server_socket,&message,sizeof(message));
 
-  printf("Lecture d'un message : \n");
+
   
-  /*read(to_server_socket,&m,sizeof(Message));
-  printf("%s\n",m.message);*/
+
+
   while(1){
 
     retval=select(to_server_socket+1,&set,NULL,NULL,&alive);
@@ -82,7 +85,9 @@ int main ( int argc,char**argv ){
   //wait
   read(0,buffer,512);
 
-  /* fermeture de la connection */
+  /* 
+    fermeture de la connection 
+  */
   shutdown(to_server_socket,2);
   close(to_server_socket);
   return 0;
@@ -91,6 +96,10 @@ int main ( int argc,char**argv ){
 void handle_message(Message message,Carte** cartes,int* nbCartes){
   Message resp;
   switch(message.type){
+    case CONNECTION_FULL : 
+      printf("Nombre max de connexions au serveur atteint.\n");
+      exit(0);
+
     case INSCRIPTION_OK : 
       printf("Vous êtes bien inscrit!\n");
       break;
@@ -111,5 +120,26 @@ void handle_message(Message message,Carte** cartes,int* nbCartes){
       printf("Cartes distribuees\n");
       *cartes=message.cartes;
       *nbCartes=atoi(message.message);
+      break;
+
+    case DISTRIBUTION_PAQUET : 
+      break;
+
+    case DEMANDER_CARTE : 
+      break;
+
+    case AVERTIR_PLI_EN_COURS : 
+      break;
+
+    case ENVOI_PLI : 
+      break;
+
+    case COMPTER_POINTS : 
+      break;
+
+    case FIN_PARTIE : 
+      printf("La partie actuelle est finie.\n");
+      break;
+
   }
 }
