@@ -1,1 +1,0 @@
-inactivité des clients
