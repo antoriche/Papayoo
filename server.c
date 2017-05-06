@@ -127,6 +127,7 @@ int main(int argc, char** argv){
 					Client nouveau_client;
 					nouveau_client.fd = nouveau_client_fd;
 					nouveau_client.send_ecart = FALSE;
+					strcpy(nouveau_client.nom,"\0");
 					clients[nb_client] = nouveau_client;
 					nb_client++;
 				}
@@ -168,7 +169,7 @@ void handle_message(Client* client, Message msg){
 			}else{
 				strcpy(client->nom, msg.message);
 				inscrits[nb_inscrit] = client;
-				printf("Inscription : %s\n", inscrits[nb_inscrit]->nom);
+				printf("Inscription : %s\n", client->nom);
 				nb_inscrit++;
 				if(nb_inscrit == 1){
 					alarm(30);

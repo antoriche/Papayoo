@@ -89,7 +89,6 @@ int main ( int argc,char**argv ){
 }
 
 void handle_message(Message message,Carte** cartes,int* nbCartes){
-
   Message resp;
   switch(message.type){
     case INSCRIPTION_OK : 
