@@ -9,8 +9,12 @@
  */
 
 
-#ifndef TYPES_H_
-#define TYPES_H_
+#ifndef MESSAGE_H_
+#define MESSAGE_H_
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define INSCRIPTION 1
 #define ENVOI_PAQUET 3

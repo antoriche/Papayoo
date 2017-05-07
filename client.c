@@ -1,14 +1,15 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-#include <signal.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
+/*
+#############################################################
+# Projet Unix - Papayoo
+#
+# LA Johnny
+# RICHE Antonin
+# SERIE 3
+############################################################
+ */
 
-#include "message.h"
 #include "client.h"
-#include "socket.h"
+
 
 
 int to_server_socket = -1;
@@ -40,10 +41,6 @@ int main ( int argc,char**argv ){
     Connexion au serveur
   */
   to_server_socket = connect_to_server(argv[2],port);
-  /*FD_ZERO(&set);
-  FD_SET(0,&set);
-  FD_SET(to_server_socket,&set);*/
-
 
   /*
     Inscription du joueur
@@ -61,12 +58,7 @@ int main ( int argc,char**argv ){
   Message message = {INSCRIPTION};
   strcpy(message.message, nom);
 
-  //printf("Envoi du message : %s\n", message.message);
   write(to_server_socket,&message,sizeof(message));
-
-
-  
-
 
   while(1){
 
@@ -79,7 +71,7 @@ int main ( int argc,char**argv ){
       perror("Erreur select");
     }
     else if(retval==0){
-
+      
     }else{
       if(FD_ISSET(to_server_socket,&set)){
         Message m=lire_message(to_server_socket);
@@ -89,11 +81,9 @@ int main ( int argc,char**argv ){
     }
 
   }
-  //wait
-  read(0,buffer,512);
 
   /* 
-    fermeture de la connection 
+    fermeture de la connection
   */
   shutdown(to_server_socket,2);
   close(to_server_socket);

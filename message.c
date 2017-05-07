@@ -1,7 +1,14 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+/*
+#############################################################
+# Projet Unix - Papayoo
+#
+# LA Johnny
+# RICHE Antonin
+# SERIE 3
+############################################################
+ */
 #include "message.h"
+
 
 Message lire_message(int fd){
 	Message message;

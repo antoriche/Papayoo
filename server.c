@@ -1,20 +1,13 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <signal.h>
-#include <errno.h>
-
-#include <sys/time.h>
-#include <sys/select.h>
-
-#include "message.h"
+/*
+#############################################################
+# Projet Unix - Papayoo
+#
+# LA Johnny
+# RICHE Antonin
+# SERIE 3
+############################################################
+ */
 #include "server.h"
-#include "socket.h"
 
 Client clients[NOMBRE_JOUEURS_MAX];
 int nb_client = 0;
@@ -82,7 +75,6 @@ int main(int argc, char** argv){
 		annule = FALSE;
 
 		while(!end){
-			//int s = select(max_fd+1,&joueurs,NULL,NULL,&alive);
 			int i;
 			fd_set set;
 			int fds[NOMBRE_JOUEURS_MAX];
@@ -112,10 +104,7 @@ int main(int argc, char** argv){
 				int addrlen = sizeof(address);
 				SYS((nouveau_client_fd = accept(ma_socket, (struct sockaddr *) &address, (socklen_t*) &addrlen)));
 
-				//printf("New connection , socket fd is %d\n" , client);
-
 				if(nb_client >= NOMBRE_JOUEURS_MAX){
-					//TODO : Envoyer message ?
 					Message ko;
 					ko.type = CONNECTION_FULL;
 					strcpy(ko.message, "Aucune place disponible\0");
@@ -129,7 +118,6 @@ int main(int argc, char** argv){
 					nouveau_client.send_ecart = FALSE;
 					strcpy(nouveau_client.nom,"\0");
 					memcpy(&clients[nb_client], &nouveau_client, sizeof(Client));
-					//clients[nb_client] = nouveau_client;
 					nb_client++;
 				}
 			}
@@ -154,7 +142,7 @@ void handle_message(Client* client, Message msg){
 		case INSCRIPTION:
 			if(partie_en_cours){
 				resp.type = INSCRIPTION_KO;
-				//strcpy(resp.message, "Une partie est en cours actuellement\0");
+				strcpy(resp.message, "Une partie est en cours actuellement\0");
 				envoyer_message(client->fd,resp);
 			}else{
 				strcpy(client->nom, msg.message);
@@ -187,7 +175,7 @@ void handle_message(Client* client, Message msg){
 					}
 				}
 				nb_client--;
-				close(client->fd); // a tester
+				close(client->fd);
 			}else{
 				fprintf(stderr,"%s s'est déconnecté\n",client->nom);
 				end = TRUE;
@@ -276,7 +264,6 @@ void demarrer_manche(){
 
 void demarrer_tour(){
 	nb_cartes = 60/nb_inscrit;
-	//premier_joueur = rand()%nb_inscrit;
 	demander_carte();
 }
 
@@ -303,7 +290,6 @@ void distribuer_paquet(){
 	Client* c = inscrits[nb_inscrit-1];
 	for(i = 0 ; i < nb_inscrit ; i++){
 		Message distribution = {DISTRIBUTION_PAQUET};
-		//distribution.cartes = c->ecart;
 		memcpy(&distribution.cartes,c->ecart,sizeof(Carte)*5);
 		envoyer_message(inscrits[i]->fd,distribution);
 		c = inscrits[i];
@@ -314,4 +300,25 @@ void bad_request(Client* client,Message msg){
 	fprintf(stderr,"Reception d'un message non-autorisé(%d)\n",msg.type);
 	Message bad_request = {BAD_REQUEST};
 	envoyer_message(client->fd,bad_request);
+}
+
+int attendre_message(int ma_socket, int* fds, int nb_fd, fd_set* set){
+	int i = 0;
+	int max_fd = ma_socket;
+
+	struct timeval alive;
+	alive.tv_sec = 30;
+	alive.tv_usec = 0;
+
+	FD_ZERO(set);
+	FD_SET(ma_socket,set);
+
+	for(i = 0 ; i < nb_fd ; i++){
+		int fd = fds[i];
+		if(fd > max_fd)max_fd = fd;
+		FD_SET(fd,set);
+	}
+
+	int activity = select(max_fd+1,set,NULL,NULL,&alive);
+	return activity;
 }

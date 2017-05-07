@@ -1,3 +1,11 @@
+#############################################################
+# Projet Unix - Papayoo
+#
+# LA Johnny
+# RICHE Antonin
+# SERIE 3
+############################################################
+
 params = -w
 
 all : server client clean

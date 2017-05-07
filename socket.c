@@ -1,15 +1,12 @@
-#include <stdlib.h>
-#include <stdio.h>
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <signal.h>
-#include <unistd.h>
-
-#include <errno.h>
-#include <netdb.h>
-
+/*
+#############################################################
+# Projet Unix - Papayoo
+#
+# LA Johnny
+# RICHE Antonin
+# SERIE 3
+############################################################
+ */
 #include "socket.h"
 
 int create_server_socket(int port){
@@ -25,8 +22,6 @@ int create_server_socket(int port){
 	  printf("la creation rate\n");
 	  exit(0);
 	}
-	//signal(SIGINT,fin);
-	/* bind serveur - socket */
 	bind(ma_socket,(struct sockaddr *)&mon_address,sizeof(mon_address));
 
 	/* ecoute sur la socket */
@@ -67,25 +62,4 @@ int connect_to_server(char* ip,int port){
 		exit(0);
 	}
 	return to_server_socket;
-}
-
-int attendre_message(int ma_socket, int* fds, int nb_fd, fd_set* set){
-	int i = 0;
-	int max_fd = ma_socket;
-
-	struct timeval alive;
-	alive.tv_sec = 30;
-	alive.tv_usec = 0;
-
-	FD_ZERO(set);
-	FD_SET(ma_socket,set);
-
-	for(i = 0 ; i < nb_fd ; i++){
-		int fd = fds[i];
-		if(fd > max_fd)max_fd = fd;
-		FD_SET(fd,set);
-	}
-
-	int activity = select(max_fd+1,set,NULL,NULL,&alive);
-	return activity;
 }
