@@ -14,7 +14,8 @@ Message lire_message(int fd){
 }
 
 void envoyer_message(int client, Message message){
-	SYS(write(client,&message,sizeof(Message)));
+	int n = write(client,&message,sizeof(Message));
+	printf("envoi de message (fd %d) -> n : %d\n",client,n);
 }
 
 char* carte2str(Carte c){

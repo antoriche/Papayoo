@@ -128,18 +128,9 @@ int main(int argc, char** argv){
 					nouveau_client.fd = nouveau_client_fd;
 					nouveau_client.send_ecart = FALSE;
 					strcpy(nouveau_client.nom,"\0");
-					clients[nb_client] = nouveau_client;
+					memcpy(&clients[nb_client], &nouveau_client, sizeof(Client));
+					//clients[nb_client] = nouveau_client;
 					nb_client++;
-				}
-			}
-			if (FD_ISSET(STDIN_FILENO, &set)) {
-				//On a ecrit quelque chose au clavier
-				char buffer[10];
-				read(STDIN_FILENO,buffer,10);
-				if(strcmp(buffer,"exit")){
-					//fermeture propre du serveur
-					fclose(err);
-					return 0;
 				}
 			}
 			for(i = 0 ; i < nb_client ; i++){
@@ -150,7 +141,7 @@ int main(int argc, char** argv){
 			}
 		}
 		close_all();
-		printf("Fin de la partie\n");
+		printf("Fin de la partie (%s)\n",annule?"annule":"ok");
 	}
 	fclose(err);
 	return 0;
@@ -159,7 +150,6 @@ int main(int argc, char** argv){
 void handle_message(Client* client, Message msg){
 	Message resp;
 	int i;
-	int n = -1;
 	switch(msg.type){
 		case INSCRIPTION:
 			if(partie_en_cours){
@@ -176,7 +166,7 @@ void handle_message(Client* client, Message msg){
 				}
 				resp.type = INSCRIPTION_OK;
 				envoyer_message(client->fd,resp);
-				if(nb_inscrit >= NOMBRE_JOUEURS_MAX){
+				if(nb_inscrit >= NOMBRE_JOUEURS_MAX || timer_inscription_ecoule){
 					alarm(0);
 					kill(getpid(),SIGALRM);
 					//handle_timer(SIGALRM);
@@ -184,21 +174,23 @@ void handle_message(Client* client, Message msg){
 			}
 			return;
 		case ANNULE:
-			//Un client s'est déconnecté
-			for(i = 0 ; i < nb_client-1 ; i++){
-				if(clients[i].fd == client->fd){
-					n = i;
-				}
-				if(n<0){
-					clients[i]=clients[i+1];
-				}
-			}
-			nb_client--;
 			if(strlen(client->nom) == 0){
 				fprintf(stderr,"Un joueur non-inscrit s'est déconnecté\n");
+				int trouve = FALSE;
+				//Un client s'est déconnecté
+				for(i = 0 ; i < nb_client ; i++){
+					if(clients[i].fd == client->fd){
+						trouve = TRUE;
+					}
+					if(trouve){
+						clients[i]=clients[i+1];
+					}
+				}
+				nb_client--;
+				close(client->fd); // a tester
 			}else{
 				fprintf(stderr,"%s s'est déconnecté\n",client->nom);
-				end=TRUE;
+				end = TRUE;
 				annule = TRUE;
 			}
 			return;
@@ -234,7 +226,10 @@ void close_all(){
 	int i;
 	for(i = 0 ; i < nb_client ; i++){
 		Message msg = {ANNULE,NULL,NULL};
-		if(annule)envoyer_message(clients[i].fd,msg);
+		printf("-- close_all : annule=%d, clients[i].fd = %d, clients[i].nom = %s\n",annule,clients[i].fd,clients[i].nom);
+		if(annule){
+			envoyer_message(clients[i].fd,msg);
+		}
 		close(clients[i].fd);
 	}
 }

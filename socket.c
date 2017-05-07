@@ -79,7 +79,6 @@ int attendre_message(int ma_socket, int* fds, int nb_fd, fd_set* set){
 
 	FD_ZERO(set);
 	FD_SET(ma_socket,set);
-	FD_SET(STDIN_FILENO,set);
 
 	for(i = 0 ; i < nb_fd ; i++){
 		int fd = fds[i];
