@@ -37,9 +37,9 @@ int main ( int argc,char**argv ){
     Connexion au serveur
   */
   to_server_socket = connect_to_server(argv[1],30000);
-  FD_ZERO(&set);
+  /*FD_ZERO(&set);
   FD_SET(0,&set);
-  FD_SET(to_server_socket,&set);
+  FD_SET(to_server_socket,&set);*/
 
 
   /*
@@ -67,6 +67,10 @@ int main ( int argc,char**argv ){
 
   while(1){
 
+    FD_ZERO(&set);
+    FD_SET(0,&set);
+    FD_SET(to_server_socket,&set);
+    
     retval=select(to_server_socket+1,&set,NULL,NULL,&alive);
     if(retval==-1){
       perror("Erreur select");

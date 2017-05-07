@@ -226,7 +226,6 @@ void close_all(){
 	int i;
 	for(i = 0 ; i < nb_client ; i++){
 		Message msg = {ANNULE,NULL,NULL};
-		printf("-- close_all : annule=%d, clients[i].fd = %d, clients[i].nom = %s\n",annule,clients[i].fd,clients[i].nom);
 		if(annule){
 			envoyer_message(clients[i].fd,msg);
 		}
