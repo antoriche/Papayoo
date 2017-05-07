@@ -17,7 +17,7 @@ int to_server_socket = -1;
 int main ( int argc,char**argv ){
 
   if(argc!=3){
-    fprintf(stderr,"Usage : %s ip_server ",argv[0]);
+    fprintf(stderr,"Usage : %s port ip_server ",argv[0]);
     exit(1);
   }
 
