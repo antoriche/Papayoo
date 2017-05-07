@@ -15,9 +15,12 @@ int to_server_socket = -1;
 
 
 int main ( int argc,char**argv ){
-
+  int port;
   if(argc!=3){
-    fprintf(stderr,"Usage : %s port ip_server ",argv[0]);
+    fprintf(stderr,"Usage : %s port ip_server\n",argv[0]);
+    exit(1);
+  }else if((port = atoi(argv[1])) <= 0){
+    fprintf(stderr,"Le port est invalide\n");
     exit(1);
   }
 
@@ -36,7 +39,7 @@ int main ( int argc,char**argv ){
   /*
     Connexion au serveur
   */
-  to_server_socket = connect_to_server(argv[2],atoi(argv[1]));
+  to_server_socket = connect_to_server(argv[2],port);
   /*FD_ZERO(&set);
   FD_SET(0,&set);
   FD_SET(to_server_socket,&set);*/
