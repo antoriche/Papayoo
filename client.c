@@ -16,7 +16,7 @@ int to_server_socket = -1;
 
 int main ( int argc,char**argv ){
 
-  if(argc!=2){
+  if(argc!=3){
     fprintf(stderr,"Usage : %s ip_server ",argv[0]);
     exit(1);
   }
@@ -36,7 +36,7 @@ int main ( int argc,char**argv ){
   /*
     Connexion au serveur
   */
-  to_server_socket = connect_to_server(argv[1],30000);
+  to_server_socket = connect_to_server(argv[2],atoi(argv[1]));
   /*FD_ZERO(&set);
   FD_SET(0,&set);
   FD_SET(to_server_socket,&set);*/
@@ -58,7 +58,7 @@ int main ( int argc,char**argv ){
   Message message = {INSCRIPTION};
   strcpy(message.message, nom);
 
-  printf("Envoi du message : %s\n", message.message);
+  //printf("Envoi du message : %s\n", message.message);
   write(to_server_socket,&message,sizeof(message));
 
 
