@@ -50,8 +50,10 @@ typedef struct carte{
 
 typedef struct message{
 	int type;
-	char message[256];
-	Carte cartes[30];
+	union {
+		char message[256];
+		Carte cartes[30];
+	} data;
 } Message;
 
 Message lire_message(int fd);

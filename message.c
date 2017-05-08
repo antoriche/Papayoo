@@ -14,7 +14,7 @@ Message lire_message(int fd){
 	Message message;
 	int l = read(fd,&message, sizeof(Message));
 	if(l <= 0){
-		Message e = {ANNULE,"\0"};
+		Message e = {ANNULE,{"\0"}};
 		return e;
 	}
 	return message;

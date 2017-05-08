@@ -56,7 +56,7 @@ int main ( int argc,char**argv ){
   nom[nbCharLus-1]='\0';
  
   Message message = {INSCRIPTION};
-  strcpy(message.message, nom);
+  strcpy(message.data.message, nom);
 
   write(to_server_socket,&message,sizeof(message));
 
@@ -115,8 +115,8 @@ void handle_message(Message message,Carte** cartes,int* nbCartes){
 
     case DISTRIBUTION_CARTES : 
       printf("Cartes distribuees\n");
-      *cartes=message.cartes;
-      *nbCartes=atoi(message.message);
+      *cartes=message.data.cartes;
+      *nbCartes=atoi(message.data.message);
       break;
 
     case DISTRIBUTION_PAQUET : 

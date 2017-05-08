@@ -107,7 +107,7 @@ int main(int argc, char** argv){
 				if(nb_client >= NOMBRE_JOUEURS_MAX){
 					Message ko;
 					ko.type = CONNECTION_FULL;
-					strcpy(ko.message, "Aucune place disponible\0");
+					strcpy(ko.data.message, "Aucune place disponible\0");
 					envoyer_message(nouveau_client_fd,ko);
 					close(nouveau_client_fd);
 					fprintf(stderr, "Un client a essayé de se connecter mais il n'y avais plus de connections disponnible\n");
@@ -142,10 +142,10 @@ void handle_message(Client* client, Message msg){
 		case INSCRIPTION:
 			if(partie_en_cours){
 				resp.type = INSCRIPTION_KO;
-				strcpy(resp.message, "Une partie est en cours actuellement\0");
+				strcpy(resp.data.message, "Une partie est en cours actuellement\0");
 				envoyer_message(client->fd,resp);
 			}else{
-				strcpy(client->nom, msg.message);
+				strcpy(client->nom, msg.data.message);
 				inscrits[nb_inscrit] = client;
 				printf("Inscription : %s\n", client->nom);
 				nb_inscrit++;
@@ -193,7 +193,7 @@ void handle_message(Client* client, Message msg){
 				bad_request(client,msg);
 				return;
 			}
-			memcpy(client->ecart,msg.cartes,sizeof(Carte)*5);
+			memcpy(client->ecart,msg.data.cartes,sizeof(Carte)*5);
 			client->send_ecart = TRUE;
 			if(check_ecart()){
 				distribuer_paquet();
@@ -213,7 +213,7 @@ void handle_message(Client* client, Message msg){
 void close_all(){
 	int i;
 	for(i = 0 ; i < nb_client ; i++){
-		Message msg = {ANNULE,NULL,NULL};
+		Message msg = {ANNULE};
 		if(annule){
 			envoyer_message(clients[i].fd,msg);
 		}
@@ -256,7 +256,7 @@ void demarrer_manche(){
 		}
 		char nb_cartes[3];
 		sprintf(nb_cartes, "%d\0", NB_CARTES/nb_inscrit);
-		Message distribution = {DISTRIBUTION_CARTES,nb_cartes,main};
+		Message distribution = {DISTRIBUTION_CARTES,{nb_cartes,main}};
 		envoyer_message(inscrits[i]->fd,distribution);
 	}
 	demarrer_tour();
@@ -290,7 +290,7 @@ void distribuer_paquet(){
 	Client* c = inscrits[nb_inscrit-1];
 	for(i = 0 ; i < nb_inscrit ; i++){
 		Message distribution = {DISTRIBUTION_PAQUET};
-		memcpy(&distribution.cartes,c->ecart,sizeof(Carte)*5);
+		memcpy(&distribution.data.cartes,c->ecart,sizeof(Carte)*5);
 		envoyer_message(inscrits[i]->fd,distribution);
 		c = inscrits[i];
 	}
