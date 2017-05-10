@@ -8,26 +8,26 @@
 
 params = -w
 
-all : server client clean
+all : serveur joueur clean
 
 clean :
 	rm *.o
 
-# SERVER
+# serveur
 
-server : server.o memoire.o socket.o message.o
-	gcc $(params) -o server server.o memoire.o socket.o message.o
+serveur : serveur.o memoire.o socket.o message.o
+	gcc $(params) -o serveur serveur.o memoire.o socket.o message.o
 
-server.o : server.c server.h
-	gcc $(params) -c server.c
+serveur.o : serveur.c serveur.h
+	gcc $(params) -c serveur.c
 
-# CLIENT
+# joueur
 
-client : client.o memoire.o socket.o message.o
-	gcc $(params) -o client client.o memoire.o socket.o message.o
+joueur : joueur.o memoire.o socket.o message.o
+	gcc $(params) -o joueur joueur.o memoire.o socket.o message.o
 
-client.o : client.c client.h
-	gcc $(params) -c client.c
+joueur.o : joueur.c joueur.h
+	gcc $(params) -c joueur.c
 
 
 # PARTIE COMMUNE
