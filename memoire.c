@@ -11,11 +11,11 @@
 #define KEY 1000
 #include "memoire.h"
 
-int envoyer_donnees(struct_partagee data){
+struct_partagee* envoyer_donnees(struct_partagee data){
 	int mem_ID;
 	struct_partagee *ptr_mem_partagee;
 
-	if ((mem_ID = shmget(KEY, sizeof(struct_partagee), IPC_CREAT)) < 0)	//	je crée un nouveau segment mémoire de taille "taille de ma structure data" octets, avec des droits d'écriture et de lecture
+	if ((mem_ID = shmget(KEY, sizeof(struct_partagee), IPC_CREAT | 0666)) < 0)	//	je crée un nouveau segment mémoire de taille "taille de ma structure data" octets, avec des droits d'écriture et de lecture
 	{
 		perror("erreur shmget");											//	et je m'assure que l'espace mémoire a été correctement créé
 		return 0;
@@ -27,9 +27,8 @@ int envoyer_donnees(struct_partagee data){
 		return 0;
 	}
 
-	ptr_mem_partagee=&data;
-	shmdt(ptr_mem_partagee);
-	return 1;
+	return ptr_mem_partagee;
+	
 
 
 
@@ -54,6 +53,10 @@ struct_partagee recevoir_donnees(){
 	}
 
 	data=(*ptr_mem_partagee);
-	shmdt(ptr_mem_partagee);
+	
 	return data;
 }
+/*
+void detacher(struct_partagee* ptr){
+	shmdt(ptr);
+}*/

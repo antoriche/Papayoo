@@ -26,6 +26,8 @@ typedef struct {
 	Carte *pli;
 }struct_partagee;
 
-int envoyer_donnees(struct_partagee data);
+struct_partagee* envoyer_donnees();
 
 struct_partagee recevoir_donnees();
+
+//void detacher(struct_partagee* ptr)

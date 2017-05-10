@@ -9,6 +9,7 @@
  */
 
 #include "joueur.h"
+#include "memoire.h"
 
 
 
@@ -126,6 +127,7 @@ void handle_message(Message message,Carte** cartes,int* nbCartes){
       break;
 
     case AVERTIR_PLI_EN_COURS : 
+      
       break;
 
     case ENVOI_PLI : 
