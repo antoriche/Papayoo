@@ -9,11 +9,13 @@
  */
 #include "serveur.h"
 
+struct_partagee* memoire;
+
 Joueur clients[NOMBRE_JOUEURS_MAX];
 int nb_client = 0;
 
-Joueur* inscrits[NOMBRE_JOUEURS_MAX];
-int nb_inscrit = 0;
+//Joueur* inscrits[NOMBRE_JOUEURS_MAX];
+//int nb_joueurs = 0;
 
 int timer_inscription_ecoule = FALSE;
 int partie_en_cours = FALSE;
@@ -24,7 +26,7 @@ int nb_cartes_par_joueur = 0;
 int joueur_en_cours = 0;
 Color couleur_tour;
 Carte* pli_en_cours[NOMBRE_JOUEURS_MAX];
-int taille_pli_en_cours;
+//int taille_pli_en_cours;
 
 int end = FALSE;
 int annule = FALSE;
@@ -56,14 +58,6 @@ int main(int argc, char** argv){
 	    return 1;
 	}
 
-	struct_partagee* share = init_memoire();
-	Carte c =  {7,COEUR};
-	share->papayoo = c;
-
-	
-	struct_partagee donnees = lire_memoire();
-	printf("Papayoo : %s\n",carte2str(donnees.papayoo));
-
 	srand(time(NULL));
 
 	struct sigaction timer;
@@ -80,7 +74,7 @@ int main(int argc, char** argv){
 
 		//Initialisation des variables pour la partie
 		nb_client = 0;
-		nb_inscrit = 0;
+		memoire->nb_joueurs = 0;
 
 		timer_inscription_ecoule = FALSE;
 		partie_en_cours = FALSE;
@@ -88,10 +82,12 @@ int main(int argc, char** argv){
 		manche = 0;
 		nb_cartes_par_joueur = 0;
 
-		taille_pli_en_cours = 0;
+		memoire->taille_pli_en_cours = 0;
 
 		end = FALSE;
 		annule = FALSE;
+
+		memoire = init_memoire();
 
 		while(!end){
 			int i;
@@ -165,15 +161,15 @@ void handle_message(Joueur* client, Message msg){
 				envoyer_message(client->fd,resp);
 			}else{
 				strcpy(client->nom, msg.data.message);
-				inscrits[nb_inscrit] = client;
+				memoire->joueurs[memoire->nb_joueurs] = client;
 				printf("Inscription : %s\n", client->nom);
-				nb_inscrit++;
-				if(nb_inscrit == 1){
+				memoire->nb_joueurs++;
+				if(memoire->nb_joueurs == 1){
 					alarm(30);
 				}
 				resp.type = INSCRIPTION_OK;
 				envoyer_message(client->fd,resp);
-				if(nb_inscrit >= NOMBRE_JOUEURS_MAX || timer_inscription_ecoule){
+				if(memoire->nb_joueurs >= NOMBRE_JOUEURS_MAX || timer_inscription_ecoule){
 					alarm(0);
 					kill(getpid(),SIGALRM);
 					//handle_timer(SIGALRM);
@@ -220,20 +216,26 @@ void handle_message(Joueur* client, Message msg){
 			}
 			return;
 		case JOUER_CARTE:
-			if(client->fd != inscrits[joueur_en_cours]->fd){
+			if(client->fd != memoire->joueurs[joueur_en_cours]->fd){
 				bad_request(client,msg);
 				return;
 			}
-			if(taille_pli_en_cours == 0){
+			if(memoire->taille_pli_en_cours == 0){
 				couleur_tour = msg.data.cartes[0].couleur;
 			}
-			pli_en_cours[taille_pli_en_cours] = &msg.data.cartes[0];
-			taille_pli_en_cours++;
+			pli_en_cours[memoire->taille_pli_en_cours] = &msg.data.cartes[0];
+			memoire->taille_pli_en_cours++;
 			joueur_en_cours++;
-			if(joueur_en_cours >= nb_inscrit){
+			if(joueur_en_cours >= memoire->nb_joueurs){
 				joueur_en_cours=0;
 			}
-			if(taille_pli_en_cours >= nb_inscrit){ // cloture le tour
+
+			for(i = 0 ; i < memoire->nb_joueurs ; i++){ //Avertir tous les joueurs du nouveau pli en cours
+				resp.type = AVERTIR_PLI_EN_COURS;
+				envoyer_message(memoire->joueurs[i]->fd,resp);
+			}
+
+			if(memoire->taille_pli_en_cours >= memoire->nb_joueurs){ // cloture le tour
 				cloturer_tour();
 				if(nb_cartes_par_joueur>0)demarrer_tour();
 				else{
@@ -253,12 +255,13 @@ void close_all(){
 		}
 		close(clients[i].fd);
 	}
+	//detacher(memoire);
 }
 
 void handle_timer(int signal){
     if(signal==SIGALRM){
     	timer_inscription_ecoule = TRUE;
-        if(nb_inscrit>1){
+        if(memoire->nb_joueurs>1){
         	demarrer_partie();
         }
     }
@@ -269,9 +272,9 @@ void demarrer_partie(){
 	partie_en_cours = TRUE;
 	int i;
 
-	for(i = 0 ; i < nb_inscrit ; i++){
+	for(i = 0 ; i < memoire->nb_joueurs ; i++){
 		Message debut = {DEBUT_PARTIE};
-		envoyer_message(inscrits[i]->fd,debut);
+		envoyer_message(memoire->joueurs[i]->fd,debut);
 	}
 	demarrer_manche();
 }
@@ -283,17 +286,17 @@ void demarrer_manche(){
 	const int NB_CARTES = nb_cartes;
 	int i,j;
 
-	for(i = 0 ; i < nb_inscrit ; i++){
+	for(i = 0 ; i < memoire->nb_joueurs ; i++){
 		Carte main[30];
-		for(j = 0 ; j < NB_CARTES/nb_inscrit ; j++){
+		for(j = 0 ; j < NB_CARTES/memoire->nb_joueurs ; j++){
 			main[j] = getRandomCarte(cartes,&nb_cartes);
 		}
 		char nb_c[3];
-		sprintf(nb_c, "%d\0", NB_CARTES/nb_inscrit);
+		sprintf(nb_c, "%d\0", NB_CARTES/memoire->nb_joueurs);
 		Message distribution = {DISTRIBUTION_CARTES,{nb_cartes,main}};
-		envoyer_message(inscrits[i]->fd,distribution);
+		envoyer_message(memoire->joueurs[i]->fd,distribution);
 	}
-	nb_cartes_par_joueur = 60/nb_inscrit;
+	nb_cartes_par_joueur = 60/memoire->nb_joueurs;
 	demarrer_tour();
 }
 
@@ -304,25 +307,25 @@ void demarrer_tour(){
 void cloturer_tour(){
 	nb_cartes_par_joueur--;
 	Message pli = {ENVOI_PLI};
-	memcpy(pli.data.cartes,&pli_en_cours,sizeof(Carte)*taille_pli_en_cours);
-	sprintf(pli.data.message, "%d\0", taille_pli_en_cours);
+	memcpy(pli.data.cartes,&pli_en_cours,sizeof(Carte)*memoire->taille_pli_en_cours);
+	sprintf(pli.data.message, "%d\0", memoire->taille_pli_en_cours);
 	int i = 0, j = joueur_en_cours;
 	int max_carte = 0;
 	int joueur_max;
 
-	for( i = 0 ; i < nb_inscrit ; i++){
-		if(j++ >= nb_inscrit) j = 0;
+	for( i = 0 ; i < memoire->nb_joueurs ; i++){
+		if(j++ >= memoire->nb_joueurs) j = 0;
 		if(pli_en_cours[i]->valeur > max_carte && pli_en_cours[i]->couleur == couleur_tour){
 			max_carte = pli_en_cours[i]->valeur;
 			joueur_max = j;
 		}
 	}
-	envoyer_message(inscrits[joueur_max]->fd,pli);
+	envoyer_message(memoire->joueurs[joueur_max]->fd,pli);
 	joueur_en_cours = joueur_max;
 }
 
 void demander_carte(){
-	Joueur* c = inscrits[joueur_en_cours];
+	Joueur* c = memoire->joueurs[joueur_en_cours];
 	Message demande_carte = {DEMANDER_CARTE};
 	envoyer_message(c->fd,demande_carte);
 }
@@ -330,8 +333,8 @@ void demander_carte(){
 int check_ecart(){
 	int i;
 	int ok = TRUE;
-	for(i = 0 ; i < nb_inscrit ; i++){
-		if(!inscrits[i]->send_ecart){
+	for(i = 0 ; i < memoire->nb_joueurs ; i++){
+		if(!memoire->joueurs[i]->send_ecart){
 			ok=FALSE;
 			break;
 		}
@@ -341,12 +344,12 @@ int check_ecart(){
 
 void distribuer_paquet(){
 	int i;
-	Joueur* c = inscrits[nb_inscrit-1];
-	for(i = 0 ; i < nb_inscrit ; i++){
+	Joueur* c = memoire->joueurs[memoire->nb_joueurs-1];
+	for(i = 0 ; i < memoire->nb_joueurs ; i++){
 		Message distribution = {DISTRIBUTION_PAQUET};
 		memcpy(&distribution.data.cartes,c->ecart,sizeof(Carte)*5);
-		envoyer_message(inscrits[i]->fd,distribution);
-		c = inscrits[i];
+		envoyer_message(memoire->joueurs[i]->fd,distribution);
+		c = memoire->joueurs[i];
 	}
 }
 
