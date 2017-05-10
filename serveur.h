@@ -27,14 +27,8 @@
 #include <fcntl.h>
 
 #include "message.h"
+#include "memoire.h"
 #include "socket.h"
-
-typedef struct joueur{
-	int fd;
-	char nom[256];
-	int send_ecart;
-	Carte ecart[5];
-} Joueur;
 
 void handle_message(Joueur* joueur, Message msg);
 void close_all();

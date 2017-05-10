@@ -50,11 +50,18 @@ int main(int argc, char** argv){
 		}
 	}
 
-	if(CheckForAnotherInstance()) {
+	if(CheckForAnotherInstance()) { //Ne fonctionne pas actuellement
 		fprintf(stderr,"Une autre instance du serveur est déjà en exécution\n");
 		fclose(err);
 	    return 1;
 	}
+
+	struct_partagee share = recevoir_donnees();
+	Carte c =  {7,COEUR};
+	share.papayoo = c;
+	envoyer_donnees(share);
+
+	fprintf("Papayoo : %s\n",carte2str(recevoir_donnees().papayoo));
 
 	srand(time(NULL));
 
