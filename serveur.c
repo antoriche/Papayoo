@@ -71,6 +71,14 @@ int main(int argc, char** argv){
 
 	while(TRUE){
 		alarm(0);
+		memoire = init_memoire();
+
+		Carte c1 = {3,PIQUE};
+		Carte c2 = {9,PAYOO};
+		memoire->pli_en_cours[0] = &c1;
+		memoire->pli_en_cours[1] = &c2;
+		memoire->taille_pli_en_cours = 2;
+
 
 		//Initialisation des variables pour la partie
 		nb_client = 0;
@@ -86,8 +94,6 @@ int main(int argc, char** argv){
 
 		end = FALSE;
 		annule = FALSE;
-
-		memoire = init_memoire();
 
 		while(!end){
 			int i;

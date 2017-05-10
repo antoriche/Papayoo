@@ -63,12 +63,13 @@ int main ( int argc,char**argv ){
 
 
   struct_partagee donnees = lire_memoire();
-      printf("Pli en cours : \n");
-      Carte** ptr=donnees.pli_en_cours;
-      while(ptr !=NULL){
-        printf("%s\n",carte2str(**ptr));
-        ptr++;
-      }
+  printf("Pli en cours : \n");
+  Carte** ptr=donnees.pli_en_cours;
+  int i = 0;
+  printf("taille : %d\n",donnees.taille_pli_en_cours);
+  for(i = 0 ; i < donnees.taille_pli_en_cours ; i++){
+    printf("%s\n",carte2str(*ptr[i]));
+  }
 
   while(1){
 
