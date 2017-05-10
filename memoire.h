@@ -11,11 +11,11 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
-#include "server.h"
+#include "serveur.h"
 #include "message.h"
 
 typedef struct {
-	Client *joueurs;
+	Joueur *joueurs;
 	Carte papayoo;
 	Carte *pli;
 }struct_partagee;

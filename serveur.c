@@ -22,6 +22,7 @@ int distribution_paquet = FALSE;
 int manche = 0;
 int nb_cartes_par_joueur = 0;
 int joueur_en_cours = 0;
+Color couleur_tour;
 Carte* pli_en_cours[NOMBRE_JOUEURS_MAX];
 int taille_pli_en_cours;
 
@@ -215,7 +216,9 @@ void handle_message(Joueur* client, Message msg){
 				bad_request(client,msg);
 				return;
 			}
-			//TODO
+			if(taille_pli_en_cours == 0){
+				couleur_tour = msg.data.cartes[0].couleur;
+			}
 			pli_en_cours[taille_pli_en_cours] = &msg.data.cartes[0];
 			taille_pli_en_cours++;
 			joueur_en_cours++;
@@ -224,7 +227,10 @@ void handle_message(Joueur* client, Message msg){
 			}
 			if(taille_pli_en_cours >= nb_inscrit){ // cloture le tour
 				cloturer_tour();
-				demarrer_tour();
+				if(nb_cartes_par_joueur>0)demarrer_tour();
+				else{
+					//cloturer manche
+				}
 			}
 			return;
 	}
@@ -288,9 +294,23 @@ void demarrer_tour(){
 }
 
 void cloturer_tour(){
+	nb_cartes_par_joueur--;
 	Message pli = {ENVOI_PLI};
 	memcpy(pli.data.cartes,&pli_en_cours,sizeof(Carte)*taille_pli_en_cours);
-	//TODO : pli.data.message + envoyer message
+	sprintf(pli.data.message, "%d\0", taille_pli_en_cours);
+	int i = 0, j = joueur_en_cours;
+	int max_carte = 0;
+	int joueur_max;
+
+	for( i = 0 ; i < nb_inscrit ; i++){
+		if(j++ >= nb_inscrit) j = 0;
+		if(pli_en_cours[i]->valeur > max_carte && pli_en_cours[i]->couleur == couleur_tour){
+			max_carte = pli_en_cours[i]->valeur;
+			joueur_max = j;
+		}
+	}
+	envoyer_message(inscrits[joueur_max]->fd,pli);
+	joueur_en_cours = joueur_max;
 }
 
 void demander_carte(){
