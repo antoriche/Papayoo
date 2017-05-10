@@ -21,7 +21,7 @@ int envoyer_donnees(struct_partagee data){
 		return 0;
 	}
 
-	if ((ptr_mem_partagee = (struct_partagee*)shmat(mem_ID, NULL, 0)) == (void*) -1)	//	J'attache le segment de mémoire partagée identifié par mem_ID au segment de données du processus A dans une zone libre déterminée par le Système d'exploitation
+	if ((ptr_mem_partagee = (struct_partagee*)shmat(mem_ID, NULL, 0)) == (struct_partagee*) -1)	//	J'attache le segment de mémoire partagée identifié par mem_ID au segment de données du processus A dans une zone libre déterminée par le Système d'exploitation
 	{
 		perror("erreur shmat");											//	et je m'assure que le segment de mémoire a été correctement attaché à mon processus
 		return 0;
@@ -47,7 +47,7 @@ struct_partagee recevoir_donnees(){
 		perror("shmget");											//	et je m'assure que l'espace mémoire a été correctement créé
 		exit(1);
 	}
-	if ((ptr_mem_partagee = (struct_partagee*)shmat(mem_ID, NULL, 0)) == (void*) -1)	//	J'attache le segment de mémoire partagée identifié par mem_ID_B au segment de données du processus B dans une zone libre déterminée par le Système d'exploitation
+	if ((ptr_mem_partagee = (struct_partagee*)shmat(mem_ID, NULL, 0)) == (struct_partagee*) -1)	//	J'attache le segment de mémoire partagée identifié par mem_ID_B au segment de données du processus B dans une zone libre déterminée par le Système d'exploitation
 	{
 		perror("shmat");											//	et je m'assure que le segment de mémoire a été correctement attaché à mon processus
 		exit(1);
