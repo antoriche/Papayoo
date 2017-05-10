@@ -56,11 +56,12 @@ int main(int argc, char** argv){
 	    return 1;
 	}
 
-	struct_partagee* share = envoyer_donnees();
+	struct_partagee* share = init_memoire();
 	Carte c =  {7,COEUR};
 	share->papayoo = c;
+
 	
-	struct_partagee donnees = recevoir_donnees();
+	struct_partagee donnees = lire_memoire();
 	printf("Papayoo : %s\n",carte2str(donnees.papayoo));
 
 	srand(time(NULL));

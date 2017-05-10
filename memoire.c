@@ -11,7 +11,7 @@
 #define KEY 1000
 #include "memoire.h"
 
-struct_partagee* envoyer_donnees(struct_partagee data){
+struct_partagee* init_memoire(struct_partagee data){
 	int mem_ID;
 	struct_partagee *ptr_mem_partagee;
 
@@ -34,7 +34,7 @@ struct_partagee* envoyer_donnees(struct_partagee data){
 
 }
 
-struct_partagee recevoir_donnees(){
+struct_partagee lire_memoire(){
 	int mem_ID; //	identificateur du segment de mémoire partagée associé à CLEF (là encore le nom de cette variable n'a rien à voir avec celle du programme A mais son contenu sera évidemment identique)
 	struct_partagee* ptr_mem_partagee; //	adresse d'attachement du segment de mémoire partagée (idem)
 
@@ -56,7 +56,7 @@ struct_partagee recevoir_donnees(){
 	
 	return data;
 }
-/*
+
 void detacher(struct_partagee* ptr){
-	shmdt(ptr);
-}*/
+	if(shmdt(ptr)<0);
+}

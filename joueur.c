@@ -61,6 +61,15 @@ int main ( int argc,char**argv ){
 
   write(to_server_socket,&message,sizeof(message));
 
+
+  struct_partagee donnees = lire_memoire();
+      printf("Pli en cours : \n");
+      Carte** ptr=donnees.pli_en_cours;
+      while(ptr !=NULL){
+        printf("%s\n",carte2str(**ptr));
+        ptr++;
+      }
+
   while(1){
 
     FD_ZERO(&set);
