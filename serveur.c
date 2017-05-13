@@ -24,8 +24,8 @@ int distribution_paquet = FALSE;
 int manche = 0;
 int nb_cartes_par_joueur = 0;
 int joueur_en_cours = 0;
-Color couleur_tour;
-Carte* pli_en_cours[NOMBRE_JOUEURS_MAX];
+//Color couleur_tour;
+//Carte* pli_en_cours[NOMBRE_JOUEURS_MAX];
 //int taille_pli_en_cours;
 
 int end = FALSE;
@@ -73,21 +73,11 @@ int main(int argc, char** argv){
 	while(TRUE){
 		alarm(0);
 
-		Carte c1 = {3,PIQUE};
-		Carte c2 = {9,PAYOO};
-		memoire.pli_en_cours[0] = c1;
-		memoire.pli_en_cours[1] = c2;
-		memoire.taille_pli_en_cours = 2;
-		
-		
-		
-
-		
-
-
 		//Initialisation des variables pour la partie
 		nb_client = 0;
 		memoire.nb_joueurs = 0;
+		memoire.taille_pli_en_cours = 0;
+		memoire.papayoo.valeur = 7;
 
 		timer_inscription_ecoule = FALSE;
 		partie_en_cours = FALSE;
@@ -95,14 +85,11 @@ int main(int argc, char** argv){
 		manche = 0;
 		nb_cartes_par_joueur = 0;
 
-		//memoire->taille_pli_en_cours = 0;
-
 		end = FALSE;
 		annule = FALSE;
 
-		ecrire_memoire(memoire);
-
 		while(!end){
+			ecrire_memoire(memoire);
 			int i;
 			fd_set set;
 			int fds[NOMBRE_JOUEURS_MAX];
@@ -235,9 +222,9 @@ void handle_message(Joueur* client, Message msg){
 				return;
 			}
 			if(memoire.taille_pli_en_cours == 0){
-				couleur_tour = msg.data.cartes[0].couleur;
+				memoire.couleur_tour = msg.data.cartes[0].couleur;
 			}
-			pli_en_cours[memoire.taille_pli_en_cours] = &msg.data.cartes[0];
+			memoire.pli_en_cours[memoire.taille_pli_en_cours] = msg.data.cartes[0];
 			memoire.taille_pli_en_cours++;
 			joueur_en_cours++;
 			ecrire_memoire(memoire);
@@ -301,6 +288,8 @@ void demarrer_manche(){
 	const int NB_CARTES = nb_cartes;
 	int i,j;
 
+	memoire.papayoo.couleur = rand()%4;
+
 	for(i = 0 ; i < memoire.nb_joueurs ; i++){
 		Carte main[30];
 		for(j = 0 ; j < NB_CARTES/memoire.nb_joueurs ; j++){
@@ -322,7 +311,7 @@ void demarrer_tour(){
 void cloturer_tour(){
 	nb_cartes_par_joueur--;
 	Message pli = {ENVOI_PLI};
-	memcpy(pli.data.cartes,&pli_en_cours,sizeof(Carte)*memoire.taille_pli_en_cours);
+	memcpy(pli.data.cartes,memoire.pli_en_cours,sizeof(Carte)*memoire.taille_pli_en_cours);
 	sprintf(pli.data.message, "%d\0", memoire.taille_pli_en_cours);
 	int i = 0, j = joueur_en_cours;
 	int max_carte = 0;
@@ -330,8 +319,8 @@ void cloturer_tour(){
 
 	for( i = 0 ; i < memoire.nb_joueurs ; i++){
 		if(j++ >= memoire.nb_joueurs) j = 0;
-		if(pli_en_cours[i]->valeur > max_carte && pli_en_cours[i]->couleur == couleur_tour){
-			max_carte = pli_en_cours[i]->valeur;
+		if(memoire.pli_en_cours[i].valeur > max_carte && memoire.pli_en_cours[i].couleur == memoire.couleur_tour){
+			max_carte = memoire.pli_en_cours[i].valeur;
 			joueur_max = j;
 		}
 	}

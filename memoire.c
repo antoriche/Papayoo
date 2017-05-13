@@ -15,6 +15,8 @@
 #define MUTEX "/MUTEX"
 #define BD "/BD"
 
+#define ACTIVER_MEMOIRE_PARTAGEE 1 //Debug
+
 #include "memoire.h"
 
 sem_t *mutex;
@@ -69,9 +71,12 @@ void init_sem(){
 }
 
 
-
+struct_partagee test;
 void ecrire_memoire(struct_partagee data){
-	
+	if(!ACTIVER_MEMOIRE_PARTAGEE){
+		test = data;
+		return;
+	}
 	struct_partagee *ptr_mem_partagee;
 	if((bd = sem_open(BD,O_CREAT,0666,1))==NULL){
 		perror("Erreur semaphore bd\n");
@@ -96,13 +101,10 @@ void ecrire_memoire(struct_partagee data){
 		shmdt(ptr_mem_partagee);
 
 		sem_post(&bd);
-	
-
-
-
 }
 
 struct_partagee lire_memoire(){
+	if(!ACTIVER_MEMOIRE_PARTAGEE)return test;
 	int mem_ID; 
 	struct_partagee* ptr_mem_partagee; 
 	struct_partagee data;
