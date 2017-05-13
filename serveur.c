@@ -33,7 +33,7 @@ int annule = FALSE;
 
 
 int main(int argc, char** argv){
-	init_sem();
+	
 	int port;
 	if(argc < 2 || argc > 3){
 		printf("Usage : %s port [stderr]\n",argv[0]);

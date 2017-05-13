@@ -26,7 +26,6 @@ int main ( int argc,char**argv ){
     fprintf(stderr,"Le port est invalide\n");
     exit(1);
   }
-  init_sem();
 
   Carte* cartes;
   int nbCartes;

@@ -73,6 +73,10 @@ void init_sem(){
 void ecrire_memoire(struct_partagee data){
 	
 	struct_partagee *ptr_mem_partagee;
+	if((bd = sem_open(BD,O_CREAT,0666,1))==NULL){
+		perror("Erreur semaphore bd\n");
+		exit(1);
+	}
 	
 	
 		sem_wait(&bd);
@@ -102,7 +106,14 @@ struct_partagee lire_memoire(){
 	int mem_ID; 
 	struct_partagee* ptr_mem_partagee; 
 	struct_partagee data;
-	
+	if((bd = sem_open(BD,O_CREAT,0666,1))==NULL){
+		perror("Erreur semaphore bd\n");
+		exit(1);
+	}
+	if((mutex=sem_open(MUTEX,O_CREAT,0666,1))==NULL){
+		perror("Erreur semaphore mutex\n");
+		exit(1);
+	}
 	
 		sem_wait(&mutex);
 		
