@@ -17,6 +17,7 @@ int to_server_socket = -1;
 
 
 int main ( int argc,char**argv ){
+
   int port;
   if(argc!=3){
     fprintf(stderr,"Usage : %s port ip_server\n",argv[0]);
@@ -25,6 +26,7 @@ int main ( int argc,char**argv ){
     fprintf(stderr,"Le port est invalide\n");
     exit(1);
   }
+  init_sem();
 
   Carte* cartes;
   int nbCartes;
@@ -62,14 +64,7 @@ int main ( int argc,char**argv ){
   write(to_server_socket,&message,sizeof(message));
 
 
-  struct_partagee donnees = lire_memoire();
-  printf("Pli en cours : \n");
-  Carte** ptr=donnees.pli_en_cours;
-  int i = 0;
-  printf("taille : %d\n",donnees.taille_pli_en_cours);
-  for(i = 0 ; i < donnees.taille_pli_en_cours ; i++){
-    printf("%s\n",carte2str(*ptr[i]));
-  }
+  
 
   while(1){
 
@@ -87,6 +82,20 @@ int main ( int argc,char**argv ){
       if(FD_ISSET(to_server_socket,&set)){
         Message m=lire_message(to_server_socket);
         handle_message(m,&cartes,&nbCartes);
+
+        struct_partagee donnees = lire_memoire();
+        
+        Carte** ptr=donnees.pli_en_cours;
+        
+        printf("Nombre de joueurs : %d\n",donnees.nb_joueurs);
+        //printf("Taille du pli : %d\n",donnees.taille_pli_en_cours);
+        /*
+        printf("Pli en cours : \n");
+        int i = 0;
+        for(i = 0 ; i < donnees.taille_pli_en_cours ; i++){
+          printf("%d\n",*(ptr[i]));
+        }
+        */
       }
       
     }
@@ -131,6 +140,9 @@ void handle_message(Message message,Carte** cartes,int* nbCartes){
       break;
 
     case DISTRIBUTION_PAQUET : 
+      printf("Cartes distribuees\n");
+      *cartes=message.data.cartes;
+      *nbCartes=atoi(message.data.message);
       break;
 
     case DEMANDER_CARTE : 

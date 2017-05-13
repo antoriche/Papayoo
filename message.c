@@ -27,7 +27,7 @@ void envoyer_message(int client, Message message){
 char* carte2str(Carte c){
 	char* ret;
 	if( (ret = (char*)malloc(sizeof(char)*15)) == NULL){
-		perror("Erreur malloc");
+		perror("Erreur malloc\n");
 		exit(2);
 	}
 	sprintf(ret, "%d ", c.valeur);

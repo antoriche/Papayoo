@@ -11,8 +11,16 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
+
+
 #include "message.h"
 #include "socket.h"
+
+#ifndef _MEMOIRE_PARTAGEE_H_
+#define _MEMOIRE_PARTAGEE_H_
+
+typedef int semaphore;
+
 
 typedef struct joueur{
 	int fd;
@@ -31,8 +39,10 @@ typedef struct {
 	Color couleur_tour;
 }struct_partagee;
 
-struct_partagee* init_memoire();
+void init_sem();
+
+void ecrire_memoire(struct_partagee data);
 
 struct_partagee lire_memoire();
 
-void detacher(struct_partagee* ptr);
+#endif
