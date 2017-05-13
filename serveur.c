@@ -73,10 +73,15 @@ int main(int argc, char** argv){
 	while(TRUE){
 		alarm(0);
 
-		//Initialisation des variables pour la partie
+		//Initialisation des variables pour le test de mémoire partagee
+		Carte c1 = {3,PIQUE};
+        Carte c2 = {9,PAYOO};
+        memoire.pli_en_cours[0] = c1;
+        memoire.pli_en_cours[1] = c2;
+
 		nb_client = 0;
 		memoire.nb_joueurs = 0;
-		memoire.taille_pli_en_cours = 0;
+		memoire.taille_pli_en_cours = 2;
 		memoire.papayoo.valeur = 7;
 
 		timer_inscription_ecoule = FALSE;
