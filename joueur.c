@@ -82,19 +82,25 @@ int main ( int argc,char**argv ){
         Message m=lire_message(to_server_socket);
         handle_message(m,&cartes,&nbCartes);
 
-        struct_partagee donnees = lire_memoire();
-        
-        Carte** ptr=donnees.pli_en_cours;
-        
-        printf("Nombre de joueurs : %d\n",donnees.nb_joueurs);
-        //printf("Taille du pli : %d\n",donnees.taille_pli_en_cours);
+        struct_partagee memoire = lire_memoire();
         /*
+        struct_partagee donnees;    
+        Carte c1 = {3,PIQUE};
+        Carte c2 = {9,PAYOO};
+        donnees.pli_en_cours[0] = &c1;
+        donnees.pli_en_cours[1] = &c2;
+*/
+        Carte* ptr=memoire.pli_en_cours;
+        
+        printf("Nombre de joueurs : %d\n",memoire.nb_joueurs);
+        printf("Taille du pli : %d\n",memoire.taille_pli_en_cours);
+        
         printf("Pli en cours : \n");
         int i = 0;
-        for(i = 0 ; i < donnees.taille_pli_en_cours ; i++){
-          printf("%d\n",*(ptr[i]));
+        for(i = 0 ; i < memoire.taille_pli_en_cours ; i++){
+          printf("%s\n",carte2str(ptr[i]));
         }
-        */
+        
       }
       
     }

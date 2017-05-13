@@ -75,8 +75,8 @@ int main(int argc, char** argv){
 
 		Carte c1 = {3,PIQUE};
 		Carte c2 = {9,PAYOO};
-		memoire.pli_en_cours[0] = &c1;
-		memoire.pli_en_cours[1] = &c2;
+		memoire.pli_en_cours[0] = c1;
+		memoire.pli_en_cours[1] = c2;
 		memoire.taille_pli_en_cours = 2;
 		
 		

@@ -34,7 +34,7 @@ typedef struct {
 	Joueur* joueurs[NOMBRE_JOUEURS_MAX];
 	int nb_joueurs;
 	Carte papayoo;
-	Carte* pli_en_cours[NOMBRE_JOUEURS_MAX];
+	Carte pli_en_cours[NOMBRE_JOUEURS_MAX];
 	int taille_pli_en_cours;
 	Color couleur_tour;
 }struct_partagee;

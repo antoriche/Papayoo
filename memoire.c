@@ -82,7 +82,7 @@ void ecrire_memoire(struct_partagee data){
 		sem_wait(&bd);
 		if ((mem_ID = shmget(KEY, sizeof(struct_partagee), IPC_CREAT | 0666)) < 0)	
 		{
-			perror("erreur shmget");											
+			perror("erreur shmget1");											
 			return 0;
 		}
 
