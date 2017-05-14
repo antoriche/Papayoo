@@ -114,14 +114,12 @@ struct_partagee lire_memoire(){
 			perror("erreur shmat");											
 			exit(1);
 		}
-	
 
 
 		
 		*rc=*rc+1;
 		if(*rc==1) sem_wait(&bd);
 		sem_post(&mutex);
-
 
 		if ((mem_ID = shmget(KEY, sizeof(struct_partagee), 0444)) < 0)	
 		{

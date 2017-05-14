@@ -82,6 +82,16 @@ int main ( int argc,char**argv ){
         Message m=lire_message(to_server_socket);
         handle_message(m,&cartes,&nbCartes);
 
+        //TEST ACCES MEMOIRE PARTAGEE
+      struct_partagee memoire = lire_memoire();  
+      Carte* ptr=memoire.pli_en_cours; 
+      printf("Nombre de joueurs : %d\n",memoire.nb_joueurs);
+      printf("Taille du pli : %d\n",memoire.taille_pli_en_cours);
+      printf("Pli  : \n");
+      int i = 0;
+      for(i = 0 ; i < memoire.taille_pli_en_cours ; i++){
+        printf("%s\n",carte2str(ptr[i]));
+      }
         
         
       }
@@ -112,16 +122,7 @@ void handle_message(Message message,Carte** cartes,int* nbCartes){
     case INSCRIPTION_OK : 
       printf("Vous êtes bien inscrit!\n");
   
-      //TEST ACCES MEMOIRE PARTAGEE
-      struct_partagee memoire = lire_memoire();  
-      Carte* ptr=memoire.pli_en_cours; 
-      printf("Nombre de joueurs : %d\n",memoire.nb_joueurs);
-      printf("Taille du pli : %d\n",memoire.taille_pli_en_cours);
-      printf("Pli  : \n");
-      int i = 0;
-      for(i = 0 ; i < memoire.taille_pli_en_cours ; i++){
-        printf("%s\n",carte2str(ptr[i]));
-      }
+      
       break;
 
     case INSCRIPTION_KO : 
