@@ -62,18 +62,7 @@ int main ( int argc,char**argv ){
 
   write(to_server_socket,&message,sizeof(message));
 
-  struct_partagee memoire = lire_memoire();
-       
-        Carte* ptr=memoire.pli_en_cours;
-        
-        printf("Nombre de joueurs : %d\n",memoire.nb_joueurs);
-        printf("Taille du pli : %d\n",memoire.taille_pli_en_cours);
-        
-        printf("Pli en cours : \n");
-        int i = 0;
-        for(i = 0 ; i < memoire.taille_pli_en_cours ; i++){
-          printf("%s\n",carte2str(ptr[i]));
-        }
+  
   
 
   while(1){
@@ -110,14 +99,29 @@ int main ( int argc,char**argv ){
 }
 
 void handle_message(Message message,Carte** cartes,int* nbCartes){
+  int i;
   Message resp;
   switch(message.type){
     case CONNECTION_FULL : 
       printf("Nombre max de connexions au serveur atteint.\n");
+      
+       
+  
       exit(0);
 
     case INSCRIPTION_OK : 
       printf("Vous êtes bien inscrit!\n");
+  
+      //TEST ACCES MEMOIRE PARTAGEE
+      struct_partagee memoire = lire_memoire();  
+      Carte* ptr=memoire.pli_en_cours; 
+      printf("Nombre de joueurs : %d\n",memoire.nb_joueurs);
+      printf("Taille du pli : %d\n",memoire.taille_pli_en_cours);
+      printf("Pli  : \n");
+      int i = 0;
+      for(i = 0 ; i < memoire.taille_pli_en_cours ; i++){
+        printf("%s\n",carte2str(ptr[i]));
+      }
       break;
 
     case INSCRIPTION_KO : 
@@ -134,8 +138,15 @@ void handle_message(Message message,Carte** cartes,int* nbCartes){
 
     case DISTRIBUTION_CARTES : 
       printf("Cartes distribuees\n");
+      
       *cartes=message.data.cartes;
       *nbCartes=atoi(message.data.message);
+      /*
+      printf("Nb cartes = %d\n", atoi(message.data.message));
+      for(i=0;i<;i++){
+        printf("Test1\n");
+        printf("%d. %s\n",i+1,carte2str(*cartes[i]));
+      }*/
       break;
 
     case DISTRIBUTION_PAQUET : 

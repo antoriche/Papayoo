@@ -60,6 +60,7 @@ int main(int argc, char** argv){
 	}
 
 	srand(time(NULL));
+	init_mem_RC();
 
 	struct sigaction timer;
     timer.sa_handler = &handle_timer;
@@ -302,7 +303,7 @@ void demarrer_manche(){
 		}
 		char nb_c[3];
 		sprintf(nb_c, "%d\0", NB_CARTES/memoire.nb_joueurs);
-		Message distribution = {DISTRIBUTION_CARTES,{nb_cartes,main}};
+		Message distribution = {DISTRIBUTION_CARTES,{nb_c,main}};
 		envoyer_message(memoire.joueurs[i]->fd,distribution);
 	}
 	nb_cartes_par_joueur = 60/memoire.nb_joueurs;
