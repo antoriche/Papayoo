@@ -140,6 +140,7 @@ void handle_message(Message message,Carte** cartes,int* nbCartes){
       printf("Cartes distribuees\n");
       
       *cartes=message.data.cartes;
+      printf("%s\n",message.data.message);
       *nbCartes=atoi(message.data.message);
       /*
       printf("Nb cartes = %d\n", atoi(message.data.message));
@@ -152,6 +153,7 @@ void handle_message(Message message,Carte** cartes,int* nbCartes){
     case DISTRIBUTION_PAQUET : 
       printf("Cartes distribuees\n");
       *cartes=message.data.cartes;
+
       *nbCartes=atoi(message.data.message);
       break;
 

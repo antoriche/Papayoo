@@ -39,6 +39,19 @@ void init_mem_RC(){
 	*rc=0;
 	shmdt(rc);
 }
+void cloturer_memoire(){
+	if((bd = sem_open(BD,O_CREAT,0666,1))==NULL){
+		perror("Erreur semaphore bd\n");
+		exit(1);
+	}
+	if((mutex=sem_open(MUTEX,O_CREAT,0666,1))==NULL){
+		perror("Erreur semaphore mutex\n");
+		exit(1);
+	}
+	sem_destroy(bd);
+	sem_destroy(mutex);
+
+}
 
 
 
@@ -57,23 +70,20 @@ void ecrire_memoire(struct_partagee data){
 	}
 	
 	
-		sem_wait(&bd);
-		if ((mem_ID = shmget(KEY, sizeof(struct_partagee), IPC_CREAT | 0666)) < 0)	
-		{
-			perror("erreur shmget1");											
-			exit(1);
-		}
-
-		if ((ptr_mem_partagee = (struct_partagee*)shmat(mem_ID, NULL, 0)) == (struct_partagee*) -1)	
-		{
-			perror("erreur shmat");											
-			exit(1);
-		}
-		*ptr_mem_partagee=data;
-
-		shmdt(ptr_mem_partagee);
-
-		sem_post(&bd);
+	sem_wait(&bd);
+	if ((mem_ID = shmget(KEY, sizeof(struct_partagee), IPC_CREAT | 0666)) < 0)	
+	{
+		perror("erreur shmget1");											
+		exit(1);
+	}
+	if ((ptr_mem_partagee = (struct_partagee*)shmat(mem_ID, NULL, 0)) == (struct_partagee*) -1)	
+	{
+		perror("erreur shmat");											
+		exit(1);
+	}
+	*ptr_mem_partagee=data;
+	shmdt(ptr_mem_partagee);
+	sem_post(&bd);
 }
 
 struct_partagee lire_memoire(){

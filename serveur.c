@@ -262,6 +262,7 @@ void close_all(){
 			envoyer_message(clients[i].fd,msg);
 		}
 		close(clients[i].fd);
+		cloturer_memoire();
 	}
 	//detacher(memoire);
 }
@@ -303,6 +304,7 @@ void demarrer_manche(){
 		}
 		char nb_c[3];
 		sprintf(nb_c, "%d\0", NB_CARTES/memoire.nb_joueurs);
+		printf("NB_C = %s\n",nb_c);
 		Message distribution = {DISTRIBUTION_CARTES,{nb_c,main}};
 		envoyer_message(memoire.joueurs[i]->fd,distribution);
 	}
