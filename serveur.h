@@ -27,7 +27,7 @@
 #include <fcntl.h>
 
 #include "message.h"
-#include "memoire.h"
+#include "ipc.h"
 #include "socket.h"
 
 void handle_message(Joueur* joueur, Message msg);

@@ -15,7 +15,7 @@
 
 #define ACTIVER_MEMOIRE_PARTAGEE 1 //Debug
 
-#include "memoire.h"
+#include "ipc.h"
 
 sem_t *mutex;
 sem_t *bd;

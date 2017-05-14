@@ -16,16 +16,16 @@ clean :
 
 # serveur
 
-serveur : serveur.o memoire.o socket.o message.o
-	gcc $(params) -o serveur serveur.o memoire.o socket.o message.o $(lrt)
+serveur : serveur.o ipc.o socket.o message.o
+	gcc $(params) -o serveur serveur.o ipc.o socket.o message.o $(lrt)
 
 serveur.o : serveur.c serveur.h
 	gcc $(params) -c serveur.c $(lrt)
 
 # joueur
 
-joueur : joueur.o memoire.o socket.o message.o
-	gcc $(params) -o joueur joueur.o memoire.o socket.o message.o $(lrt)
+joueur : joueur.o ipc.o socket.o message.o
+	gcc $(params) -o joueur joueur.o ipc.o socket.o message.o $(lrt)
 
 
 joueur.o : joueur.c joueur.h
@@ -35,8 +35,8 @@ joueur.o : joueur.c joueur.h
 
 # PARTIE COMMUNE
 
-memoire.o : memoire.c memoire.h
-	gcc $(params) -c memoire.c $(lrt)
+ipc.o : ipc.c ipc.h
+	gcc $(params) -c ipc.c $(lrt)
 
 
 socket.o : socket.c socket.h
