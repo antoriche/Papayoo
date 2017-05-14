@@ -135,7 +135,7 @@ void handle_message(Message message,Carte** cartes,int* nbCartes){
       struct_partagee memoire = lire_memoire();  
       printf("Liste des joueurs :\n");
       for( i = 0 ; i < memoire.nb_joueurs ; i++){
-        printf("\t- %s\n",memoire.joueurs[i]->nom);
+        printf("\t- %s\n",memoire.joueurs[i].nom);
       }
       break;
 

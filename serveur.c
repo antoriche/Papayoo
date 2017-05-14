@@ -11,8 +11,8 @@
 
 struct_partagee memoire;
 
-//Joueur clients[NOMBRE_JOUEURS_MAX];
-//int nb_clients = 0;
+Joueur clients[NOMBRE_JOUEURS_MAX];
+int nb_clients = 0;
 
 //Joueur* inscrits[NOMBRE_JOUEURS_MAX];
 //int nb_joueurs = 0;
@@ -74,7 +74,7 @@ int main(int argc, char** argv){
 		alarm(0);
 
 		//Initialisation des variables pour la partie
-		memoire.nb_clients = 0;
+		nb_clients = 0;
 		memoire.nb_joueurs = 0;
 		memoire.taille_pli_en_cours = 0;
 		memoire.papayoo.valeur = 7;
@@ -93,10 +93,10 @@ int main(int argc, char** argv){
 			int i,j;
 			fd_set set;
 			int fds[NOMBRE_JOUEURS_MAX];
-			for(i = 0 ; i < memoire.nb_clients ; i++){
-				fds[i] = memoire.clients[i].fd;
+			for(i = 0 ; i < nb_clients ; i++){
+				fds[i] = clients[i].fd;
 			}
-			int activity = attendre_message(ma_socket,fds,memoire.nb_clients,&set);
+			int activity = attendre_message(ma_socket,fds,nb_clients,&set);
 			if(activity == 0){
 				if(!partie_en_cours)
 					continue;
@@ -119,7 +119,7 @@ int main(int argc, char** argv){
 				int addrlen = sizeof(address);
 				SYS((nouveau_client_fd = accept(ma_socket, (struct sockaddr *) &address, (socklen_t*) &addrlen)));
 
-				if(memoire.nb_clients >= NOMBRE_JOUEURS_MAX){
+				if(nb_clients >= NOMBRE_JOUEURS_MAX){
 					Message ko;
 					ko.type = CONNECTION_FULL;
 					strcpy(ko.data.message, "Aucune place disponible\0");
@@ -132,15 +132,21 @@ int main(int argc, char** argv){
 					nouveau_client.fd = nouveau_client_fd;
 					nouveau_client.send_ecart = FALSE;
 					strcpy(nouveau_client.nom,"\0");
-					memcpy(&memoire.clients[memoire.nb_clients],&nouveau_client,sizeof(Joueur));
-					memoire.nb_clients++;
+					memcpy(&clients[nb_clients],&nouveau_client,sizeof(Joueur));
+					nb_clients++;
 					//printf("nouvelle connection\n");
 				}
 			}
-			for(i = 0 ; i < memoire.nb_clients ; i++){
-				if (FD_ISSET(memoire.clients[i].fd, &set)) {
-					Message msg = lire_message(memoire.clients[i].fd);
-					handle_message(&memoire.clients[i],msg);
+			for(i = 0 ; i < nb_clients ; i++){
+				if (FD_ISSET(clients[i].fd, &set)) {
+					Message msg = lire_message(clients[i].fd);
+					handle_message(&clients[i],msg);
+					for(j = 0 ; j < nb_clients ; j++){
+						if(clients[i].fd == memoire.joueurs[j].fd){
+							memcpy(&memoire.joueurs[j],&clients[i],sizeof(Joueur));
+							break;
+						}
+					}
 				}
 			}
 		}
@@ -162,7 +168,7 @@ void handle_message(Joueur* client, Message msg){
 				envoyer_message(client->fd,resp);
 			}else{
 				strcpy(client->nom, msg.data.message);
-				memoire.joueurs[memoire.nb_joueurs] = client;
+				memoire.joueurs[memoire.nb_joueurs] = *client;
 				printf("Inscription : %s\n", client->nom);
 				memoire.nb_joueurs++;
 				if(memoire.nb_joueurs == 1){
@@ -183,15 +189,15 @@ void handle_message(Joueur* client, Message msg){
 				fprintf(stderr,"Un joueur non-inscrit s'est déconnecté\n");
 				int trouve = FALSE;
 				//Un client s'est déconnecté
-				for(i = 0 ; i < memoire.nb_clients ; i++){
-					if(memoire.clients[i].fd == client->fd){
+				for(i = 0 ; i < nb_clients ; i++){
+					if(clients[i].fd == client->fd){
 						trouve = TRUE;
 					}
 					if(trouve){
-						memoire.clients[i]=memoire.clients[i+1];
+						clients[i]=clients[i+1];
 					}
 				}
-				memoire.nb_clients--;
+				nb_clients--;
 				close(client->fd);
 			}else{
 				fprintf(stderr,"%s s'est déconnecté\n",client->nom);
@@ -218,7 +224,7 @@ void handle_message(Joueur* client, Message msg){
 			}
 			return;
 		case JOUER_CARTE:
-			if(client->fd != memoire.joueurs[joueur_en_cours]->fd){
+			if(client->fd != memoire.joueurs[joueur_en_cours].fd){
 				bad_request(client,msg);
 				return;
 			}
@@ -235,7 +241,7 @@ void handle_message(Joueur* client, Message msg){
 
 			for(i = 0 ; i < memoire.nb_joueurs ; i++){ //Avertir tous les joueurs du nouveau pli en cours
 				resp.type = AVERTIR_PLI_EN_COURS;
-				envoyer_message(memoire.joueurs[i]->fd,resp);
+				envoyer_message(memoire.joueurs[i].fd,resp);
 			}
 
 			if(memoire.taille_pli_en_cours >= memoire.nb_joueurs){ // cloture le tour
@@ -251,12 +257,12 @@ void handle_message(Joueur* client, Message msg){
 
 void close_all(){
 	int i;
-	for(i = 0 ; i < memoire.nb_clients ; i++){
+	for(i = 0 ; i < nb_clients ; i++){
 		Message msg = {ANNULE};
 		if(annule){
-			envoyer_message(memoire.clients[i].fd,msg);
+			envoyer_message(clients[i].fd,msg);
 		}
-		close(memoire.clients[i].fd);
+		close(clients[i].fd);
 	}
 	//detacher(memoire);
 }
@@ -277,7 +283,7 @@ void demarrer_partie(){
 
 	for(i = 0 ; i < memoire.nb_joueurs ; i++){
 		Message debut = {DEBUT_PARTIE};
-		envoyer_message(memoire.joueurs[i]->fd,debut);
+		envoyer_message(memoire.joueurs[i].fd,debut);
 	}
 	demarrer_manche();
 }
@@ -304,7 +310,7 @@ void demarrer_manche(){
 		strcpy(&distribution.data.message,&nb_str);
 		memcpy(&distribution.data.cartes,&main,sizeof(Carte)*30);
 		//printf("nombre de cartes(message) : %s\n",distribution.data.message);
-		envoyer_message(memoire.joueurs[i]->fd,distribution);
+		envoyer_message(memoire.joueurs[i].fd,distribution);
 	}
 	nb_cartes_par_joueur = 60/memoire.nb_joueurs;
 	demarrer_tour();
@@ -330,12 +336,12 @@ void cloturer_tour(){
 			joueur_max = j;
 		}
 	}
-	envoyer_message(memoire.joueurs[joueur_max]->fd,pli);
+	envoyer_message(memoire.joueurs[joueur_max].fd,pli);
 	joueur_en_cours = joueur_max;
 }
 
 void demander_carte(){
-	Joueur* c = memoire.joueurs[joueur_en_cours];
+	Joueur* c = &memoire.joueurs[joueur_en_cours];
 	Message demande_carte = {DEMANDER_CARTE};
 	envoyer_message(c->fd,demande_carte);
 }
@@ -344,7 +350,7 @@ int check_ecart(){
 	int i;
 	int ok = TRUE;
 	for(i = 0 ; i < memoire.nb_joueurs ; i++){
-		if(!memoire.joueurs[i]->send_ecart){
+		if(!memoire.joueurs[i].send_ecart){
 			ok=FALSE;
 			break;
 		}
@@ -354,12 +360,12 @@ int check_ecart(){
 
 void distribuer_paquet(){
 	int i;
-	Joueur* c = memoire.joueurs[memoire.nb_joueurs-1];
+	Joueur* c = &memoire.joueurs[memoire.nb_joueurs-1];
 	for(i = 0 ; i < memoire.nb_joueurs ; i++){
 		Message distribution = {DISTRIBUTION_PAQUET};
 		memcpy(&distribution.data.cartes,c->ecart,sizeof(Carte)*5);
-		envoyer_message(memoire.joueurs[i]->fd,distribution);
-		c = memoire.joueurs[i];
+		envoyer_message(memoire.joueurs[i].fd,distribution);
+		c = &memoire.joueurs[i];
 	}
 }
 
