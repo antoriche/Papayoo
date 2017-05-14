@@ -34,6 +34,8 @@ typedef struct joueur{
 } Joueur;
 
 typedef struct {
+	Joueur clients[NOMBRE_JOUEURS_MAX];
+	int nb_clients;
 	Joueur* joueurs[NOMBRE_JOUEURS_MAX];
 	int nb_joueurs;
 	Carte papayoo;
