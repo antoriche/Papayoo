@@ -114,7 +114,7 @@ void handle_message(Message message,Carte** cartes,int* nbCartes){
       printf("Vous êtes bien inscrit!\n");
   
       //TEST ACCES MEMOIRE PARTAGEE
-      struct_partagee memoire = lire_memoire();  
+      /*struct_partagee memoire = lire_memoire();  
       Carte* ptr=memoire.pli_en_cours; 
       printf("Nombre de joueurs : %d\n",memoire.nb_joueurs);
       printf("Taille du pli : %d\n",memoire.taille_pli_en_cours);
@@ -122,7 +122,7 @@ void handle_message(Message message,Carte** cartes,int* nbCartes){
       int i = 0;
       for(i = 0 ; i < memoire.taille_pli_en_cours ; i++){
         printf("%s\n",carte2str(ptr[i]));
-      }
+      }*/
       
       break;
 
@@ -132,6 +132,11 @@ void handle_message(Message message,Carte** cartes,int* nbCartes){
 
     case DEBUT_PARTIE :
       printf("La partie a commencé\n");
+      struct_partagee memoire = lire_memoire();  
+      printf("Liste des joueurs :\n");
+      for( i = 0 ; i < memoire.nb_joueurs ; i++){
+        printf("\t- %s\n",memoire.joueurs[i]->nom);
+      }
       break;
 
     case ANNULE :
@@ -142,7 +147,7 @@ void handle_message(Message message,Carte** cartes,int* nbCartes){
       printf("Cartes distribuees\n");
       
       *cartes=message.data.cartes;
-      printf("%s\n",message.data.message);
+      printf("nombre de cartes : %s\n",message.data.message);
       *nbCartes=atoi(message.data.message);
       /*
       printf("Nb cartes = %d\n", atoi(message.data.message));

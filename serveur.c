@@ -11,8 +11,8 @@
 
 struct_partagee memoire;
 
-Joueur clients[NOMBRE_JOUEURS_MAX];
-int nb_client = 0;
+//Joueur clients[NOMBRE_JOUEURS_MAX];
+//int nb_clients = 0;
 
 //Joueur* inscrits[NOMBRE_JOUEURS_MAX];
 //int nb_joueurs = 0;
@@ -60,7 +60,6 @@ int main(int argc, char** argv){
 	}
 
 	srand(time(NULL));
-	init_mem_RC();
 
 	struct sigaction timer;
     timer.sa_handler = &handle_timer;
@@ -74,15 +73,10 @@ int main(int argc, char** argv){
 	while(TRUE){
 		alarm(0);
 
-		//Initialisation des variables pour le test de mémoire partagee
-		Carte c1 = {3,PIQUE};
-        Carte c2 = {9,PAYOO};
-        memoire.pli_en_cours[0] = c1;
-        memoire.pli_en_cours[1] = c2;
-
-		nb_client = 0;
+		//Initialisation des variables pour la partie
+		memoire.nb_clients = 0;
 		memoire.nb_joueurs = 0;
-		memoire.taille_pli_en_cours = 2;
+		memoire.taille_pli_en_cours = 0;
 		memoire.papayoo.valeur = 7;
 
 		timer_inscription_ecoule = FALSE;
@@ -96,13 +90,13 @@ int main(int argc, char** argv){
 
 		while(!end){
 			ecrire_memoire(memoire);
-			int i;
+			int i,j;
 			fd_set set;
 			int fds[NOMBRE_JOUEURS_MAX];
-			for(i = 0 ; i < nb_client ; i++){
-				fds[i] = clients[i].fd;
+			for(i = 0 ; i < memoire.nb_clients ; i++){
+				fds[i] = memoire.clients[i].fd;
 			}
-			int activity = attendre_message(ma_socket,fds,nb_client,&set);
+			int activity = attendre_message(ma_socket,fds,memoire.nb_clients,&set);
 			if(activity == 0){
 				if(!partie_en_cours)
 					continue;
@@ -125,7 +119,7 @@ int main(int argc, char** argv){
 				int addrlen = sizeof(address);
 				SYS((nouveau_client_fd = accept(ma_socket, (struct sockaddr *) &address, (socklen_t*) &addrlen)));
 
-				if(nb_client >= NOMBRE_JOUEURS_MAX){
+				if(memoire.nb_clients >= NOMBRE_JOUEURS_MAX){
 					Message ko;
 					ko.type = CONNECTION_FULL;
 					strcpy(ko.data.message, "Aucune place disponible\0");
@@ -138,14 +132,15 @@ int main(int argc, char** argv){
 					nouveau_client.fd = nouveau_client_fd;
 					nouveau_client.send_ecart = FALSE;
 					strcpy(nouveau_client.nom,"\0");
-					memcpy(&clients[nb_client], &nouveau_client, sizeof(Joueur));
-					nb_client++;
+					memcpy(&memoire.clients[memoire.nb_clients],&nouveau_client,sizeof(Joueur));
+					memoire.nb_clients++;
+					//printf("nouvelle connection\n");
 				}
 			}
-			for(i = 0 ; i < nb_client ; i++){
-				if (FD_ISSET(clients[i].fd, &set)) {
-					Message msg = lire_message(clients[i].fd);
-					handle_message(&clients[i],msg);
+			for(i = 0 ; i < memoire.nb_clients ; i++){
+				if (FD_ISSET(memoire.clients[i].fd, &set)) {
+					Message msg = lire_message(memoire.clients[i].fd);
+					handle_message(&memoire.clients[i],msg);
 				}
 			}
 		}
@@ -188,15 +183,15 @@ void handle_message(Joueur* client, Message msg){
 				fprintf(stderr,"Un joueur non-inscrit s'est déconnecté\n");
 				int trouve = FALSE;
 				//Un client s'est déconnecté
-				for(i = 0 ; i < nb_client ; i++){
-					if(clients[i].fd == client->fd){
+				for(i = 0 ; i < memoire.nb_clients ; i++){
+					if(memoire.clients[i].fd == client->fd){
 						trouve = TRUE;
 					}
 					if(trouve){
-						clients[i]=clients[i+1];
+						memoire.clients[i]=memoire.clients[i+1];
 					}
 				}
-				nb_client--;
+				memoire.nb_clients--;
 				close(client->fd);
 			}else{
 				fprintf(stderr,"%s s'est déconnecté\n",client->nom);
@@ -256,13 +251,12 @@ void handle_message(Joueur* client, Message msg){
 
 void close_all(){
 	int i;
-	for(i = 0 ; i < nb_client ; i++){
+	for(i = 0 ; i < memoire.nb_clients ; i++){
 		Message msg = {ANNULE};
 		if(annule){
-			envoyer_message(clients[i].fd,msg);
+			envoyer_message(memoire.clients[i].fd,msg);
 		}
-		close(clients[i].fd);
-		cloturer_memoire();
+		close(memoire.clients[i].fd);
 	}
 	//detacher(memoire);
 }
@@ -292,20 +286,24 @@ void demarrer_manche(){
 	manche++;
 	int nb_cartes;
 	Carte* cartes = paquet(&nb_cartes);
-	const int NB_CARTES = nb_cartes;
+	const int NB_CARTES_TOTAL = nb_cartes;
 	int i,j;
 
 	memoire.papayoo.couleur = rand()%4;
 
 	for(i = 0 ; i < memoire.nb_joueurs ; i++){
 		Carte main[30];
-		for(j = 0 ; j < NB_CARTES/memoire.nb_joueurs ; j++){
+		for(j = 0 ; j < NB_CARTES_TOTAL/memoire.nb_joueurs ; j++){
 			main[j] = getRandomCarte(cartes,&nb_cartes);
 		}
-		char nb_c[3];
-		sprintf(nb_c, "%d\0", NB_CARTES/memoire.nb_joueurs);
-		printf("NB_C = %s\n",nb_c);
-		Message distribution = {DISTRIBUTION_CARTES,{nb_c,main}};
+		char nb_str[3];
+		sprintf(nb_str, "%d\0", NB_CARTES_TOTAL/memoire.nb_joueurs);
+		// A DEBUGER
+		//printf("nombre de cartes : %s\n",nb_str);
+		Message distribution = {DISTRIBUTION_CARTES};
+		strcpy(&distribution.data.message,&nb_str);
+		memcpy(&distribution.data.cartes,&main,sizeof(Carte)*30);
+		//printf("nombre de cartes(message) : %s\n",distribution.data.message);
 		envoyer_message(memoire.joueurs[i]->fd,distribution);
 	}
 	nb_cartes_par_joueur = 60/memoire.nb_joueurs;

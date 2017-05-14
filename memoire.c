@@ -8,8 +8,8 @@
 #############################################################
 */
 
-#define KEY 1000
-#define KEY_RC 2000
+#define KEY 1002
+#define KEY_RC 2002
 #define MUTEX "/MUTEX"
 #define BD "/BD"
 
@@ -137,8 +137,9 @@ struct_partagee lire_memoire(){
 		sem_post(&mutex);
 
 		data=(*ptr_mem_partagee);
+		shmdt(rc);
+		shmdt(ptr_mem_partagee);
 		return data;
-	
 }
 
 
