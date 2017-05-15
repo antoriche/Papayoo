@@ -40,6 +40,13 @@ void init_mem_RC(){
 	shmdt(rc);
 }
 void cloturer_memoire(){
+	int mem_RC;
+	int mem_ID;
+	SYS(mem_RC = shmget(KEY_RC, sizeof(int), IPC_CREAT | 0666));
+	SYS(shmctl(mem_RC,IPC_RMID,NULL));
+	SYS(mem_ID = shmget(KEY, sizeof(struct_partagee), IPC_CREAT | 0666));
+	SYS(shmctl(mem_ID,IPC_RMID,NULL));
+
 	if((bd = sem_open(BD,O_CREAT,0666,1))==NULL){
 		perror("Erreur semaphore bd\n");
 		exit(1);

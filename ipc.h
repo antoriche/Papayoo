@@ -22,6 +22,8 @@
 #ifndef _MEMOIRE_PARTAGEE_H_
 #define _MEMOIRE_PARTAGEE_H_
 
+#define SYS(call) ((call) == -1) ? (perror(#call ": ERROR"),exit(1)) : 0
+
 typedef int semaphore;
 
 
