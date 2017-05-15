@@ -22,7 +22,10 @@ int create_server_socket(int port){
 	  printf("la creation rate\n");
 	  exit(0);
 	}
-	bind(ma_socket,(struct sockaddr *)&mon_address,sizeof(mon_address));
+	if((bind(ma_socket,(struct sockaddr *)&mon_address,sizeof(mon_address))) < 0){
+		printf(stderr,"Impossible de démarrer le serveur sur le port %d\n",port);
+		exit(1);
+	}
 
 	/* ecoute sur la socket */
 	listen(ma_socket,NOMBRE_JOUEURS_MAX);

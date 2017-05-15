@@ -8,7 +8,8 @@
 ############################################################
  */
 #include "serveur.h"
-
+#define TIMEOUT_INSCRIPTION 10
+#define TIMEOUT_RESPONSE 30
 struct_partagee memoire;
 
 Joueur clients[NOMBRE_JOUEURS_MAX];
@@ -51,12 +52,6 @@ int main(int argc, char** argv){
 		}else{
 			dup2(fileno(err), STDERR_FILENO);
 		}
-	}
-
-	if(CheckForAnotherInstance()) { //Ne fonctionne pas actuellement
-		fprintf(stderr,"Une autre instance du serveur est déjà en exécution\n");
-		fclose(err);
-	    return 1;
 	}
 
 	srand(time(NULL));
@@ -172,7 +167,7 @@ void handle_message(Joueur* client, Message msg){
 				printf("Inscription : %s\n", client->nom);
 				memoire.nb_joueurs++;
 				if(memoire.nb_joueurs == 1){
-					alarm(30);
+					alarm(TIMEOUT_INSCRIPTION);
 				}
 				resp.type = INSCRIPTION_OK;
 				envoyer_message(client->fd,resp);
@@ -302,10 +297,6 @@ void demarrer_manche(){
 		for(j = 0 ; j < NB_CARTES_TOTAL/memoire.nb_joueurs ; j++){
 			main[j] = getRandomCarte(cartes,&nb_cartes);
 		}
-		char nb_str[3];
-		sprintf(nb_str, "%d\0", NB_CARTES_TOTAL/memoire.nb_joueurs);
-		// A DEBUGER
-		//printf("nombre de cartes : %s\n",nb_str);
 		Message distribution = {DISTRIBUTION_CARTES};
 		strcpy(&distribution.data.message,&nb_str);
 		memcpy(&distribution.data.cartes,&main,sizeof(Carte)*30);
@@ -359,7 +350,6 @@ int check_ecart(){
 }
 
 void distribuer_paquet(){
-	int i;
 	Joueur* c = &memoire.joueurs[memoire.nb_joueurs-1];
 	for(i = 0 ; i < memoire.nb_joueurs ; i++){
 		Message distribution = {DISTRIBUTION_PAQUET};
@@ -380,7 +370,6 @@ int attendre_message(int ma_socket, int* fds, int nb_fd, fd_set* set){
 	int max_fd = ma_socket;
 
 	struct timeval alive;
-	alive.tv_sec = 30;
 	alive.tv_usec = 0;
 
 	FD_ZERO(set);
@@ -394,28 +383,4 @@ int attendre_message(int ma_socket, int* fds, int nb_fd, fd_set* set){
 
 	int activity = select(max_fd+1,set,NULL,NULL,&alive);
 	return activity;
-}
-
-int CheckForAnotherInstance(){ // Ne fonctionne pas actuellement
-  int fd;
-  struct flock fl;
-  fd = open("/var/run/papayoo.pid", O_RDWR);
-  if(fd == -1)
-  {
-    return FALSE;
-  }
-
-  fl.l_type   = F_WRLCK;  /* F_RDLCK, F_WRLCK, F_UNLCK    */
-  fl.l_whence = SEEK_SET; /* SEEK_SET, SEEK_CUR, SEEK_END */
-  fl.l_start  = 0;        /* Offset from l_whence         */
-  fl.l_len    = 0;        /* length, 0 = to EOF           */
-  fl.l_pid    = getpid(); /* our PID                      */
-  // try to create a file lock
-
-  if( fcntl(fd, F_SETLK, &fl) == -1){
-    if( errno == EACCES || errno == EAGAIN){
-      return TRUE;
-    }
-  }
-  return FALSE;
 }

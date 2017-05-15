@@ -39,6 +39,8 @@
 #define TRUE   1
 #define FALSE  0
 
+#define CARTE_NULL 0;
+
 #define SYS(call) ((call) == -1) ? (perror(#call ": ERROR"),exit(1)) : 0
 
 typedef enum {COEUR=0, CARREAU=1, TREFLE=2, PIQUE=3, PAYOO=4} Color;
