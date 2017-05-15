@@ -297,10 +297,11 @@ void demarrer_manche(){
 		for(j = 0 ; j < NB_CARTES_TOTAL/memoire.nb_joueurs ; j++){
 			main[j] = getRandomCarte(cartes,&nb_cartes);
 		}
+		for(j = NB_CARTES_TOTAL/memoire.nb_joueurs ; j < 30 ; j++){
+			main[j].valeur = CARTE_NULL;
+		}
 		Message distribution = {DISTRIBUTION_CARTES};
-		strcpy(&distribution.data.message,&nb_str);
-		memcpy(&distribution.data.cartes,&main,sizeof(Carte)*30);
-		//printf("nombre de cartes(message) : %s\n",distribution.data.message);
+		memcpy(distribution.data.cartes,main,sizeof(Carte)*30);
 		envoyer_message(memoire.joueurs[i].fd,distribution);
 	}
 	nb_cartes_par_joueur = 60/memoire.nb_joueurs;
@@ -350,10 +351,14 @@ int check_ecart(){
 }
 
 void distribuer_paquet(){
+	int i,j;
 	Joueur* c = &memoire.joueurs[memoire.nb_joueurs-1];
 	for(i = 0 ; i < memoire.nb_joueurs ; i++){
 		Message distribution = {DISTRIBUTION_PAQUET};
 		memcpy(&distribution.data.cartes,c->ecart,sizeof(Carte)*5);
+		for( j = 5 ; j < 30 ; j++){
+			distribution.data.cartes[j].valeur = CARTE_NULL;
+		}
 		envoyer_message(memoire.joueurs[i].fd,distribution);
 		c = &memoire.joueurs[i];
 	}
@@ -370,6 +375,7 @@ int attendre_message(int ma_socket, int* fds, int nb_fd, fd_set* set){
 	int max_fd = ma_socket;
 
 	struct timeval alive;
+	alive.tv_sec = TIMEOUT_RESPONSE;
 	alive.tv_usec = 0;
 
 	FD_ZERO(set);
