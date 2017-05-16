@@ -8,8 +8,12 @@
 ############################################################
  */
 #include "serveur.h"
+
 #define TIMEOUT_INSCRIPTION 5
 #define TIMEOUT_RESPONSE 30
+#define NB_MANCHES 3
+#define NB_PLI_MAX 3
+
 struct_partagee memoire;
 
 Joueur clients[NOMBRE_JOUEURS_MAX];
@@ -24,6 +28,7 @@ int distribution_paquet = FALSE;
 
 int manche = 0;
 int nb_cartes_par_joueur = 0;
+int nb_cartes_par_joueur_initial = 0;
 int joueur_en_cours = 0;
 //Color couleur_tour;
 //Carte* pli_en_cours[NOMBRE_JOUEURS_MAX];
@@ -90,6 +95,7 @@ int main(int argc, char** argv){
 
 		manche = 0;
 		nb_cartes_par_joueur = 0;
+		nb_cartes_par_joueur_initial = 0;
 
 		end = FALSE;
 		annule = FALSE;
@@ -166,6 +172,7 @@ int main(int argc, char** argv){
 void handle_message(Joueur* client, Message msg){
 	Message resp;
 	int i;
+	int points;
 	switch(msg.type){
 		case INSCRIPTION:
 			if(partie_en_cours){
@@ -246,27 +253,51 @@ void handle_message(Joueur* client, Message msg){
 				envoyer_message(memoire.joueurs[i].fd,resp);
 			}
 
+			resp.type = DEMANDER_CARTE;
+			envoyer_message(memoire.joueurs[joueur_en_cours].fd,resp);
+
 			if(memoire.taille_pli_en_cours >= memoire.nb_joueurs){ // cloture le tour
 				cloturer_tour();
-				if(nb_cartes_par_joueur>0)demarrer_tour();
+				if(nb_cartes_par_joueur>nb_cartes_par_joueur_initial-NB_PLI_MAX)demarrer_tour();
 				else{
 					//cloturer manche
+					for(i = 0 ; i < memoire.nb_joueurs ; i++){
+						memoire.joueurs[i].score_en_attente = TRUE;
+						resp.type = COMPTER_POINTS;
+						envoyer_message(memoire.joueurs[i].fd,resp);
+					}
 				}
 			}
 			return;
+		case ENVOI_POINTS:
+			points = atoi(msg.data.message);
+			client->score = client->score+points;
+			client->score_en_attente = FALSE;
+			if(check_score()){
+				cloturer_manche();
+			}
+			return;
+	}
+}
+
+void cloturer_manche(){
+	if(manche >= NB_MANCHES){
+		//cloturer partie
+	}else{
+		demarrer_manche();
 	}
 }
 
 void close_all_connections(){
 	int i;
 	for(i = 0 ; i < nb_clients ; i++){
-		Message msg = {ANNULE};
-		if(annule){
-			envoyer_message(clients[i].fd,msg);
-		}
+		Message msg;
+		msg.type = annule?ANNULE:FIN_PARTIE;
+		envoyer_message(clients[i].fd,msg);
 		close(clients[i].fd);
 	}
 	nb_clients = 0;
+	memoire.nb_joueurs = 0;
 }
 void close_server(){
 	printf("fermeture du serveur\n");
@@ -282,6 +313,9 @@ void handle_timer(int signal){
     	timer_inscription_ecoule = TRUE;
         if(memoire.nb_joueurs>1){
         	demarrer_partie();
+        }else{
+        	annule = TRUE;
+        	close_all_connections();
         }
     }
 }
@@ -321,6 +355,7 @@ void demarrer_manche(){
 		envoyer_message(memoire.joueurs[i].fd,distribution);
 	}
 	nb_cartes_par_joueur = 60/memoire.nb_joueurs;
+	nb_cartes_par_joueur_initial = 60/memoire.nb_joueurs;
 }
 
 void demarrer_tour(){
@@ -370,6 +405,13 @@ int check_ecart(){
 		}
 	}
 	return ok;
+}
+
+/*
+*	renvoi true si tous les joueurs ont envoyé leurs score
+*/
+int check_score(){
+
 }
 
 void distribuer_paquet(){

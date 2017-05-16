@@ -43,6 +43,7 @@ void distribuer_paquet();
 void bad_request(Joueur* Joueur,Message msg);
 int attendre_message(int ma_socket, int* fds, int nb_fd, fd_set* set);
 int checkForAnotherInstance();
-
+int check_score();
+void cloturer_manche();
 
 #endif // SERVER_H_
