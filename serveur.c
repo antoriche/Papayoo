@@ -233,6 +233,7 @@ void handle_message(Joueur* client, Message msg){
 			if(memoire.taille_pli_en_cours == 0){
 				memoire.couleur_tour = msg.data.cartes[0].couleur;
 			}
+			printf("Carte reçue\n");
 			memoire.pli_en_cours[memoire.taille_pli_en_cours] = msg.data.cartes[0];
 			memoire.taille_pli_en_cours++;
 			joueur_en_cours++;

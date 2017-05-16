@@ -148,8 +148,6 @@ struct_partagee lire_memoire(){
 		perror("erreur shmat");											
 		exit(1);
 	}
-	printf("val mutex = %d\n",*mutex);
-	printf("val bd = %d\n",*bd);
 
 		
 	*rc++;
@@ -157,8 +155,6 @@ struct_partagee lire_memoire(){
 		sem_wait(bd);
 	} 
 	sem_post(mutex);
-	printf("val mutex = %d\n",*mutex);
-	printf("val bd = %d\n",*bd);
 	
 	if ((ptr_mem_partagee = (struct_partagee*)shmat(mem_ID, NULL, 0)) == (struct_partagee*) -1){
 		perror("shmat");					
@@ -167,15 +163,11 @@ struct_partagee lire_memoire(){
 	data=(*ptr_mem_partagee);
 
 	sem_wait(mutex);
-	printf("val mutex = %d\n",*mutex);
-	printf("val bd = %d\n",*bd);
 	*rc--;
 	if(*rc==0){ 
 		sem_post(bd);
 	}
 	sem_post(mutex);
-	printf("val mutex = %d\n",*mutex);
-	printf("val bd = %d\n",*bd);
 
 	
 	//shmdt(rc);

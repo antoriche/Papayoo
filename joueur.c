@@ -19,6 +19,7 @@ int nbCartes;
 int score;
 
 int selection_paquet = FALSE; //indique que le client attend que l'on rentre la selection du paquet au clavier
+int selection_carte = FALSE;
 int taille_paquet = 0;
 Carte mon_paquet[5];
 
@@ -154,10 +155,8 @@ void handle_message(Message message){
 
     case DISTRIBUTION_CARTES : 
       printf("Cartes distribuees\n");
-      printf("Test1\n");
       //cartes=message.data.cartes;
       memcpy(cartes,message.data.cartes,sizeof(Carte)*30);
-      printf("Test2\n");
       Carte* ptr=cartes;
       i=0;
       while(ptr->valeur!=0){
@@ -165,20 +164,23 @@ void handle_message(Message message){
         printf("%d) %s\n",i,carte2str(*ptr));
         ptr++;
       }
+      printf("Veuillez choisir les 5 cartes à écarter.\n");
       nbCartes = i;
       selection_paquet = TRUE;
+      
       break;
 
     case DISTRIBUTION_PAQUET : 
       printf("Paquet distribue\n");
       //cartes=message.data.cartes;
-      memcpy(&cartes[25],message.data.cartes,sizeof(Carte)*5);
+      memcpy(&cartes[nbCartes],message.data.cartes,sizeof(Carte)*5);
       nbCartes+=5;
       break;
 
     case DEMANDER_CARTE : 
       afficher_cartes();
       printf("Quelle carte voulez vous jouer? \n");
+      selection_carte=TRUE;
       break;
 
     case AVERTIR_PLI_EN_COURS : 
@@ -189,7 +191,7 @@ void handle_message(Message message){
       memoire=lire_memoire();
       Color couleur_tour=memoire.couleur_tour;
       ptr= message.data.cartes;
-      while(ptr->valeur!=0){
+      while(ptr->valeur!=CARTE_NULL){
         if(ptr->couleur==PAYOO){
           score+=ptr->valeur;
         }else if(ptr->couleur==couleur_tour){
@@ -225,6 +227,7 @@ void handle_keyboard(char* msg){
       //m.data.cartes=mon_paquet;
       memcpy(m.data.cartes,mon_paquet,sizeof(Carte)*5);
       envoyer_message(to_server_socket,m);
+      printf("Paquet envoye\n");
       selection_paquet = FALSE;
     }else{
       afficher_cartes();
@@ -232,7 +235,35 @@ void handle_keyboard(char* msg){
       printf("%s a été ajouté au paquet\n", carte2str(mon_paquet[taille_paquet-1]) );
       printf("Carte suivante : \n");
     }
+  }if(selection_carte){
+    int carte_id = atoi(msg)-1;
+    choisir_carte_a_jouer(carte_id);
   }
+}
+
+ choisir_carte_a_jouer(int carte_id){
+  Message message={JOUER_CARTE};
+  struct_partagee memoire=lire_memoire();
+  Color couleur_tour=memoire.couleur_tour;
+  if(carte_id < 0 || carte_id >= nbCartes){ // se protege contre les cartes non valides
+      fprintf(stderr,"carte non valide\n");
+      return;
+  }
+  if(memoire.taille_pli_en_cours>0 && cartes[carte_id].couleur!=couleur_tour){
+    Carte* ptr=cartes;
+    while(ptr->valeur!=CARTE_NULL){
+      if(ptr->couleur==couleur_tour){
+        fprintf(stderr,"carte de la mauvaise couleur, choisissez un autre.\n");
+        return;
+      }
+    }
+  }
+  memcpy(message.data.cartes,&cartes[carte_id],sizeof(Carte));
+  cartes[carte_id]= cartes[--nbCartes];
+  envoyer_message(to_server_socket,message);
+  printf("Carte jouee\n");
+  selection_carte = FALSE;
+
 }
 
 void afficher_cartes(){
