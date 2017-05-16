@@ -284,7 +284,7 @@ void handle_message(Joueur* client, Message msg){
 void cloturer_manche(){
 	if(manche >= NB_MANCHES){
 		//cloturer partie
-		close_all_connections();
+		end = TRUE;
 	}else{
 		demarrer_manche();
 	}
@@ -317,6 +317,7 @@ void handle_timer(int signal){
         	demarrer_partie();
         }else{
         	annule = TRUE;
+        	end = TRUE;
         	close_all_connections();
         }
     }
