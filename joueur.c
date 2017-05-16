@@ -209,6 +209,7 @@ void envoyer_points(){
   envoyer_message(to_server_socket,message);
 }
 void recevoir_pli(Message message){
+  printf("Vous avez gagne ce pli! \n");
   struct_partagee memoire=lire_memoire();
   Color couleur_tour=memoire.couleur_tour;
   Carte* ptr= message.data.cartes;
@@ -222,11 +223,20 @@ void recevoir_pli(Message message){
     }
       ptr++;
   }
+  printf("votre score actuel est de %d\n\n");
 }
 
 void handle_keyboard(char* msg){
   if(selection_paquet){
+    envoyer_paquet(msg);
+  }if(selection_carte){
     int carte_id = atoi(msg)-1;
+    choisir_carte_a_jouer(carte_id);
+  }
+}
+
+void envoyer_paquet(char* msg){
+  int carte_id = atoi(msg)-1;
     if(carte_id < 0 || carte_id >= nbCartes){ // se protege contre les cartes non valides
       fprintf(stderr,"carte non valide\n");
       return;
@@ -246,13 +256,10 @@ void handle_keyboard(char* msg){
       printf("%s a été ajouté au paquet\n", carte2str(mon_paquet[taille_paquet-1]) );
       printf("Carte suivante : \n");
     }
-  }if(selection_carte){
-    int carte_id = atoi(msg)-1;
-    choisir_carte_a_jouer(carte_id);
-  }
 }
 
- choisir_carte_a_jouer(int carte_id){
+
+ void choisir_carte_a_jouer(int carte_id){
   Message message={JOUER_CARTE};
   struct_partagee memoire=lire_memoire();
   Color couleur_tour=memoire.couleur_tour;
@@ -262,11 +269,13 @@ void handle_keyboard(char* msg){
   }
   if(memoire.taille_pli_en_cours>0 && cartes[carte_id].couleur!=couleur_tour){
     Carte* ptr=cartes;
-    while(ptr->valeur!=CARTE_NULL){
+    int i;
+    for(i=0;i<nbCartes;i++){
       if(ptr->couleur==couleur_tour){
         fprintf(stderr,"carte de la mauvaise couleur, choisissez un autre.\n");
         return;
       }
+      ptr++;
     }
   }
   memcpy(message.data.cartes,&cartes[carte_id],sizeof(Carte));
@@ -303,6 +312,7 @@ void afficher_pli_en_cours(){
   for(i=0;i<memoire.taille_pli_en_cours;i++){
     printf("%s\n",carte2str(memoire.pli_en_cours[i]));
   }
+  printf("\n");
 }
 
 void afficher_cartes(){
