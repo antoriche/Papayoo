@@ -305,6 +305,7 @@ void close_all_connections(){
 }
 void close_server(){
 	printf("fermeture du serveur\n");
+	annule = TRUE;
 	close_all_connections();
 	close(ma_socket);
 	cloturer_memoire();
@@ -361,6 +362,7 @@ void demarrer_manche(){
 	}
 	nb_cartes_par_joueur = 60/memoire.nb_joueurs;
 	nb_cartes_par_joueur_initial = 60/memoire.nb_joueurs;
+	joueur_en_cours = rand()%memoire.nb_joueurs;
 }
 
 void demarrer_tour(){
