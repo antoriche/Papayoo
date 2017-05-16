@@ -41,6 +41,7 @@ int check_ecart();
 void distribuer_paquet();
 void bad_request(Joueur* Joueur,Message msg);
 int attendre_message(int ma_socket, int* fds, int nb_fd, fd_set* set);
+int checkForAnotherInstance();
 
 
 #endif // SERVER_H_

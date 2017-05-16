@@ -87,7 +87,7 @@ Carte* paquet(int* nb_cartes){
 		}
 	}
 	for( i = 40 ; i < 60 ; i++){
-		cartes[i].valeur = i;
+		cartes[i].valeur = i-39;
 		cartes[i].couleur = PAYOO;
 	}
 	return cartes;

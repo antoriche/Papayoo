@@ -53,6 +53,13 @@ int main(int argc, char** argv){
 			dup2(fileno(err), STDERR_FILENO);
 		}
 	}
+
+	if(checkForAnotherInstance()){
+		fprintf(stderr, "Une autre instance du serveur est déjà en cours\n");
+		exit(1);
+	}
+	memoire.port_actuel = port;
+
 	init_sem();
 
 	srand(time(NULL));
@@ -390,4 +397,11 @@ int attendre_message(int ma_socket, int* fds, int nb_fd, fd_set* set){
 
 	int activity = select(max_fd+1,set,NULL,NULL,&alive);
 	return activity;
+}
+
+int checkForAnotherInstance(){
+	memoire = lire_memoire();
+	if(memoire.memoire_valide){
+		//verifier en se connectant au port du serveur
+	}
 }
