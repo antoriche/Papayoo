@@ -211,13 +211,12 @@ void handle_message(Message message){
       break;
 
   }
-
-  void afficher_cartes(){
-    Carte* ptr=cartes;
-    
-    while(ptr->valeur!=0){
-      printf("%d. %s\n",i+1,carte2str(*ptr));
-      ptr++;
-    }
+}
+void afficher_cartes(){
+  Carte* ptr=cartes;
+  int i = 0;
+  while(ptr->valeur!=0){
+    printf("%d. %s\n",i++,carte2str(*ptr));
+    ptr++;
   }
 }

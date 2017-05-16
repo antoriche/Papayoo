@@ -36,7 +36,7 @@ typedef struct joueur{
 } Joueur;
 
 typedef struct {
-	int memoire_valide;
+	int memoire_valide; // indique si l'ipc existe ou non
 	int port_actuel;
 	Joueur joueurs[NOMBRE_JOUEURS_MAX];
 	int nb_joueurs;

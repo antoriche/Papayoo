@@ -39,7 +39,7 @@
 #define TRUE   1
 #define FALSE  0
 
-#define CARTE_NULL 0;
+#define CARTE_NULL 0
 
 #define SYS(call) ((call) == -1) ? (perror(#call ": ERROR"),exit(1)) : 0
 

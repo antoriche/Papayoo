@@ -55,12 +55,13 @@ Carte getRandomCarte(Carte* paquet, int* nb_cartes){
 	Carte ret = {};
 
 	if(*nb_cartes == 0){
-		ret.valeur = -1;
+		ret.valeur = CARTE_NULL;
 		return ret;
 	}
 
 	int x = rand()%(*nb_cartes);
-	memcpy(&ret,&paquet[x],sizeof(Carte));
+	//memcpy(&ret,&paquet[x],sizeof(Carte));
+	ret = paquet[x];
 	paquet[x] = paquet[*nb_cartes];
 
 	*nb_cartes-=1;
