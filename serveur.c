@@ -9,8 +9,8 @@
  */
 #include "serveur.h"
 
-#define TIMEOUT_INSCRIPTION 5
-#define TIMEOUT_RESPONSE 30
+#define TIMEOUT_INSCRIPTION 10
+#define TIMEOUT_RESPONSE 60
 #define NB_MANCHES 3
 #define NB_PLI_MAX 3
 
@@ -378,7 +378,7 @@ void cloturer_tour(){
 	int joueur_max;
 
 	for( i = 0 ; i < memoire.nb_joueurs ; i++){
-		if(j++ >= memoire.nb_joueurs) j = 0;
+		if(++j >= memoire.nb_joueurs) j = 0;
 		if(memoire.pli_en_cours[i].valeur > max_carte && memoire.pli_en_cours[i].couleur == memoire.couleur_tour){
 			max_carte = memoire.pli_en_cours[i].valeur;
 			joueur_max = j;
@@ -437,8 +437,13 @@ int check_score(){
 
 void distribuer_paquet(){
 	int i,j;
-	//for( i = )
-	Joueur* c = &clients[nb_clients]; //TODO : trouver index dernier inscrit
+	Joueur* c;
+	for( i = nb_clients ; i >= 0 ; i--){ // on trouve le dernier client inscrit
+		if(strlen(clients[i].nom) > 0){
+			c = &clients[i];
+			break;
+		}
+	}
 
 	for(i = 0 ; i < nb_clients ; i++){
 		int inscrit = FALSE;
