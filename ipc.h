@@ -33,6 +33,7 @@ typedef struct joueur{
 	int send_ecart;
 	Carte ecart[5];
 	int score;
+	int score_en_attente;
 } Joueur;
 
 typedef struct {
