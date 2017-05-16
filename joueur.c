@@ -184,25 +184,15 @@ void handle_message(Message message){
       break;
 
     case AVERTIR_PLI_EN_COURS : 
-      
+      afficher_pli_en_cours();
       break;
 
     case ENVOI_PLI : 
-      memoire=lire_memoire();
-      Color couleur_tour=memoire.couleur_tour;
-      ptr= message.data.cartes;
-      while(ptr->valeur!=CARTE_NULL){
-        if(ptr->couleur==PAYOO){
-          score+=ptr->valeur;
-        }else if(ptr->couleur==couleur_tour){
-          score+=ptr->valeur;
-        }
-        ptr++;
-      }
+      recevoir_pli(message);
       break;
 
     case COMPTER_POINTS : 
-
+      envoyer_points();
 
       break;
 
@@ -210,6 +200,27 @@ void handle_message(Message message){
       printf("La partie actuelle est finie.\n");
       break;
 
+  }
+}
+
+void envoyer_points(){
+  Message message={ENVOI_POINTS};
+  sprintf(message.data.message,"%d\0",score);
+  envoyer_message(to_server_socket,message);
+}
+void recevoir_pli(Message message){
+  struct_partagee memoire=lire_memoire();
+  Color couleur_tour=memoire.couleur_tour;
+  Carte* ptr= message.data.cartes;
+  while(ptr->valeur!=CARTE_NULL){
+    if(ptr->valeur==memoire.papayoo.valeur && ptr->couleur==memoire.papayoo.couleur) {
+      score+=40;
+    }else if(ptr->couleur==PAYOO){
+      score+=ptr->valeur;
+    }else if(ptr->couleur==couleur_tour){
+      score+=ptr->valeur;
+    }
+      ptr++;
   }
 }
 
@@ -265,16 +276,34 @@ void handle_keyboard(char* msg){
   selection_carte = FALSE;
 
 }
-/*
+
 void afficher_pli_en_cours(){
   struct_partagee memoire = lire_memoire();
   Color c=memoire.couleur_tour;
-  char[10] couleur
-  if(couleur=0){
-
+  char couleur[10];
+  switch(c){
+    case CARREAU:
+      sprintf(couleur,"carreau\0");
+      break;
+    case PIQUE:
+      sprintf(couleur,"pique\0");
+      break;
+    case TREFLE:
+      sprintf(couleur,"trefle\0");
+      break;
+    case COEUR:
+      sprintf(couleur,"coeur\0");
+      break;
+    case PAYOO:
+      sprintf(couleur,"payoo\0");
+      break;
   }
-  printf("Couleur du pli en cours : %s\n",)
-}*/
+  printf("Couleur du pli en cours : %s\n",couleur);
+  int i;
+  for(i=0;i<memoire.taille_pli_en_cours;i++){
+    printf("%s\n",carte2str(memoire.pli_en_cours[i]));
+  }
+}
 
 void afficher_cartes(){
   int i = 0;
