@@ -173,6 +173,7 @@ void handle_message(Message message){
       printf("Veuillez choisir les 5 cartes à écarter.\n");
       nbCartes = i;
       selection_paquet = TRUE;
+      selection_carte = FALSE;
       
       break;
 
@@ -187,6 +188,7 @@ void handle_message(Message message){
       afficher_cartes();
       printf("Quelle carte voulez vous jouer? \n");
       selection_carte=TRUE;
+      selection_paquet = FALSE;
       break;
 
     case AVERTIR_PLI_EN_COURS : 
