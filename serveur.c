@@ -370,8 +370,10 @@ void cloturer_tour(){
 	nb_cartes_par_joueur--;
 	Message pli = {ENVOI_PLI};
 	memcpy(pli.data.cartes,memoire.pli_en_cours,sizeof(Carte)*memoire.taille_pli_en_cours);
-	sprintf(pli.data.message, "%d\0", memoire.taille_pli_en_cours);
 	int i = 0, j = joueur_en_cours;
+	for(i = memoire.taille_pli_en_cours ; i < 30 ; i++){
+		pli.data.cartes[i].valeur = CARTE_NULL;
+	}
 	int max_carte = 0;
 	int joueur_max;
 
@@ -384,6 +386,8 @@ void cloturer_tour(){
 	}
 	envoyer_message(memoire.joueurs[joueur_max].fd,pli);
 	joueur_en_cours = joueur_max;
+	memoire.taille_pli_en_cours = 0;
+	ecrire_memoire(memoire);
 }
 
 void demander_carte(){
@@ -433,15 +437,25 @@ int check_score(){
 
 void distribuer_paquet(){
 	int i,j;
-	Joueur* c = &memoire.joueurs[memoire.nb_joueurs-1];
-	for(i = 0 ; i < memoire.nb_joueurs ; i++){
-		Message distribution = {DISTRIBUTION_PAQUET};
-		memcpy(&distribution.data.cartes,c->ecart,sizeof(Carte)*5);
-		for( j = 5 ; j < 30 ; j++){
-			distribution.data.cartes[j].valeur = CARTE_NULL;
+	//for( i = )
+	Joueur* c = &clients[nb_clients]; //TODO : trouver index dernier inscrit
+
+	for(i = 0 ; i < nb_clients ; i++){
+		int inscrit = FALSE;
+		for(j = 0 ; j < memoire.nb_joueurs ; j++){
+			if(memoire.joueurs[j].fd == clients[i].fd){
+				inscrit = TRUE;
+			}
 		}
-		envoyer_message(memoire.joueurs[i].fd,distribution);
-		c = &memoire.joueurs[i];
+		if(inscrit){
+			Message distribution = {DISTRIBUTION_PAQUET};
+			memcpy(&distribution.data.cartes,c->ecart,sizeof(Carte)*5);
+			for( j = 5 ; j < 30 ; j++){
+				distribution.data.cartes[j].valeur = CARTE_NULL;
+			}
+			envoyer_message(clients[i].fd,distribution);
+			c = &clients[i];
+		}
 	}
 }
 

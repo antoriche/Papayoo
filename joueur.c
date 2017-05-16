@@ -93,7 +93,13 @@ int main ( int argc,char**argv ){
       }
       if(FD_ISSET(STDIN_FILENO,&set)){
         char buffer[255];
-        fgets(buffer,255,stdin);
+        if(fgets(buffer,255,stdin) == NULL){
+          //CTRL D
+          Message resp = {ANNULE};
+          envoyer_message(to_server_socket,resp);
+          close(to_server_socket);
+          exit(0);
+        }
         handle_keyboard(buffer);
       }
     }
@@ -256,6 +262,7 @@ void envoyer_paquet(char* msg){
       printf("%s a été ajouté au paquet\n", carte2str(mon_paquet[taille_paquet-1]) );
       printf("Carte suivante : \n");
     }
+
 }
 
 
