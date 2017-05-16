@@ -165,13 +165,14 @@ void handle_message(Message message){
       memcpy(cartes,message.data.cartes,sizeof(Carte)*30);
       Carte* ptr=cartes;
       i=0;
-      while(ptr->valeur!=CARTE_NULL){
+      while(ptr->valeur!=CARTE_NULL && i<30){
         i++;
         printf("%d) %s\n",i,carte2str(*ptr));
         ptr++;
       }
       printf("Veuillez choisir les 5 cartes à écarter.\n");
       nbCartes = i;
+      taille_paquet=0;
       selection_paquet = TRUE;
       
       break;
@@ -245,6 +246,7 @@ void envoyer_paquet(char* msg){
       fprintf(stderr,"carte non valide\n");
       return;
     }
+
     mon_paquet[taille_paquet++] = cartes[carte_id]; // on ajoute la carte au paquet
     cartes[carte_id] = cartes[--nbCartes]; // et on la retire de notre main
     if(taille_paquet >= 5){
