@@ -9,7 +9,7 @@
  */
 #include "serveur.h"
 
-#define TIMEOUT_INSCRIPTION 5
+#define TIMEOUT_INSCRIPTION 10
 #define TIMEOUT_RESPONSE 30
 #define NB_MANCHES 3
 #define NB_PLI_MAX 3

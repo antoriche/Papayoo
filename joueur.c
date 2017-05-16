@@ -229,7 +229,7 @@ void recevoir_pli(Message message){
     }
       ptr++;
   }
-  printf("votre score actuel est de %d\n\n");
+  printf("votre score actuel est de %d\n\n\n");
 }
 
 void handle_keyboard(char* msg){
@@ -288,7 +288,7 @@ void envoyer_paquet(char* msg){
   memcpy(message.data.cartes,&cartes[carte_id],sizeof(Carte));
   cartes[carte_id]= cartes[--nbCartes];
   envoyer_message(to_server_socket,message);
-  printf("Carte jouee\n");
+  printf("Carte jouee : %s\n\n\n",carte2str(message.data.cartes[0]));
   selection_carte = FALSE;
 
 }
@@ -297,23 +297,25 @@ void afficher_pli_en_cours(){
   struct_partagee memoire = lire_memoire();
   Color c=memoire.couleur_tour;
   char couleur[10];
+  if(memoire.taille_pli_en_cours!=0){}
   switch(c){
     case CARREAU:
-      sprintf(couleur,"carreau\0");
+      couleur="carreau\0";
       break;
     case PIQUE:
-      sprintf(couleur,"pique\0");
+      couleur="pique\0";
       break;
     case TREFLE:
-      sprintf(couleur,"trefle\0");
+      couleur="trefle\0";
       break;
     case COEUR:
-      sprintf(couleur,"coeur\0");
+      couleur="coeur\0";
       break;
     case PAYOO:
-      sprintf(couleur,"payoo\0");
+      couleur="payoo\0";
       break;
   }
+}
   printf("Couleur du pli en cours : %s\n",couleur);
   int i;
   for(i=0;i<memoire.taille_pli_en_cours;i++){
