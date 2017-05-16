@@ -265,6 +265,16 @@ void handle_keyboard(char* msg){
   selection_carte = FALSE;
 
 }
+/*
+void afficher_pli_en_cours(){
+  struct_partagee memoire = lire_memoire();
+  Color c=memoire.couleur_tour;
+  char[10] couleur
+  if(couleur=0){
+
+  }
+  printf("Couleur du pli en cours : %s\n",)
+}*/
 
 void afficher_cartes(){
   int i = 0;

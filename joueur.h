@@ -26,6 +26,7 @@
 
 void handle_message(Message message);
 void handle_keyboard(char* msg);
+void choisir_carte_a_jouer(int carte_id);
 void afficher_cartes();
 
 
