@@ -284,6 +284,7 @@ void handle_message(Joueur* client, Message msg){
 void cloturer_manche(){
 	if(manche >= NB_MANCHES){
 		//cloturer partie
+		close_all_connections();
 	}else{
 		demarrer_manche();
 	}
@@ -412,7 +413,21 @@ int check_ecart(){
 *	renvoi true si tous les joueurs ont envoyé leurs score
 */
 int check_score(){
-
+	int i,j;
+	int ok = TRUE;
+	for(i = 0 ; i < nb_clients ; i++){
+		int inscrit = FALSE;
+		for(j = 0 ; j < memoire.nb_joueurs ; j++){
+			if(memoire.joueurs[j].fd == clients[i].fd){
+				inscrit = TRUE;
+			}
+		}
+		if(clients[i].score_en_attente && inscrit){
+			ok=FALSE;
+			break;
+		}
+	}
+	return ok;
 }
 
 void distribuer_paquet(){
