@@ -165,7 +165,7 @@ void handle_message(Message message){
       memcpy(cartes,message.data.cartes,sizeof(Carte)*30);
       Carte* ptr=cartes;
       i=0;
-      while(ptr->valeur!=0){
+      while(ptr->valeur!=CARTE_NULL){
         i++;
         printf("%d) %s\n",i,carte2str(*ptr));
         ptr++;
@@ -224,12 +224,10 @@ void recevoir_pli(Message message){
       score+=40;
     }else if(ptr->couleur==PAYOO){
       score+=ptr->valeur;
-    }else if(ptr->couleur==couleur_tour){
-      score+=ptr->valeur;
     }
       ptr++;
   }
-  printf("votre score actuel est de %d\n\n\n");
+  printf("votre score actuel est de %d\n\n\n",score);
 }
 
 void handle_keyboard(char* msg){
@@ -296,7 +294,7 @@ void envoyer_paquet(char* msg){
 void afficher_pli_en_cours(){
   struct_partagee memoire = lire_memoire();
   Color c=memoire.couleur_tour;
-  char couleur[10];
+  char couleur[10]="";
   if(memoire.taille_pli_en_cours!=0){
     switch(c){
      case CARREAU:
