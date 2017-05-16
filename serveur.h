@@ -31,7 +31,8 @@
 #include "socket.h"
 
 void handle_message(Joueur* joueur, Message msg);
-void close_all();
+void close_all_connections();
+void close_server();
 void demarrer_partie();
 void demarrer_manche();
 void demarrer_tour();

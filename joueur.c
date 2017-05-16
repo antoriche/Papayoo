@@ -43,7 +43,10 @@ int main ( int argc,char**argv ){
   /*
     Connexion au serveur
   */
-  to_server_socket = connect_to_server(argv[2],port);
+  if((to_server_socket = connect_to_server(argv[2],port)) <0){
+    printf("demande de connection ratee\n");
+    exit(0);
+  }
 
   /*
     Inscription du joueur

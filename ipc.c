@@ -60,7 +60,7 @@ void cloturer_memoire(){
 	int mem_RC;
 	int mem_ID;
 	sem_t *mutex;
-sem_t *bd;
+	sem_t *bd;
 
 	SYS(mem_RC = shmget(KEY_RC, sizeof(int), IPC_CREAT | 0666));
 	SYS(shmctl(mem_RC,IPC_RMID,NULL));
@@ -132,7 +132,7 @@ struct_partagee lire_memoire(){
 
 	
 
-	if(mem_ID = shmget(KEY, sizeof(struct_partagee), 0444)){
+	if((mem_ID = shmget(KEY, sizeof(struct_partagee), 0444)) < 0){
 		struct_partagee ret;
 		ret.memoire_valide = 0;
 		return ret;

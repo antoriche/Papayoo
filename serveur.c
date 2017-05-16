@@ -32,6 +32,7 @@ int joueur_en_cours = 0;
 int end = FALSE;
 int annule = FALSE;
 
+int ma_socket;
 
 int main(int argc, char** argv){
 	
@@ -71,8 +72,9 @@ int main(int argc, char** argv){
 
     SYS(sigaction(SIGALRM, &timer, NULL));
 
-    int ma_socket = create_server_socket(port);
+    signal(SIGINT,close_server);
 
+    ma_socket = create_server_socket(port);
 	while(TRUE){
 		alarm(0);
 
@@ -128,7 +130,7 @@ int main(int argc, char** argv){
 					strcpy(ko.data.message, "Aucune place disponible\0");
 					envoyer_message(nouveau_client_fd,ko);
 					close(nouveau_client_fd);
-					fprintf(stderr, "Un client a essayé de se connecter mais il n'y avais plus de connections disponnible\n");
+					//fprintf(stderr, "Un client a essayé de se connecter mais il n'y avais plus de connections disponnible\n");
 				}else{
 					// ajouter le nouveau user
 					Joueur nouveau_client;
@@ -153,7 +155,7 @@ int main(int argc, char** argv){
 				}
 			}
 		}
-		close_all();
+		close_all_connections();
 		printf("Fin de la partie (%s)\n",annule?"annule":"ok");
 	}
 	fclose(err);
@@ -189,7 +191,7 @@ void handle_message(Joueur* client, Message msg){
 			return;
 		case ANNULE:
 			if(strlen(client->nom) == 0){
-				fprintf(stderr,"Un joueur non-inscrit s'est déconnecté\n");
+				//fprintf(stderr,"Un joueur non-inscrit s'est déconnecté\n");
 				int trouve = FALSE;
 				//Un client s'est déconnecté
 				for(i = 0 ; i < nb_clients ; i++){
@@ -258,7 +260,7 @@ void handle_message(Joueur* client, Message msg){
 	}
 }
 
-void close_all(){
+void close_all_connections(){
 	int i;
 	for(i = 0 ; i < nb_clients ; i++){
 		Message msg = {ANNULE};
@@ -267,7 +269,14 @@ void close_all(){
 		}
 		close(clients[i].fd);
 	}
-	//detacher(memoire);
+	nb_clients = 0;
+}
+void close_server(){
+	printf("fermeture du serveur\n");
+	close_all_connections();
+	close(ma_socket);
+	cloturer_memoire();
+	exit(0);
 }
 
 void handle_timer(int signal){
@@ -399,9 +408,21 @@ int attendre_message(int ma_socket, int* fds, int nb_fd, fd_set* set){
 	return activity;
 }
 
+/*
+*	Renvoi TRUE si une autre instance du serveur est en cours
+*/
 int checkForAnotherInstance(){
 	memoire = lire_memoire();
 	if(memoire.memoire_valide){
 		//verifier en se connectant au port du serveur
+		int resp;
+		if((resp = connect_to_server("localhost",memoire.port_actuel)) < 0){
+			cloturer_memoire();
+			return 0;
+		}
+		close(resp);
+		return 1;
+	}else{
+		return 0;
 	}
 }

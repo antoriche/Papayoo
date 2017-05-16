@@ -19,16 +19,19 @@ int create_server_socket(int port){
 	/* creation de socket */
 	if ((ma_socket = socket(AF_INET,SOCK_STREAM,0))== -1)
 	{
-	  printf("la creation rate\n");
+	  perror("erreur socket ");
 	  exit(0);
 	}
 	if((bind(ma_socket,(struct sockaddr *)&mon_address,sizeof(mon_address))) < 0){
-		printf(stderr,"Impossible de démarrer le serveur sur le port %d\n",port);
+		fprintf(stderr,"Impossible de démarrer le serveur sur le port %d ",port);
 		exit(1);
 	}
 
 	/* ecoute sur la socket */
-	listen(ma_socket,NOMBRE_JOUEURS_MAX);
+	if(listen(ma_socket,NOMBRE_JOUEURS_MAX) < 0){
+		perror("erreur listen ");
+		exit(1);
+	}
 	return ma_socket;
 }
 
@@ -61,8 +64,7 @@ int connect_to_server(char* ip,int port){
 	}
 	/* requete de connexion */
 	if(connect( to_server_socket, (struct sockaddr *)&serverSockAddr,sizeof(serverSockAddr)) < 0 ){
-		printf("demande de connection ratee\n");
-		exit(0);
+		return -1;
 	}
 	return to_server_socket;
 }
