@@ -39,17 +39,6 @@ FILE* err;
 int main(int argc, char** argv){
 	srand(time(NULL));
 
-	//tests
-	int nb_cartes,j;
-	Carte* cartes = paquet(&nb_cartes);
-	for(j = 0 ; j < 60 ; j++){
-		Carte c = getRandomCarte(cartes,&nb_cartes);
-		printf("%d) %s : %d cartes restantes\n",j,carte2str(c),nb_cartes);
-		if(c.valeur == CARTE_NULL){
-			printf("\t %d\n",c.couleur);
-		}
-	}
-
 	
 	int port;
 	if(argc < 2 || argc > 3){
@@ -272,7 +261,6 @@ void close_all_connections(){
 	int i;
 	for(i = 0 ; i < nb_clients ; i++){
 		Message msg = {ANNULE};
-		printf("client %d : %s\n",i,clients[i].nom);
 		if(annule){
 			envoyer_message(clients[i].fd,msg);
 		}

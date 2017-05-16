@@ -219,7 +219,7 @@ void handle_keyboard(char* msg){
       return;
     }
     mon_paquet[taille_paquet++] = cartes[carte_id]; // on ajoute la carte au paquet
-    cartes[carte_id] = cartes[nbCartes--]; // et on la retire de notre main
+    cartes[carte_id] = cartes[--nbCartes]; // et on la retire de notre main
     if(taille_paquet >= 5){
       Message m = {ENVOI_PAQUET};
       //m.data.cartes=mon_paquet;
@@ -236,11 +236,8 @@ void handle_keyboard(char* msg){
 }
 
 void afficher_cartes(){
-  Carte* ptr=cartes;
-  int i = 1;
-  while(ptr->valeur!=0){
-    printf("%d) %s\n",i,carte2str(*ptr));
-    i++;
-    ptr++;
+  int i = 0;
+  for(i = 0 ; i < nbCartes ; i++){
+    printf("%d) %s\n",i+1,carte2str(cartes[i]));
   }
 }

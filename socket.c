@@ -23,7 +23,7 @@ int create_server_socket(int port){
 	  exit(0);
 	}
 	if((bind(ma_socket,(struct sockaddr *)&mon_address,sizeof(mon_address))) < 0){
-		fprintf(stderr,"Impossible de démarrer le serveur sur le port %d ",port);
+		fprintf(stderr,"Impossible de démarrer le serveur sur le port %d\n",port);
 		exit(1);
 	}
 

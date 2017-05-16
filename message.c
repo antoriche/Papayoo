@@ -60,9 +60,9 @@ Carte getRandomCarte(Carte* paquet, int* nb_cartes){
 	}
 
 	int x = rand()%(*nb_cartes);
-	//memcpy(&ret,&paquet[x],sizeof(Carte));
+	int i;
 	ret = paquet[x];
-	paquet[x] = paquet[*nb_cartes];
+	paquet[x] = paquet[*nb_cartes-1];
 
 	*nb_cartes-=1;
 	return ret;
@@ -90,6 +90,7 @@ Carte* paquet(int* nb_cartes){
 	for( i = 40 ; i < 60 ; i++){
 		cartes[i].valeur = i-39;
 		cartes[i].couleur = PAYOO;
+		
 	}
 	return cartes;
 }
