@@ -9,7 +9,7 @@
  */
 #include "serveur.h"
 #define TIMEOUT_INSCRIPTION 5
-#define TIMEOUT_RESPONSE 10
+#define TIMEOUT_RESPONSE 30
 struct_partagee memoire;
 
 Joueur clients[NOMBRE_JOUEURS_MAX];
@@ -229,10 +229,6 @@ void handle_message(Joueur* client, Message msg){
 	}
 	switch(msg.type){
 		case ENVOI_PAQUET:
-			if(nb_cartes_par_joueur > 0){
-				bad_request(client,msg);
-				return;
-			}
 			memcpy(client->ecart,msg.data.cartes,sizeof(Carte)*5);
 			client->send_ecart = TRUE;
 			if(check_ecart()){
@@ -276,7 +272,7 @@ void close_all_connections(){
 	int i;
 	for(i = 0 ; i < nb_clients ; i++){
 		Message msg = {ANNULE};
-		printf("client %d : %s(%d)\n",i,clients[i].nom,clients[i].fd);
+		printf("client %d : %s\n",i,clients[i].nom);
 		if(annule){
 			envoyer_message(clients[i].fd,msg);
 		}
@@ -315,6 +311,7 @@ void demarrer_partie(){
 }
 
 void demarrer_manche(){
+	printf("debut de manche\n");
 	manche++;
 	int nb_cartes;
 	Carte* cartes = paquet(&nb_cartes);
@@ -336,7 +333,6 @@ void demarrer_manche(){
 		envoyer_message(memoire.joueurs[i].fd,distribution);
 	}
 	nb_cartes_par_joueur = 60/memoire.nb_joueurs;
-	demarrer_tour();
 }
 
 void demarrer_tour(){

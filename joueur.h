@@ -25,6 +25,7 @@
 #define SYS(call) ((call) == -1) ? (perror(#call ": ERROR"),exit(1)) : 0
 
 void handle_message(Message message);
+void handle_keyboard(char* msg);
 void afficher_cartes();
 
 

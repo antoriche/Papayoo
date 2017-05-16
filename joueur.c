@@ -14,9 +14,13 @@
 
 
 int to_server_socket = -1;
-Carte* cartes;
+Carte cartes[30];
 int nbCartes;
 int score;
+
+int selection_paquet = FALSE; //indique que le client attend que l'on rentre la selection du paquet au clavier
+int taille_paquet = 0;
+Carte mon_paquet[5];
 
 
 int main ( int argc,char**argv ){
@@ -72,7 +76,7 @@ int main ( int argc,char**argv ){
   while(1){
 
     FD_ZERO(&set);
-    FD_SET(0,&set);
+    FD_SET(STDIN_FILENO,&set);
     FD_SET(to_server_socket,&set);
     
     retval=select(to_server_socket+1,&set,NULL,NULL,&alive);
@@ -85,12 +89,12 @@ int main ( int argc,char**argv ){
       if(FD_ISSET(to_server_socket,&set)){
         Message m=lire_message(to_server_socket);
         handle_message(m);
-
-     
-        
-        
       }
-      
+      if(FD_ISSET(STDIN_FILENO,&set)){
+        char buffer[255];
+        fgets(buffer,255,stdin);
+        handle_keyboard(buffer);
+      }
     }
 
   }
@@ -151,36 +155,30 @@ void handle_message(Message message){
     case DISTRIBUTION_CARTES : 
       printf("Cartes distribuees\n");
       printf("Test1\n");
-      cartes=message.data.cartes;
-      //memcpy(cartes,message.data.cartes,sizeof(Carte)*30);
+      //cartes=message.data.cartes;
+      memcpy(cartes,message.data.cartes,sizeof(Carte)*30);
       printf("Test2\n");
       Carte* ptr=cartes;
-    i=0;
-    while(ptr->valeur!=0){
-      i++;
-      printf("%d. %s\n",i,carte2str(*ptr));
-      ptr++;
-
-    }
+      i=0;
+      while(ptr->valeur!=0){
+        i++;
+        printf("%d) %s\n",i,carte2str(*ptr));
+        ptr++;
+      }
+      nbCartes = i;
+      selection_paquet = TRUE;
       break;
 
     case DISTRIBUTION_PAQUET : 
       printf("Paquet distribue\n");
-      cartes=message.data.cartes;
+      //cartes=message.data.cartes;
+      memcpy(&cartes[25],message.data.cartes,sizeof(Carte)*5);
+      nbCartes+=5;
       break;
 
     case DEMANDER_CARTE : 
-      printf("Quelle carte voulez vous jouer?");
-      ptr=cartes;
-    
-      while(ptr->valeur!=0){
-        printf("%d. %s\n",i+1,carte2str(*ptr));
-        ptr++;
-    }
-      char val[3];
-      int size;
-      SYS((size=read(0,val,2)));
-      val[size]="\0";
+      afficher_cartes();
+      printf("Quelle carte voulez vous jouer? \n");
       break;
 
     case AVERTIR_PLI_EN_COURS : 
@@ -212,11 +210,37 @@ void handle_message(Message message){
 
   }
 }
+
+void handle_keyboard(char* msg){
+  if(selection_paquet){
+    int carte_id = atoi(msg)-1;
+    if(carte_id < 0 || carte_id >= nbCartes){ // se protege contre les cartes non valides
+      fprintf(stderr,"carte non valide\n");
+      return;
+    }
+    mon_paquet[taille_paquet++] = cartes[carte_id]; // on ajoute la carte au paquet
+    cartes[carte_id] = cartes[nbCartes--]; // et on la retire de notre main
+    if(taille_paquet >= 5){
+      Message m = {ENVOI_PAQUET};
+      //m.data.cartes=mon_paquet;
+      memcpy(m.data.cartes,mon_paquet,sizeof(Carte)*5);
+      envoyer_message(to_server_socket,m);
+      selection_paquet = FALSE;
+    }else{
+      afficher_cartes();
+      printf("-------------------\n");
+      printf("%s a été ajouté au paquet\n", carte2str(mon_paquet[taille_paquet-1]) );
+      printf("Carte suivante : \n");
+    }
+  }
+}
+
 void afficher_cartes(){
   Carte* ptr=cartes;
-  int i = 0;
+  int i = 1;
   while(ptr->valeur!=0){
-    printf("%d. %s\n",i++,carte2str(*ptr));
+    printf("%d) %s\n",i,carte2str(*ptr));
+    i++;
     ptr++;
   }
 }
