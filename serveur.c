@@ -380,7 +380,8 @@ void cloturer_tour(){
 	int joueur_max;
 
 	for( i = 0 ; i < memoire.nb_joueurs ; i++){
-		if(++j >= memoire.nb_joueurs) j = 0;
+		j++;
+		if(j >= memoire.nb_joueurs) j = 0;
 		if(memoire.pli_en_cours[i].valeur > max_carte && memoire.pli_en_cours[i].couleur == memoire.couleur_tour){
 			max_carte = memoire.pli_en_cours[i].valeur;
 			joueur_max = j;
@@ -456,7 +457,7 @@ void distribuer_paquet(){
 		}
 		if(inscrit){
 			Message distribution = {DISTRIBUTION_PAQUET};
-			memcpy(&distribution.data.cartes,c->ecart,sizeof(Carte)*5);
+			memcpy(distribution.data.cartes,c->ecart,sizeof(Carte)*5);
 			for( j = 5 ; j < 30 ; j++){
 				distribution.data.cartes[j].valeur = CARTE_NULL;
 			}
