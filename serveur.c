@@ -305,6 +305,7 @@ void close_all_connections(){
 }
 void close_server(){
 	printf("fermeture du serveur\n");
+	annule = TRUE;
 	close_all_connections();
 	close(ma_socket);
 	cloturer_memoire();
