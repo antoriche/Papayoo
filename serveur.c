@@ -256,9 +256,6 @@ void handle_message(Joueur* client, Message msg){
 				envoyer_message(memoire.joueurs[i].fd,resp);
 			}
 
-			resp.type = DEMANDER_CARTE;
-			envoyer_message(memoire.joueurs[joueur_en_cours].fd,resp);
-
 			if(memoire.taille_pli_en_cours >= memoire.nb_joueurs){ // cloture le tour
 				cloturer_tour();
 				if(nb_cartes_par_joueur>nb_cartes_par_joueur_initial-NB_PLI_MAX)demarrer_tour();
@@ -270,6 +267,8 @@ void handle_message(Joueur* client, Message msg){
 						envoyer_message(memoire.joueurs[i].fd,resp);
 					}
 				}
+			}else{
+				demander_carte();
 			}
 			return;
 		case ENVOI_POINTS:
@@ -466,6 +465,9 @@ void distribuer_paquet(){
 			envoyer_message(clients[i].fd,distribution);
 			c = &clients[i];
 		}
+	}
+	for(i = 0 ; i < nb_clients ; i++){
+		clients[i].send_ecart = FALSE;
 	}
 }
 

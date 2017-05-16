@@ -174,6 +174,7 @@ void handle_message(Message message){
       nbCartes = i;
       taille_paquet=0;
       selection_paquet = TRUE;
+      selection_carte = FALSE;
       
       break;
 
@@ -188,6 +189,7 @@ void handle_message(Message message){
       afficher_cartes();
       printf("Quelle carte voulez vous jouer? \n");
       selection_carte=TRUE;
+      selection_paquet = FALSE;
       break;
 
     case AVERTIR_PLI_EN_COURS : 
