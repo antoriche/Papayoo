@@ -8,29 +8,36 @@
 #############################################################
 */
 
-#define KEY 1002
-#define KEY_RC 2002
-#define MUTEX "/MUTEX"
-#define BD "/BD"
+#define KEY 1000
+#define KEY_RC 2000
+#define MUTEX "/mutexxx"
+#define BD "/bddd"
 
 #define ACTIVER_MEMOIRE_PARTAGEE 1 //Debug
 
 #include "ipc.h"
 
-sem_t *mutex;
-sem_t *bd;
 
 
-
-
-void init_mem_RC(){
-	int* rc;
+void init_sem(){
+	sem_t *mutex;
+	sem_t *bd;
+	int *rc;
 	int mem_RC;
-	if ((mem_RC = shmget(KEY_RC, sizeof(int), IPC_CREAT | 0666)) < 0)	
-		{
-			perror("erreur shmget");											
-			exit(1);
-		}
+	
+/*
+	SYS(bd = sem_open(BD,0));
+	SYS(mutex = sem_open(MUTEX,0));
+	sem_unlink(bd);
+	sem_unlink(mutex);*/
+	SYS(sem_open(BD,O_CREAT,0666,1));
+	SYS(sem_open(MUTEX,O_CREAT,0666,1));
+	
+
+	
+
+	SYS(mem_RC = shmget(KEY_RC, sizeof(int), IPC_CREAT | 0666));	
+		
 	if ((rc = (int*)shmat(mem_RC, NULL, 0)) == (int*) -1)	
 		{
 			perror("erreur shmat");											
@@ -38,25 +45,38 @@ void init_mem_RC(){
 		}
 	*rc=0;
 	shmdt(rc);
+
+}
+
+
+
+
+void init_mem_RC(){
+	
+	
+	
 }
 void cloturer_memoire(){
 	int mem_RC;
 	int mem_ID;
+	sem_t *mutex;
+sem_t *bd;
+
 	SYS(mem_RC = shmget(KEY_RC, sizeof(int), IPC_CREAT | 0666));
 	SYS(shmctl(mem_RC,IPC_RMID,NULL));
 	SYS(mem_ID = shmget(KEY, sizeof(struct_partagee), IPC_CREAT | 0666));
 	SYS(shmctl(mem_ID,IPC_RMID,NULL));
 
 	if((bd = sem_open(BD,O_CREAT,0666,1))==NULL){
-		perror("Erreur semaphore bd\n");
+		printf("Erreur semaphore bd 1\n");
 		exit(1);
 	}
 	if((mutex=sem_open(MUTEX,O_CREAT,0666,1))==NULL){
-		perror("Erreur semaphore mutex\n");
+		printf("Erreur semaphore mutex\n");
 		exit(1);
 	}
-	sem_destroy(bd);
-	sem_destroy(mutex);
+	sem_unlink(bd);
+	sem_unlink(mutex);
 
 }
 
@@ -65,24 +85,25 @@ void cloturer_memoire(){
 
 struct_partagee test;
 void ecrire_memoire(struct_partagee data){
-	int mem_ID;
 	if(!ACTIVER_MEMOIRE_PARTAGEE){
 		test = data;
 		return;
 	}
+	sem_t *bd;
+
+	int mem_ID;
+	
 	struct_partagee *ptr_mem_partagee;
-	if((bd = sem_open(BD,O_CREAT,0666,1))==NULL){
-		perror("Erreur semaphore bd\n");
-		exit(1);
-	}
-	
-	
-	sem_wait(&bd);
+	bd=sem_open(BD,0);
 	if ((mem_ID = shmget(KEY, sizeof(struct_partagee), IPC_CREAT | 0666)) < 0)	
 	{
 		perror("erreur shmget1");											
 		exit(1);
 	}
+	
+	
+	sem_wait(bd);
+	
 	if ((ptr_mem_partagee = (struct_partagee*)shmat(mem_ID, NULL, 0)) == (struct_partagee*) -1)	
 	{
 		perror("erreur shmat");											
@@ -90,62 +111,71 @@ void ecrire_memoire(struct_partagee data){
 	}
 	*ptr_mem_partagee=data;
 	shmdt(ptr_mem_partagee);
-	sem_post(&bd);
+	sem_post(bd);
 }
 
 struct_partagee lire_memoire(){
 	if(!ACTIVER_MEMOIRE_PARTAGEE)return test;
+
+	sem_t *mutex;
+	sem_t *bd;
+	int *rc;
+	
 	int mem_ID; 
 	int mem_RC;
-	int *rc;
+	
 	struct_partagee* ptr_mem_partagee; 
 	struct_partagee data;
-	if((bd = sem_open(BD,O_CREAT,0666,1))==NULL){
-		perror("Erreur semaphore bd\n");
-		exit(1);
-	}
-	if((mutex=sem_open(MUTEX,O_CREAT,0666,1))==NULL){
-		perror("Erreur semaphore mutex\n");
-		exit(1);
-	}
+
+	SYS(bd = sem_open(BD,0));
+	SYS(mutex = sem_open(MUTEX,0));
+
 	
-		sem_wait(&mutex);
 
-	if ((mem_RC = shmget(KEY_RC, sizeof(int), IPC_CREAT | 0666)) < 0)	
-		{
-			perror("erreur shmget");											
-			exit(1);
-		}
-	if ((rc = (int*)shmat(mem_RC, NULL, 0)) == (int*) -1)	
-		{
-			perror("erreur shmat");											
-			exit(1);
-		}
+	SYS(mem_ID = shmget(KEY, sizeof(struct_partagee), 0444));
+	SYS(mem_RC = shmget(KEY_RC, sizeof(int), IPC_CREAT | 0666));
+	
+	
+	sem_wait(mutex);
 
+	
+		
+	if ((rc = (int*)shmat(mem_RC, NULL, 0)) == (int*) -1){
+		perror("erreur shmat");											
+		exit(1);
+	}
+printf("val mutex = %d\n",*mutex);
+	printf("val bd = %d\n",*bd);
 
 		
-		*rc=*rc+1;
-		if(*rc==1) sem_wait(&bd);
-		sem_post(&mutex);
-
-		if ((mem_ID = shmget(KEY, sizeof(struct_partagee), 0444)) < 0)	
-		{
-			perror("shmget");											
-			exit(1);
-		}
-		if ((ptr_mem_partagee = (struct_partagee*)shmat(mem_ID, NULL, 0)) == (struct_partagee*) -1)
-		{
+		*rc++;
+		if(*rc==1){
+			sem_wait(bd);
+		} 
+		sem_post(mutex);
+		printf("val mutex = %d\n",*mutex);
+	printf("val bd = %d\n",*bd);
+		
+		if ((ptr_mem_partagee = (struct_partagee*)shmat(mem_ID, NULL, 0)) == (struct_partagee*) -1){
 			perror("shmat");											
 			exit(1);
 		}
-		sem_wait(&mutex);
-		*rc=*rc-1;
-		if(*rc==0) sem_post(&bd);
-		sem_post(&mutex);
-
 		data=(*ptr_mem_partagee);
-		shmdt(rc);
-		shmdt(ptr_mem_partagee);
+
+		sem_wait(mutex);
+		printf("val mutex = %d\n",*mutex);
+	printf("val bd = %d\n",*bd);
+		*rc--;
+		if(*rc==0){ 
+			sem_post(bd);
+		}
+		sem_post(mutex);
+		printf("val mutex = %d\n",*mutex);
+	printf("val bd = %d\n",*bd);
+
+		
+		//shmdt(rc);
+		//shmdt(ptr_mem_partagee);
 		return data;
 }
 

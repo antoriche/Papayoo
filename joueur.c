@@ -14,6 +14,9 @@
 
 
 int to_server_socket = -1;
+Carte* cartes;
+int nbCartes;
+int score;
 
 
 int main ( int argc,char**argv ){
@@ -27,8 +30,6 @@ int main ( int argc,char**argv ){
     exit(1);
   }
 
-  Carte* cartes;
-  int nbCartes;
 
 
  
@@ -80,7 +81,7 @@ int main ( int argc,char**argv ){
     }else{
       if(FD_ISSET(to_server_socket,&set)){
         Message m=lire_message(to_server_socket);
-        handle_message(m,&cartes,&nbCartes);
+        handle_message(m);
 
      
         
@@ -99,7 +100,8 @@ int main ( int argc,char**argv ){
   return 0;
 }
 
-void handle_message(Message message,Carte** cartes,int* nbCartes){
+void handle_message(Message message){
+  struct_partagee memoire;
   int i;
   Message resp;
   switch(message.type){
@@ -145,26 +147,37 @@ void handle_message(Message message,Carte** cartes,int* nbCartes){
 
     case DISTRIBUTION_CARTES : 
       printf("Cartes distribuees\n");
-      
-      *cartes=message.data.cartes;
-      printf("nombre de cartes : %s\n",message.data.message);
-      *nbCartes=atoi(message.data.message);
-      /*
-      printf("Nb cartes = %d\n", atoi(message.data.message));
-      for(i=0;i<;i++){
-        printf("Test1\n");
-        printf("%d. %s\n",i+1,carte2str(*cartes[i]));
-      }*/
+      printf("Test1\n");
+      cartes=message.data.cartes;
+      //memcpy(cartes,message.data.cartes,sizeof(Carte)*30);
+      printf("Test2\n");
+      Carte* ptr=cartes;
+    i=0;
+    while(ptr->valeur!=0){
+      i++;
+      printf("%d. %s\n",i,carte2str(*ptr));
+      ptr++;
+
+    }
       break;
 
     case DISTRIBUTION_PAQUET : 
-      printf("Cartes distribuees\n");
-      *cartes=message.data.cartes;
-
-      *nbCartes=atoi(message.data.message);
+      printf("Paquet distribue\n");
+      cartes=message.data.cartes;
       break;
 
     case DEMANDER_CARTE : 
+      printf("Quelle carte voulez vous jouer?");
+      ptr=cartes;
+    
+      while(ptr->valeur!=0){
+        printf("%d. %s\n",i+1,carte2str(*ptr));
+        ptr++;
+    }
+      char val[3];
+      int size;
+      SYS((size=read(0,val,2)));
+      val[size]="\0";
       break;
 
     case AVERTIR_PLI_EN_COURS : 
@@ -172,14 +185,36 @@ void handle_message(Message message,Carte** cartes,int* nbCartes){
       break;
 
     case ENVOI_PLI : 
+      memoire=lire_memoire();
+      Color couleur_tour=memoire.couleur_tour;
+      ptr= message.data.cartes;
+      while(ptr->valeur!=0){
+        if(ptr->couleur==PAYOO){
+          score+=ptr->valeur;
+        }else if(ptr->couleur==couleur_tour){
+          score+=ptr->valeur;
+        }
+        ptr++;
+      }
       break;
 
     case COMPTER_POINTS : 
+
+
       break;
 
     case FIN_PARTIE : 
       printf("La partie actuelle est finie.\n");
       break;
 
+  }
+
+  void afficher_cartes(){
+    Carte* ptr=cartes;
+    
+    while(ptr->valeur!=0){
+      printf("%d. %s\n",i+1,carte2str(*ptr));
+      ptr++;
+    }
   }
 }

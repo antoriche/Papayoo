@@ -53,6 +53,7 @@ int main(int argc, char** argv){
 			dup2(fileno(err), STDERR_FILENO);
 		}
 	}
+	init_sem();
 
 	srand(time(NULL));
 

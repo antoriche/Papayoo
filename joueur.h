@@ -22,7 +22,10 @@
 #include "message.h"
 #include "socket.h"
 
-void handle_message(Message message,Carte**cartes,int* nbCartes);
+#define SYS(call) ((call) == -1) ? (perror(#call ": ERROR"),exit(1)) : 0
+
+void handle_message(Message message);
+void afficher_cartes();
 
 
 
