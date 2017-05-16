@@ -297,25 +297,25 @@ void afficher_pli_en_cours(){
   struct_partagee memoire = lire_memoire();
   Color c=memoire.couleur_tour;
   char couleur[10];
-  if(memoire.taille_pli_en_cours!=0){}
-  switch(c){
-    case CARREAU:
-      couleur="carreau\0";
-      break;
-    case PIQUE:
-      couleur="pique\0";
-      break;
-    case TREFLE:
-      couleur="trefle\0";
-      break;
-    case COEUR:
-      couleur="coeur\0";
-      break;
-    case PAYOO:
-      couleur="payoo\0";
-      break;
+  if(memoire.taille_pli_en_cours!=0){
+    switch(c){
+     case CARREAU:
+        sprintf(couleur,"carreau\0");
+        break;
+      case PIQUE:
+        sprintf(couleur,"pique\0");
+        break;
+      case TREFLE:
+        sprintf(couleur,"trefle\0");
+        break;
+      case COEUR:
+        sprintf(couleur,"coeur\0");
+        break;
+      case PAYOO:
+        sprintf(couleur,"payoo\0");
+        break;
+    }
   }
-}
   printf("Couleur du pli en cours : %s\n",couleur);
   int i;
   for(i=0;i<memoire.taille_pli_en_cours;i++){
