@@ -336,6 +336,7 @@ void demarrer_manche(){
 }
 
 void demarrer_tour(){
+	printf("debut de tour\n");
 	demander_carte();
 }
 
@@ -366,10 +367,16 @@ void demander_carte(){
 }
 
 int check_ecart(){
-	int i;
+	int i,j;
 	int ok = TRUE;
-	for(i = 0 ; i < memoire.nb_joueurs ; i++){
-		if(!memoire.joueurs[i].send_ecart){
+	for(i = 0 ; i < nb_clients ; i++){
+		int inscrit = FALSE;
+		for(j = 0 ; j < memoire.nb_joueurs ; j++){
+			if(memoire.joueurs[j].fd == clients[i].fd){
+				inscrit = TRUE;
+			}
+		}
+		if(!clients[i].send_ecart && inscrit){
 			ok=FALSE;
 			break;
 		}
