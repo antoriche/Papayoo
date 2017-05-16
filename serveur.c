@@ -8,8 +8,8 @@
 ############################################################
  */
 #include "serveur.h"
-#define TIMEOUT_INSCRIPTION 10
-#define TIMEOUT_RESPONSE 30
+#define TIMEOUT_INSCRIPTION 5
+#define TIMEOUT_RESPONSE 10
 struct_partagee memoire;
 
 Joueur clients[NOMBRE_JOUEURS_MAX];
@@ -34,7 +34,22 @@ int annule = FALSE;
 
 int ma_socket;
 
+FILE* err;
+
 int main(int argc, char** argv){
+	srand(time(NULL));
+
+	//tests
+	int nb_cartes,j;
+	Carte* cartes = paquet(&nb_cartes);
+	for(j = 0 ; j < 60 ; j++){
+		Carte c = getRandomCarte(cartes,&nb_cartes);
+		printf("%d) %s : %d cartes restantes\n",j,carte2str(c),nb_cartes);
+		if(c.valeur == CARTE_NULL){
+			printf("\t %d\n",c.couleur);
+		}
+	}
+
 	
 	int port;
 	if(argc < 2 || argc > 3){
@@ -45,7 +60,6 @@ int main(int argc, char** argv){
 		return 1;
 	}
 
-	FILE* err;
 	if(argc == 3){
 		err = fopen(argv[2],"w");
 		if(err==NULL) {
@@ -62,8 +76,6 @@ int main(int argc, char** argv){
 	memoire.port_actuel = port;
 
 	init_sem();
-
-	srand(time(NULL));
 
 	struct sigaction timer;
     timer.sa_handler = &handle_timer;
@@ -114,7 +126,7 @@ int main(int argc, char** argv){
 				if (errno == EINTR)
             		continue; //SIGALRM
 				fprintf(stderr,"erreur select\n");
-				return 2;
+				close_server();
 			}
 
 			// Nouvelle connexion d'un user
@@ -158,7 +170,7 @@ int main(int argc, char** argv){
 		close_all_connections();
 		printf("Fin de la partie (%s)\n",annule?"annule":"ok");
 	}
-	fclose(err);
+	close_server();
 	return 0;
 }
 
@@ -264,6 +276,7 @@ void close_all_connections(){
 	int i;
 	for(i = 0 ; i < nb_clients ; i++){
 		Message msg = {ANNULE};
+		printf("client %d : %s(%d)\n",i,clients[i].nom,clients[i].fd);
 		if(annule){
 			envoyer_message(clients[i].fd,msg);
 		}
@@ -276,6 +289,7 @@ void close_server(){
 	close_all_connections();
 	close(ma_socket);
 	cloturer_memoire();
+	if(err != NULL)fclose(err);
 	exit(0);
 }
 
