@@ -302,15 +302,25 @@ void cloturer_manche(){
 		end = TRUE;
 	}else{
 		demarrer_manche();
-		printf("LOLOL\n");
 	}
 }
 
 void close_all_connections(){
 	int i;
+	Message msg;
+	msg.type = annule?ANNULE:FIN_PARTIE;
+	if(!annule){
+		for( i = 0 ; i < memoire.nb_joueurs ; i++ ){
+			strcat(msg.data.message,"\t- ");
+			strcat(msg.data.message,memoire.joueurs[i].nom);
+			strcat(msg.data.message," : ");
+			char score_str[4];
+			sprintf(score_str,"%d\0",score);
+			strcat(msg.data.message,score_str);
+			strcat(msg.data.message,"\n");
+		}
+	}
 	for(i = 0 ; i < nb_clients ; i++){
-		Message msg;
-		msg.type = annule?ANNULE:FIN_PARTIE;
 		envoyer_message(clients[i].fd,msg);
 		close(clients[i].fd);
 	}
