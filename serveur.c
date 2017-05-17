@@ -287,7 +287,7 @@ void handle_message(Joueur* client, Message msg){
 			return;
 		case ENVOI_POINTS:
 			points = atoi(msg.data.message);
-			client->score = client->score+points;
+			client->score += points;
 			client->score_en_attente = FALSE;
 			if(check_score()){
 				cloturer_manche();
@@ -309,15 +309,18 @@ void close_all_connections(){
 	int i;
 	Message msg;
 	msg.type = annule?ANNULE:FIN_PARTIE;
+	strcpy(msg.data.message,"\0");
 	if(!annule){
+		printf("fin de partie\n");
 		for( i = 0 ; i < memoire.nb_joueurs ; i++ ){
-			strcat(msg.data.message,"\t- ");
+			printf("\t- %s : %d\n",memoire.joueurs[i].nom,memoire.joueurs[i].score);
+			strcat(msg.data.message,"\t- \0");
 			strcat(msg.data.message,memoire.joueurs[i].nom);
-			strcat(msg.data.message," : ");
-			char score_str[4];
+			strcat(msg.data.message," : \0");
+			char score_str[3];
 			sprintf(score_str,"%d\0",memoire.joueurs[i].score);
 			strcat(msg.data.message,score_str);
-			strcat(msg.data.message,"\n");
+			strcat(msg.data.message,"\n\0");
 		}
 	}
 	for(i = 0 ; i < nb_clients ; i++){
