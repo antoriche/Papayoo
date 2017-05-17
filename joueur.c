@@ -195,6 +195,7 @@ void handle_message(Message message){
       break;
 
     case AVERTIR_PLI_EN_COURS : 
+      clear();
       afficher_pli_en_cours();
       break;
 
@@ -245,6 +246,7 @@ void handle_keyboard(char* msg){
 }
 
 void envoyer_paquet(char* msg){
+  clear();
   int carte_id = atoi(msg)-1;
     if(carte_id < 0 || carte_id >= nbCartes){ // se protege contre les cartes non valides
       fprintf(stderr,"carte non valide\n");
@@ -305,7 +307,8 @@ void afficher_pli_en_cours(){
   Color c=memoire.couleur_tour;
   
   printf("Couleur du pli en cours : ");
-  afficher(c);
+  if(memoire.taille_pli_en_cours!=0)
+    afficher(c);
 
   int i;
   for(i=0;i<memoire.taille_pli_en_cours;i++){
