@@ -360,10 +360,8 @@ void demarrer_manche(){
 	Carte* cartes = paquet(&nb_cartes);
 	const int NB_CARTES_TOTAL = nb_cartes;
 	int i,j;
-	printf("QSFDFDSQFQZF1\n");
 	memoire.papayoo.couleur = rand()%4;
 	ecrire_memoire(memoire);
-	printf("QSFDFDSQFQZF2\n");
 	for(i = 0 ; i < memoire.nb_joueurs ; i++){
 		Carte main[30];
 		for(j = 0 ; j < NB_CARTES_TOTAL/memoire.nb_joueurs ; j++){
@@ -375,9 +373,7 @@ void demarrer_manche(){
 		Message distribution = {DISTRIBUTION_CARTES};
 		memcpy(distribution.data.cartes,main,sizeof(Carte)*30);
 		envoyer_message(memoire.joueurs[i].fd,distribution);
-		printf("QSFDFDSQFQZF3\n");
 	}
-	printf("QSFDFDSQFQZF4\n");
 	nb_cartes_par_joueur = 60/memoire.nb_joueurs;
 	nb_cartes_par_joueur_initial = 60/memoire.nb_joueurs;
 	joueur_en_cours = rand()%memoire.nb_joueurs;
