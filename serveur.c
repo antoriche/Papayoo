@@ -348,6 +348,7 @@ void demarrer_manche(){
 	int i,j;
 
 	memoire.papayoo.couleur = rand()%4;
+	ecrire_memoire(memoire);
 
 	for(i = 0 ; i < memoire.nb_joueurs ; i++){
 		Carte main[30];
