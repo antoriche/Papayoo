@@ -19,7 +19,6 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-#include "message.h"
 #include "socket.h"
 #include "utils.h"
 
@@ -27,8 +26,14 @@
 
 void handle_message(Message message);
 void handle_keyboard(char* msg);
+void envoyer_points();
+void recevoir_pli(Message message);
+void envoyer_paquet(char* msg);
+
 void choisir_carte_a_jouer(int carte_id);
+void afficher_pli_en_cours();
 void afficher_cartes();
+
 
 
 

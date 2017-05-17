@@ -15,8 +15,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-
-#include "message.h"
+#include "utils.h"
 #include "socket.h"
 
 #ifndef _MEMOIRE_PARTAGEE_H_

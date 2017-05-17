@@ -79,7 +79,9 @@ int main ( int argc,char**argv ){
     FD_ZERO(&set);
     FD_SET(STDIN_FILENO,&set);
     FD_SET(to_server_socket,&set);
-    
+    /*
+      Initialisation du select
+    */
     retval=select(to_server_socket+1,&set,NULL,NULL,&alive);
     if(retval==-1){
       perror("Erreur select");
@@ -129,17 +131,6 @@ void handle_message(Message message){
     case INSCRIPTION_OK : 
       printf("Vous êtes bien inscrit!\n");
   
-      //TEST ACCES MEMOIRE PARTAGEE
-      /*struct_partagee memoire = lire_memoire();  
-      Carte* ptr=memoire.pli_en_cours; 
-      printf("Nombre de joueurs : %d\n",memoire.nb_joueurs);
-      printf("Taille du pli : %d\n",memoire.taille_pli_en_cours);
-      printf("Pli  : \n");
-      int i = 0;
-      for(i = 0 ; i < memoire.taille_pli_en_cours ; i++){
-        printf("%s\n",carte2str(ptr[i]));
-      }*/
-      
       break;
 
     case INSCRIPTION_KO : 
@@ -161,7 +152,6 @@ void handle_message(Message message){
 
     case DISTRIBUTION_CARTES : 
       printf("Cartes distribuees\n");
-      //cartes=message.data.cartes;
       score=0;
       memcpy(cartes,message.data.cartes,sizeof(Carte)*30);
       Carte* ptr=cartes;
@@ -182,7 +172,6 @@ void handle_message(Message message){
 
     case DISTRIBUTION_PAQUET : 
       printf("Paquet distribue\n");
-      //cartes=message.data.cartes;
       memcpy(&cartes[nbCartes],message.data.cartes,sizeof(Carte)*5);
       nbCartes+=5;
       break;
@@ -259,7 +248,6 @@ void envoyer_paquet(char* msg){
     cartes[carte_id] = cartes[--nbCartes]; // et on la retire de notre main
     if(taille_paquet >= 5){
       Message m = {ENVOI_PAQUET};
-      //m.data.cartes=mon_paquet;
       memcpy(m.data.cartes,mon_paquet,sizeof(Carte)*5);
       envoyer_message(to_server_socket,m);
       printf("Paquet envoye\n");
@@ -335,6 +323,3 @@ void afficher_cartes(){
   }
 }
 
-void clear(){
-  system("clear");
-}

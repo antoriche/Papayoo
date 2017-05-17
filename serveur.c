@@ -21,9 +21,6 @@ struct_partagee memoire;
 Joueur clients[NOMBRE_JOUEURS_MAX];
 int nb_clients = 0;
 
-//Joueur* inscrits[NOMBRE_JOUEURS_MAX];
-//int nb_joueurs = 0;
-
 int timer_inscription_ecoule = FALSE;
 int partie_en_cours = FALSE;
 int distribution_paquet = FALSE;
@@ -32,9 +29,6 @@ int manche = 0;
 int nb_cartes_par_joueur = 0;
 int nb_cartes_par_joueur_initial = 0;
 int joueur_en_cours = 0;
-//Color couleur_tour;
-//Carte* pli_en_cours[NOMBRE_JOUEURS_MAX];
-//int taille_pli_en_cours;
 
 int end = FALSE;
 int annule = FALSE;
@@ -139,7 +133,6 @@ int main(int argc, char** argv){
 					strcpy(ko.data.message, "Aucune place disponible\0");
 					envoyer_message(nouveau_client_fd,ko);
 					close(nouveau_client_fd);
-					//fprintf(stderr, "Un client a essayé de se connecter mais il n'y avais plus de connections disponnible\n");
 				}else{
 					// ajouter le nouveau user
 					Joueur nouveau_client;
@@ -149,7 +142,6 @@ int main(int argc, char** argv){
 					strcpy(nouveau_client.nom,"\0");
 					memcpy(&clients[nb_clients],&nouveau_client,sizeof(Joueur));
 					nb_clients++;
-					//printf("nouvelle connection\n");
 				}
 			}
 			for(i = 0 ; i < nb_clients ; i++){
@@ -196,14 +188,12 @@ void handle_message(Joueur* client, Message msg){
 				if(memoire.nb_joueurs >= NOMBRE_JOUEURS_MAX || timer_inscription_ecoule){
 					alarm(0);
 					kill(getpid(),SIGALRM);
-					//handle_timer(SIGALRM);
 				}
 				ecrire_memoire(memoire);
 			}
 			return;
 		case ANNULE:
 			if(strlen(client->nom) == 0){
-				//fprintf(stderr,"Un joueur non-inscrit s'est déconnecté\n");
 				int trouve = FALSE;
 				//Un client s'est déconnecté
 				for(i = 0 ; i < nb_clients ; i++){
@@ -263,11 +253,6 @@ void handle_message(Joueur* client, Message msg){
 				if(nb_cartes_par_joueur>nb_cartes_par_joueur_initial-NB_PLI_MAX)demarrer_tour();
 				else{
 					// attend les scores puis cloture la manche
-					/*for(i = 0 ; i < memoire.nb_joueurs ; i++){
-						memoire.joueurs[i].score_en_attente = TRUE;
-						resp.type = COMPTER_POINTS;
-						envoyer_message(memoire.joueurs[i].fd,resp);
-					}*/
 					for(i = 0 ; i < nb_clients ; i++){
 						int inscrit = FALSE;
 						for(j = 0 ; j < memoire.nb_joueurs ; j++){

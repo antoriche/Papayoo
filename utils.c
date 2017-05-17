@@ -14,9 +14,6 @@
 
 
 
-
-
-
 Message lire_message(int fd){
 	Message message;
 	int l = read(fd,&message, sizeof(Message));
@@ -68,7 +65,6 @@ void carte2str(Carte c){
             couleurOff();
             break;
     }
-	//printf(ret);
 	
 }
 
@@ -150,4 +146,8 @@ void afficher(int couleur){
             break;
     }
     return;
+}
+
+void clear(){
+  system("clear");
 }

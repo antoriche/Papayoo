@@ -26,7 +26,6 @@
 #include <sys/select.h>
 #include <fcntl.h>
 
-#include "message.h"
 #include "ipc.h"
 #include "socket.h"
 #include "utils.h"

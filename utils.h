@@ -77,7 +77,7 @@ void carte2str(Carte c);
 Carte getRandomCarte(Carte* paquet,int *nb_cartes);
 Carte* paquet(int* nb_cartes);
 void afficher(int couleur);
-
+void clear();
 
 
 
