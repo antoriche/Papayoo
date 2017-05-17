@@ -395,6 +395,7 @@ void cloturer_tour(){
 	envoyer_message(memoire.joueurs[joueur_max].fd,pli);
 	joueur_en_cours = joueur_max;
 	memoire.taille_pli_en_cours = 0;
+	memoire.couleur_tour = -1;
 	ecrire_memoire(memoire);
 }
 
