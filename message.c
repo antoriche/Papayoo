@@ -54,7 +54,7 @@ void carte2str(Carte c){
             couleurOff();
             break;
         case PAYOO : 
-            couleurOn(0,noirTexte,vertFond);
+            couleurOn(0,noirTexte,jauneFond);
             printf("\xE2\x98\xA2 ");
             couleurOff();
             break;
@@ -134,7 +134,7 @@ void afficher(int couleur){
             printf("\n");
             break;
         case PAYOO : 
-            couleurOn(0,noirTexte,vertFond);
+            couleurOn(0,noirTexte,jauneFond);
             printf("\xE2\x98\xA2 ");
             couleurOff();
             printf("\n");
