@@ -141,8 +141,6 @@ struct_partagee lire_memoire(){
 	
 	
 	sem_wait(mutex);
-
-	
 		
 	if ((rc = (int*)shmat(mem_RC, NULL, 0)) == (int*) -1){
 		perror("erreur shmat");											

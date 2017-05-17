@@ -340,10 +340,8 @@ void demarrer_partie(){
 }
 
 void demarrer_manche(){
-	printf("debut de manche\n");
-
 	manche++;
-	printf("%d\n",manche);
+	printf("debut de manche %d\n",manche);
 	int nb_cartes;
 	Carte* cartes = paquet(&nb_cartes);
 	const int NB_CARTES_TOTAL = nb_cartes;
@@ -444,6 +442,7 @@ int check_score(){
 			break;
 		}
 	}
+	printf("check_score : %d\n", ok);
 	return ok;
 }
 
