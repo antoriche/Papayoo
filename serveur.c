@@ -339,7 +339,9 @@ void demarrer_partie(){
 
 void demarrer_manche(){
 	printf("debut de manche\n");
+
 	manche++;
+	printf("%d\n",manche);
 	int nb_cartes;
 	Carte* cartes = paquet(&nb_cartes);
 	const int NB_CARTES_TOTAL = nb_cartes;
@@ -381,12 +383,13 @@ void cloturer_tour(){
 	int joueur_max;
 
 	for( i = 0 ; i < memoire.nb_joueurs ; i++){
-		j++;
+		
 		if(j >= memoire.nb_joueurs) j = 0;
 		if(memoire.pli_en_cours[i].valeur > max_carte && memoire.pli_en_cours[i].couleur == memoire.couleur_tour){
 			max_carte = memoire.pli_en_cours[i].valeur;
 			joueur_max = j;
 		}
+		j++;
 	}
 	envoyer_message(memoire.joueurs[joueur_max].fd,pli);
 	joueur_en_cours = joueur_max;

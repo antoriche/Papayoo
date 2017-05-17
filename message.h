@@ -41,6 +41,29 @@
 
 #define CARTE_NULL 0
 
+
+#define noirTexte 30
+#define rougeTexte 31
+#define vertTexte 32
+#define jauneTexte 33
+#define bleuTexte 34
+#define magentaTexte 35
+#define cyanTexte 36
+#define blancTexte 37
+
+#define noirFond 40
+#define rougeFond 41
+#define vertFond 42
+#define jauneFond 43
+#define bleuFond 44
+#define magentaFond 45
+#define cyanFond 46
+#define blancFond 47
+
+
+#define couleurOn(A,B,C) printf("\033[%d;%d;%dm",A,B,C)
+#define couleurOff() printf("\033[0m");
+
 #define SYS(call) ((call) == -1) ? (perror(#call ": ERROR"),exit(1)) : 0
 
 typedef enum {COEUR=0, CARREAU=1, TREFLE=2, PIQUE=3, PAYOO=4} Color;
@@ -60,7 +83,7 @@ typedef struct message{
 
 Message lire_message(int fd);
 void envoyer_message(int client, Message message);
-char* carte2str(Carte c);
+void carte2str(Carte c);
 Carte getRandomCarte(Carte* paquet,int *nb_cartes);
 Carte* paquet(int* nb_cartes);
 

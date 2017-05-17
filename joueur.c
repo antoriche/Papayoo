@@ -167,7 +167,8 @@ void handle_message(Message message){
       i=0;
       while(ptr->valeur!=CARTE_NULL && i<30){
         i++;
-        printf("%d) %s\n",i,carte2str(*ptr));
+        printf("%d) ",i);
+        carte2str(*ptr);
         ptr++;
       }
       printf("Veuillez choisir les 5 cartes à écarter.\n");
@@ -207,7 +208,7 @@ void handle_message(Message message){
 
     case FIN_PARTIE : 
       printf("La partie actuelle est finie.\n");
-      break;
+      exit(0);
 
   }
 }
@@ -261,7 +262,8 @@ void envoyer_paquet(char* msg){
     }else{
       afficher_cartes();
       printf("-------------------\n");
-      printf("%s a été ajouté au paquet\n", carte2str(mon_paquet[taille_paquet-1]) );
+      carte2str(mon_paquet[taille_paquet-1]) ;
+      printf(" a été ajouté au paquet\n");
       printf("Carte suivante : \n");
     }
 
@@ -290,7 +292,8 @@ void envoyer_paquet(char* msg){
   memcpy(message.data.cartes,&cartes[carte_id],sizeof(Carte));
   cartes[carte_id]= cartes[--nbCartes];
   envoyer_message(to_server_socket,message);
-  printf("Carte jouee : %s\n\n\n",carte2str(message.data.cartes[0]));
+  printf("Carte jouee : ");
+  carte2str(message.data.cartes[0]);
   selection_carte = FALSE;
 
 }
@@ -298,30 +301,13 @@ void envoyer_paquet(char* msg){
 void afficher_pli_en_cours(){
   struct_partagee memoire = lire_memoire();
   Color c=memoire.couleur_tour;
-  char couleur[10]="";
-  if(memoire.taille_pli_en_cours!=0){
-    switch(c){
-     case CARREAU:
-        sprintf(couleur,"carreau\0");
-        break;
-      case PIQUE:
-        sprintf(couleur,"pique\0");
-        break;
-      case TREFLE:
-        sprintf(couleur,"trefle\0");
-        break;
-      case COEUR:
-        sprintf(couleur,"coeur\0");
-        break;
-      case PAYOO:
-        sprintf(couleur,"payoo\0");
-        break;
-    }
-  }
-  printf("Couleur du pli en cours : %s\n",couleur);
+  
+  printf("Couleur du pli en cours : ");
+  afficher(c);
+
   int i;
   for(i=0;i<memoire.taille_pli_en_cours;i++){
-    printf("%s\n",carte2str(memoire.pli_en_cours[i]));
+    carte2str(memoire.pli_en_cours[i]);
   }
   printf("\n");
 }
@@ -329,6 +315,7 @@ void afficher_pli_en_cours(){
 void afficher_cartes(){
   int i = 0;
   for(i = 0 ; i < nbCartes ; i++){
-    printf("%d) %s\n",i+1,carte2str(cartes[i]));
+    printf("%d) ",i+1);
+    carte2str(cartes[i]);
   }
 }

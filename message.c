@@ -24,31 +24,48 @@ void envoyer_message(int client, Message message){
 	SYS(write(client,&message,sizeof(Message)));
 }
 
-char* carte2str(Carte c){
+void carte2str(Carte c){
 	char* ret;
 	if( (ret = (char*)malloc(sizeof(char)*15)) == NULL){
 		perror("Erreur malloc\n");
 		exit(2);
 	}
-	sprintf(ret, "%d ", c.valeur);
+	printf("%d ", c.valeur);
 	switch(c.couleur){
-		case CARREAU:
-			strcat(ret,"de carreau");
-			break;
-		case PIQUE:
-			strcat(ret,"de pique");
-			break;
-		case TREFLE:
-			strcat(ret,"de trefle");
-			break;
-		case COEUR:
-			strcat(ret,"de coeur");
-			break;
-		case PAYOO:
-			strcat(ret,"de payoo");
-			break;
-	}
-	return ret;
+        case COEUR : 
+            couleurOn(0,rougeTexte,noirFond);
+            printf("\xE2\x99\xA5 ");
+            
+            couleurOff();
+            printf("\n");
+            break;
+        case CARREAU : 
+            couleurOn(0,rougeTexte,noirFond);
+            printf("\xE2\x99\xA6 ");
+            couleurOff();
+            printf("\n");
+            break;
+        case TREFLE : 
+            couleurOn(0,noirTexte,blancFond);
+            printf("\xE2\x99\xA3 ");
+            couleurOff();
+            printf("\n");
+            break;
+        case PIQUE : 
+            couleurOn(0,noirTexte,blancFond);
+            printf("\xE2\x99\xA0 ");
+            couleurOff();
+            printf("\n");
+            break;
+        case PAYOO : 
+            couleurOn(0,noirTexte,vertFond);
+            printf("PAYOO");
+            couleurOff();
+            printf("\n");
+            break;
+    }
+	printf(ret);
+	
 }
 
 Carte getRandomCarte(Carte* paquet, int* nb_cartes){
@@ -93,4 +110,40 @@ Carte* paquet(int* nb_cartes){
 		
 	}
 	return cartes;
+}
+
+void afficher(int couleur){
+    switch(couleur){
+        case COEUR : 
+            couleurOn(0,rougeTexte,noirFond);
+            printf("\xE2\x99\xA5 ");
+            couleurOff();
+            printf("\n");
+            break;
+        case CARREAU : 
+            couleurOn(0,rougeTexte,noirFond);
+            printf("\xE2\x99\xA6 ");
+            couleurOff();
+            printf("\n");
+            break;
+        case TREFLE : 
+            couleurOn(0,noirTexte,blancFond);
+            printf("\xE2\x99\xA3 ");
+            couleurOff();
+            printf("\n");
+            break;
+        case PIQUE : 
+            couleurOn(0,noirTexte,blancFond);
+            printf("\xE2\x99\xA0 ");
+            couleurOff();
+            printf("\n");
+            break;
+        case PAYOO : 
+            couleurOn(0,noirTexte,vertFond);
+            printf("PAYOO");
+            couleurOff();
+            printf("\n");
+            break;
+    }
+    return;
 }
