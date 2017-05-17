@@ -323,3 +323,7 @@ void afficher_cartes(){
     printf("\n");
   }
 }
+
+void clear(){
+  system("clear");
+}

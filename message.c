@@ -59,7 +59,7 @@ void carte2str(Carte c){
             couleurOff();
             break;
     }
-	printf(ret);
+	//printf(ret);
 	
 }
 
