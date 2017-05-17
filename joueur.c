@@ -162,6 +162,7 @@ void handle_message(Message message){
     case DISTRIBUTION_CARTES : 
       printf("Cartes distribuees\n");
       //cartes=message.data.cartes;
+      score=0;
       memcpy(cartes,message.data.cartes,sizeof(Carte)*30);
       Carte* ptr=cartes;
       i=0;
@@ -231,7 +232,9 @@ void recevoir_pli(Message message){
     }else if(ptr->couleur==PAYOO){
       score+=ptr->valeur;
     }
-      ptr++;
+    carte2str(*ptr);
+    printf("\n");
+    ptr++;
   }
 }
 

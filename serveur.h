@@ -29,6 +29,7 @@
 #include "message.h"
 #include "ipc.h"
 #include "socket.h"
+#include "utils.h"
 
 void handle_message(Joueur* joueur, Message msg);
 void close_all_connections();

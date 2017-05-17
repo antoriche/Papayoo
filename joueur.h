@@ -21,6 +21,7 @@
 
 #include "message.h"
 #include "socket.h"
+#include "utils.h"
 
 #define SYS(call) ((call) == -1) ? (perror(#call ": ERROR"),exit(1)) : 0
 
