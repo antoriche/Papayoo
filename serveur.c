@@ -158,6 +158,7 @@ int main(int argc, char** argv){
 					for(j = 0 ; j < nb_clients ; j++){
 						if(clients[i].fd == memoire.joueurs[j].fd){
 							memcpy(&memoire.joueurs[j],&clients[i],sizeof(Joueur));
+							ecrire_memoire(memoire);
 							break;
 						}
 					}
@@ -173,7 +174,7 @@ int main(int argc, char** argv){
 
 void handle_message(Joueur* client, Message msg){
 	Message resp;
-	int i;
+	int i,j;
 	int points;
 	switch(msg.type){
 		case INSCRIPTION:
@@ -260,11 +261,24 @@ void handle_message(Joueur* client, Message msg){
 				cloturer_tour();
 				if(nb_cartes_par_joueur>nb_cartes_par_joueur_initial-NB_PLI_MAX)demarrer_tour();
 				else{
-					//cloturer manche
-					for(i = 0 ; i < memoire.nb_joueurs ; i++){
+					// attend les scores puis cloture la manche
+					/*for(i = 0 ; i < memoire.nb_joueurs ; i++){
 						memoire.joueurs[i].score_en_attente = TRUE;
 						resp.type = COMPTER_POINTS;
 						envoyer_message(memoire.joueurs[i].fd,resp);
+					}*/
+					for(i = 0 ; i < nb_clients ; i++){
+						int inscrit = FALSE;
+						for(j = 0 ; j < memoire.nb_joueurs ; j++){
+							if(memoire.joueurs[j].fd == clients[i].fd){
+								inscrit = TRUE;
+							}
+						}
+						if(inscrit){
+							clients[i].score_en_attente = TRUE;
+							resp.type = COMPTER_POINTS;
+							envoyer_message(memoire.joueurs[i].fd,resp);
+						}
 					}
 				}
 			}else{
@@ -442,7 +456,6 @@ int check_score(){
 			break;
 		}
 	}
-	printf("check_score : %d\n", ok);
 	return ok;
 }
 
