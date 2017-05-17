@@ -19,17 +19,13 @@
 
 
 
-void init_sem(){
+void init_mem(){
 	sem_t *mutex;
 	sem_t *bd;
 	int *rc;
 	int mem_RC;
 	
-/*
-	SYS(bd = sem_open(BD,0));
-	SYS(mutex = sem_open(MUTEX,0));
-	sem_unlink(bd);
-	sem_unlink(mutex);*/
+
 	SYS(sem_open(BD,O_CREAT,0666,1));
 	SYS(sem_open(MUTEX,O_CREAT,0666,1));
 	
@@ -51,11 +47,7 @@ void init_sem(){
 
 
 
-void init_mem_RC(){
-	
-	
-	
-}
+
 void cloturer_memoire(){
 	int mem_RC;
 	int mem_ID;
@@ -95,11 +87,7 @@ void ecrire_memoire(struct_partagee data){
 	
 	struct_partagee *ptr_mem_partagee;
 	bd=sem_open(BD,0);
-	if ((mem_ID = shmget(KEY, sizeof(struct_partagee), IPC_CREAT | 0666)) < 0)	
-	{
-		perror("erreur shmget1");											
-		exit(1);
-	}
+	SYS(mem_ID = shmget(KEY, sizeof(struct_partagee), IPC_CREAT | 0666));	
 	
 	
 	sem_wait(bd);
@@ -168,8 +156,8 @@ struct_partagee lire_memoire(){
 	sem_post(mutex);
 
 	
-	//shmdt(rc);
-	//shmdt(ptr_mem_partagee);
+	shmdt(rc);
+	shmdt(ptr_mem_partagee);
 	data.memoire_valide = 1;
 	return data;
 }

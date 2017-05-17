@@ -71,7 +71,7 @@ int main(int argc, char** argv){
 	}
 	memoire.port_actuel = port;
 
-	init_sem();
+	init_mem();
 
 	struct sigaction timer;
     timer.sa_handler = &handle_timer;

@@ -47,8 +47,7 @@ typedef struct {
 	Color couleur_tour;
 }struct_partagee;
 
-void init_sem();
-void init_mem_RC();
+void init_mem();
 void cloturer_memoire();
 
 void ecrire_memoire(struct_partagee data);
