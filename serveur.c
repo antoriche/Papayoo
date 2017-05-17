@@ -13,8 +13,8 @@
 
 #define TIMEOUT_RESPONSE 60
 
-#define NB_MANCHES 3
-#define NB_PLI_MAX 3
+#define NB_MANCHES 1
+#define NB_PLI_MAX 2
 
 struct_partagee memoire;
 
