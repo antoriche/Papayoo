@@ -167,13 +167,12 @@ void handle_message(Message message){
       i=0;
       while(ptr->valeur!=CARTE_NULL && i<30){
         i++;
-        printf("%d) ",i);
-        carte2str(*ptr);
-        printf("\n");
         ptr++;
       }
-      printf("Veuillez choisir les 5 cartes à écarter.\n");
       nbCartes = i;
+      afficher_cartes();
+      printf("Veuillez choisir les 5 cartes à écarter.\n");
+      
       taille_paquet=0;
       selection_paquet = TRUE;
       selection_carte = FALSE;
@@ -233,7 +232,6 @@ void recevoir_pli(Message message){
     }
       ptr++;
   }
-  printf("votre score actuel est de %d\n\n\n",score);
 }
 
 void handle_keyboard(char* msg){
@@ -319,6 +317,11 @@ void afficher_pli_en_cours(){
 }
 
 void afficher_cartes(){
+  printf("Votre  score actuel : %d\n",score);
+  struct_partagee memoire = lire_memoire();
+  printf("Papayoo : ");
+  carte2str(memoire.papayoo);
+  printf("\n");
   int i = 0;
   for(i = 0 ; i < nbCartes ; i++){
     printf("%d) ",i+1);

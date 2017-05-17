@@ -360,10 +360,8 @@ void demarrer_manche(){
 	Carte* cartes = paquet(&nb_cartes);
 	const int NB_CARTES_TOTAL = nb_cartes;
 	int i,j;
-	printf("QSFDFDSQFQZF1\n");
 	memoire.papayoo.couleur = rand()%4;
 	ecrire_memoire(memoire);
-	printf("QSFDFDSQFQZF2\n");
 	for(i = 0 ; i < memoire.nb_joueurs ; i++){
 		Carte main[30];
 		for(j = 0 ; j < NB_CARTES_TOTAL/memoire.nb_joueurs ; j++){
