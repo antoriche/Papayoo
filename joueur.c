@@ -209,6 +209,7 @@ void handle_message(Message message){
 
     case FIN_PARTIE : 
       printf("La partie actuelle est finie.\n");
+      printf("%s",message.data.message);
       exit(0);
 
   }
@@ -304,9 +305,10 @@ void afficher_pli_en_cours(){
   struct_partagee memoire = lire_memoire();
   Color c=memoire.couleur_tour;
   
-  printf("Couleur du pli en cours : ");
-  if(memoire.taille_pli_en_cours!=0)
+  if(memoire.taille_pli_en_cours!=0){
+    printf("Couleur du pli en cours : ");
     afficher(c);
+  }
 
   int i;
   for(i=0;i<memoire.taille_pli_en_cours;i++){

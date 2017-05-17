@@ -315,7 +315,7 @@ void close_all_connections(){
 			strcat(msg.data.message,memoire.joueurs[i].nom);
 			strcat(msg.data.message," : ");
 			char score_str[4];
-			sprintf(score_str,"%d\0",score);
+			sprintf(score_str,"%d\0",memoire.joueurs[i].score);
 			strcat(msg.data.message,score_str);
 			strcat(msg.data.message,"\n");
 		}
