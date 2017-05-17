@@ -145,6 +145,7 @@ int main(int argc, char** argv){
 					Joueur nouveau_client;
 					nouveau_client.fd = nouveau_client_fd;
 					nouveau_client.send_ecart = FALSE;
+					nouveau_client.score = 0;
 					strcpy(nouveau_client.nom,"\0");
 					memcpy(&clients[nb_clients],&nouveau_client,sizeof(Joueur));
 					nb_clients++;

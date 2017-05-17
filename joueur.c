@@ -322,7 +322,7 @@ void afficher_pli_en_cours(){
 }
 
 void afficher_cartes(){
-  printf("Votre  score actuel : %d\n",score);
+  printf("Votre score actuel pour cette manche : %d\n",score);
   struct_partagee memoire = lire_memoire();
   printf("Papayoo : ");
   carte2str(memoire.papayoo);
