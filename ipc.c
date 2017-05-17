@@ -8,10 +8,10 @@
 #############################################################
 */
 
-#define KEY 1000
-#define KEY_RC 2000
-#define MUTEX "/mutexxx"
-#define BD "/bddd"
+#define KEY 10062
+#define KEY_RC 10068
+#define MUTEX "/mutex"
+#define BD "/bd"
 
 #define ACTIVER_MEMOIRE_PARTAGEE 1 //Debug
 
