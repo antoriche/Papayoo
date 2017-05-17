@@ -169,6 +169,7 @@ void handle_message(Message message){
         i++;
         printf("%d) ",i);
         carte2str(*ptr);
+        printf("\n");
         ptr++;
       }
       printf("Veuillez choisir les 5 cartes à écarter.\n");
@@ -294,6 +295,7 @@ void envoyer_paquet(char* msg){
   envoyer_message(to_server_socket,message);
   printf("Carte jouee : ");
   carte2str(message.data.cartes[0]);
+  printf("\n");
   selection_carte = FALSE;
 
 }
@@ -308,6 +310,7 @@ void afficher_pli_en_cours(){
   int i;
   for(i=0;i<memoire.taille_pli_en_cours;i++){
     carte2str(memoire.pli_en_cours[i]);
+    printf("\n");
   }
   printf("\n");
 }
@@ -317,5 +320,6 @@ void afficher_cartes(){
   for(i = 0 ; i < nbCartes ; i++){
     printf("%d) ",i+1);
     carte2str(cartes[i]);
+    printf("\n");
   }
 }

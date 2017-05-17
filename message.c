@@ -37,31 +37,26 @@ void carte2str(Carte c){
             printf("\xE2\x99\xA5 ");
             
             couleurOff();
-            printf("\n");
             break;
         case CARREAU : 
             couleurOn(0,rougeTexte,noirFond);
             printf("\xE2\x99\xA6 ");
             couleurOff();
-            printf("\n");
             break;
         case TREFLE : 
             couleurOn(0,noirTexte,blancFond);
             printf("\xE2\x99\xA3 ");
             couleurOff();
-            printf("\n");
             break;
         case PIQUE : 
             couleurOn(0,noirTexte,blancFond);
             printf("\xE2\x99\xA0 ");
             couleurOff();
-            printf("\n");
             break;
         case PAYOO : 
             couleurOn(0,noirTexte,vertFond);
-            printf("PAYOO");
+            printf("\xE2\x98\xA2 ");
             couleurOff();
-            printf("\n");
             break;
     }
 	printf(ret);
@@ -140,7 +135,7 @@ void afficher(int couleur){
             break;
         case PAYOO : 
             couleurOn(0,noirTexte,vertFond);
-            printf("PAYOO");
+            printf("\xE2\x98\xA2 ");
             couleurOff();
             printf("\n");
             break;
